@@ -73,9 +73,7 @@ namespace GamerRater.Application.Services
             }
         }
 
-        public static bool Navigate<T>(object parameter = null, NavigationTransitionInfo infoOverride = null)
-            where T : Page
-            => Navigate(typeof(T), parameter, infoOverride);
+        public static bool Navigate<T>(object parameter = null, NavigationTransitionInfo infoOverride = null) => Navigate(typeof(T), parameter, infoOverride);
 
         private static void RegisterFrameEvents()
         {

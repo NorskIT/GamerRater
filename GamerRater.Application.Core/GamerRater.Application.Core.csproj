@@ -3,6 +3,9 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>GamerRater.Application.Core</RootNamespace>
+    <ApplicationIcon />
+    <OutputType>Exe</OutputType>
+    <StartupObject>GamerRater.Application.Core.Main</StartupObject>
   </PropertyGroup>
 
    <ItemGroup>

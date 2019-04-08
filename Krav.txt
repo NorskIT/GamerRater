@@ -1,0 +1,16 @@
+Innleveringsfrist: 14:00 31 Mai.
+Lage en zip med alt som trengs.
+	- { Descrption.pdf. Som har navn, studentnumber og tittel på prosjekt.
+		- Requierments (Internet / logon)
+		- Noe som ikke er helt ferdig, skriv dette ned.
+		- Kjente feil
+		- En beskrivelse av programmes funksjonalitet
+	}
+	- {Source(Alle source filene)}
+	- {Source+Soulution.sln (Må kunne åpne alle source fra 1 solution fil og kjøre det i debug mode ved å trykke F5)}
+
+
+Krav til prosjektet:
+- Skal fungere med og uten internett.
+	-	Skal altså ikke kræsje om internett ikke er der.
+- Må fungere på Windows 10, version 1809(10.0: Build 17763)

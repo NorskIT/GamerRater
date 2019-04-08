@@ -1,19 +1,45 @@
 ﻿<Page
     x:Class="GamerRater.Application.Views.MainPage"
+    xmlns:application="using:GamerRater.Application"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    xmlns:models="using:GamerRater.Model"
     Style="{StaticResource PageStyle}"
     mc:Ignorable="d">
-	<Grid
-        x:Name="ContentArea"
-        Margin="{StaticResource MediumLeftRightMargin}">
-		<Grid
-            Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}">
-			<ListView HorizontalAlignment="Center" Height="auto" VerticalAlignment="Top" Width="auto" />
-			<!--The SystemControlPageBackgroundChromeLowBrush background represents where you should place your content. 
-                Place your content here.-->
-		</Grid>
-	</Grid>
+    <Grid x:Name="ContentArea">
+    <controls:AdaptiveGridView
+        ItemsSource="{x:Bind ViewModel.Games ,Mode=OneWay}"
+        ItemClickCommand="{x:Bind ViewModel.ItemClickCommand}"
+        StretchContentForSingleRow="False"
+        SelectionMode="None"
+        IsItemClickEnabled="True"
+        Padding="{StaticResource MediumLeftRightMargin}"
+        animations:Connected.ListItemElementName="itemThumbnail"
+        animations:Connected.ListItemKey="animationKeyContentGrid"
+        DesiredWidth="180"
+        ItemHeight="270">
+        <controls:AdaptiveGridView.ItemTemplate>
+            <DataTemplate x:DataType="models:Game">
+                <Grid
+                    x:Name="itemThumbnail"
+                    Padding="{StaticResource XSmallLeftTopRightBottomMargin}"
+                    Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}">
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <!--FontIcon
+                            Glyph="{x:Bind Symbol}" />
+                        <TextBlock
+                            Margin="{StaticResource XXSmallTopMargin}"
+                            HorizontalAlignment="Center"
+                            Text="{x:Bind Company}"
+                            Style="{ThemeResource BodyTextStyle}" /-->
+                    </StackPanel>
+                </Grid>
+            </DataTemplate>
+        </controls:AdaptiveGridView.ItemTemplate>
+    </controls:AdaptiveGridView>
+    </Grid>
 </Page>

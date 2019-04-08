@@ -7,11 +7,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GamerRater.Application", "G
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GamerRater.Application.Core", "GamerRater.Application.Core\GamerRater.Application.Core.csproj", "{29199EE8-E022-4F00-A36B-3CBE034D868D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GamerRater.Model", "GamerRater.Model\GamerRater.Model.csproj", "{081594B7-51FE-4731-8615-EBB375BC51C6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GamerRater.Model", "GamerRater.Model\GamerRater.Model.csproj", "{081594B7-51FE-4731-8615-EBB375BC51C6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GamerRater.DataAccess", "GamerRater.DataAccess\GamerRater.DataAccess.csproj", "{F8E1421D-EDE3-4E90-9F43-ACC6065F02D9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GamerRater.DataAccess", "GamerRater.DataAccess\GamerRater.DataAccess.csproj", "{F8E1421D-EDE3-4E90-9F43-ACC6065F02D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GamerRater.Api", "GamerRater.Api\GamerRater.Api.csproj", "{FBE60356-8AF6-4284-BD58-561DB8446FBC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GamerRater.Api", "GamerRater.Api\GamerRater.Api.csproj", "{FBE60356-8AF6-4284-BD58-561DB8446FBC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2BC8D84B-D96A-4CBA-8273-071187BA0BAB}"
+	ProjectSection(SolutionItems) = preProject
+		Krav.txt = Krav.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
