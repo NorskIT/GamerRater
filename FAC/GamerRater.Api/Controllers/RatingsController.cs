@@ -25,14 +25,14 @@ namespace GamerRater.Api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Rating>>> GetRating()
         {
-            return await _context.Ratings.ToListAsync();
+            return await _context.Rating.ToListAsync();
         }
 
         // GET: api/Ratings/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Rating>> GetRating(int id)
         {
-            var rating = await _context.Ratings.FindAsync(id);
+            var rating = await _context.Rating.FindAsync(id);
 
             if (rating == null)
             {
@@ -76,7 +76,7 @@ namespace GamerRater.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<Rating>> PostRating(Rating rating)
         {
-            _context.Ratings.Add(rating);
+            _context.Rating.Add(rating);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetRating", new { id = rating.Id }, rating);
@@ -86,13 +86,13 @@ namespace GamerRater.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<Rating>> DeleteRating(int id)
         {
-            var rating = await _context.Ratings.FindAsync(id);
+            var rating = await _context.Rating.FindAsync(id);
             if (rating == null)
             {
                 return NotFound();
             }
 
-            _context.Ratings.Remove(rating);
+            _context.Rating.Remove(rating);
             await _context.SaveChangesAsync();
 
             return rating;
@@ -100,7 +100,7 @@ namespace GamerRater.Api.Controllers
 
         private bool RatingExists(int id)
         {
-            return _context.Ratings.Any(e => e.Id == id);
+            return _context.Rating.Any(e => e.Id == id);
         }
     }
 }

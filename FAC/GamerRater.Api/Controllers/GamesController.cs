@@ -12,46 +12,46 @@ namespace GamerRater.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RatingsController : ControllerBase
+    public class GamesController : ControllerBase
     {
         private readonly DataContext _context;
 
-        public RatingsController(DataContext context)
+        public GamesController(DataContext context)
         {
             _context = context;
         }
 
-        // GET: api/Ratings
+        // GET: api/Games
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Rating>>> GetRating()
+        public async Task<ActionResult<IEnumerable<Game>>> GetGame()
         {
-            return await _context.Ratings.ToListAsync();
+            return await _context.Game.ToListAsync();
         }
 
-        // GET: api/Ratings/5
+        // GET: api/Games/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Rating>> GetRating(int id)
+        public async Task<ActionResult<Game>> GetGame(int id)
         {
-            var rating = await _context.Ratings.FindAsync(id);
+            var game = await _context.Game.FindAsync(id);
 
-            if (rating == null)
+            if (game == null)
             {
                 return NotFound();
             }
 
-            return rating;
+            return game;
         }
 
-        // PUT: api/Ratings/5
+        // PUT: api/Games/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutRating(int id, Rating rating)
+        public async Task<IActionResult> PutGame(int id, Game game)
         {
-            if (id != rating.Id)
+            if (id != game.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(rating).State = EntityState.Modified;
+            _context.Entry(game).State = EntityState.Modified;
 
             try
             {
@@ -59,7 +59,7 @@ namespace GamerRater.Api.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!RatingExists(id))
+                if (!GameExists(id))
                 {
                     return NotFound();
                 }
@@ -72,35 +72,35 @@ namespace GamerRater.Api.Controllers
             return NoContent();
         }
 
-        // POST: api/Ratings
+        // POST: api/Games
         [HttpPost]
-        public async Task<ActionResult<Rating>> PostRating(Rating rating)
+        public async Task<ActionResult<Game>> PostGame(Game game)
         {
-            _context.Ratings.Add(rating);
+            _context.Game.Add(game);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetRating", new { id = rating.Id }, rating);
+            return CreatedAtAction("GetGame", new { id = game.Id }, game);
         }
 
-        // DELETE: api/Ratings/5
+        // DELETE: api/Games/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Rating>> DeleteRating(int id)
+        public async Task<ActionResult<Game>> DeleteGame(int id)
         {
-            var rating = await _context.Ratings.FindAsync(id);
-            if (rating == null)
+            var game = await _context.Game.FindAsync(id);
+            if (game == null)
             {
                 return NotFound();
             }
 
-            _context.Ratings.Remove(rating);
+            _context.Game.Remove(game);
             await _context.SaveChangesAsync();
 
-            return rating;
+            return game;
         }
 
-        private bool RatingExists(int id)
+        private bool GameExists(int id)
         {
-            return _context.Ratings.Any(e => e.Id == id);
+            return _context.Game.Any(e => e.Id == id);
         }
     }
 }

@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
-    xmlns:models="using:GamerRater.Model"
+    xmlns:models="using:GamerRater.Model.IGDBModels"
     Style="{StaticResource PageStyle}"
     mc:Ignorable="d">
     <Grid x:Name="ContentArea">
@@ -23,20 +23,19 @@
         DesiredWidth="180"
         ItemHeight="270">
         <controls:AdaptiveGridView.ItemTemplate>
-            <DataTemplate x:DataType="models:Game">
+            <DataTemplate x:DataType="models:GameCover">
                 <Grid
                     x:Name="itemThumbnail"
                     Padding="{StaticResource XSmallLeftTopRightBottomMargin}"
                     Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}">
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <!--FontIcon
-                            Glyph="{x:Bind Symbol}" />
+                            <Image Source="https://images.igdb.com/igdb/image/upload/t_thumb/gvisgk6fn87gv0bkmtmy.jpg"/>
                         <TextBlock
-                            Margin="{StaticResource XXSmallTopMargin}"
-                            HorizontalAlignment="Center"
-                            Text="{x:Bind Company}"
-                            Style="{ThemeResource BodyTextStyle}" /-->
-                    </StackPanel>
+                        Margin="{StaticResource XXSmallTopMargin}"
+                        HorizontalAlignment="Center"
+                        Text="{x:Bind game}"
+                        Style="{ThemeResource BodyTextStyle}"/>
+                        </StackPanel>
                 </Grid>
             </DataTemplate>
         </controls:AdaptiveGridView.ItemTemplate>

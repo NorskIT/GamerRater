@@ -25,14 +25,14 @@ namespace GamerRater.Api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUser()
         {
-            return await _context.User.ToListAsync();
+            return await _context.Users.ToListAsync();
         }
 
         // GET: api/Users/5
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
-            var user = await _context.User.FindAsync(id);
+            var user = await _context.Users.FindAsync(id);
 
             if (user == null)
             {
@@ -76,7 +76,7 @@ namespace GamerRater.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<User>> PostUser(User user)
         {
-            _context.User.Add(user);
+            _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetUser", new { id = user.Id }, user);
@@ -86,13 +86,13 @@ namespace GamerRater.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<User>> DeleteUser(int id)
         {
-            var user = await _context.User.FindAsync(id);
+            var user = await _context.Users.FindAsync(id);
             if (user == null)
             {
                 return NotFound();
             }
 
-            _context.User.Remove(user);
+            _context.Users.Remove(user);
             await _context.SaveChangesAsync();
 
             return user;
@@ -100,7 +100,7 @@ namespace GamerRater.Api.Controllers
 
         private bool UserExists(int id)
         {
-            return _context.User.Any(e => e.Id == id);
+            return _context.Users.Any(e => e.Id == id);
         }
     }
 }

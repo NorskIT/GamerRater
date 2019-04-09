@@ -5,7 +5,7 @@
     <RootNamespace>GamerRater.Application.Core</RootNamespace>
     <ApplicationIcon />
     <OutputType>Exe</OutputType>
-    <StartupObject>GamerRater.Application.Core.Main</StartupObject>
+    <StartupObject></StartupObject>
   </PropertyGroup>
 
    <ItemGroup>

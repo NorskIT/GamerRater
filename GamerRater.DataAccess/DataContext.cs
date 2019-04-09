@@ -8,11 +8,12 @@ namespace GamerRater.DataAccess
 	public class DataContext : DbContext
 	{
 
-		public DbSet<Game> Game { get; set; }
-		public DbSet<Rating> Rating { get; set; }
-		public DbSet<User> User { get; set; }
+		public DbSet<Game> Games { get; set; }
+		public DbSet<Rating> Ratings { get; set; }
+		public DbSet<User> Users { get; set; }
 		public DbSet<Stars> Stars { get; set; }
 		public DbSet<Platform> Platforms { get; set; }
+		public DbSet<UserGroup> UserGroups { get; set; }
 		
 
 		public DataContext()

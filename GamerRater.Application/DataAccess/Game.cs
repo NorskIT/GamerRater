@@ -5,23 +5,19 @@ using Newtonsoft.Json;
 
 namespace GamerRater.Application.DataAccess
 {
-    internal class Game
+    public class Game
     {
-        private static readonly Uri ApiUri = new Uri("http://localhost:6289/");
+        private static readonly string ApiUri = "http://localhost:61971";
         private readonly HttpClient _httpClient;
-
-        public Game(HttpClient httpClient)
-        {
-            _httpClient = httpClient;
-        }
 
         public Game()
         {
+            _httpClient = new HttpClient();
         }
-
+        
         public async Task<Model.Game[]> GetGamesAsync()
         {
-            var resultGames = await _httpClient.GetAsync(new Uri(string.Concat(ApiUri, "/api/game")));
+            var resultGames = await _httpClient.GetAsync(new Uri(string.Concat(ApiUri, "/api/games")));
             var jsonGame = await resultGames.Content.ReadAsStringAsync();
             var gamesArr = JsonConvert.DeserializeObject<Model.Game[]>(jsonGame);
             return gamesArr;
@@ -29,7 +25,7 @@ namespace GamerRater.Application.DataAccess
 
         public async Task<bool> DeleteGame(Model.Game game)
         {
-            var result = await _httpClient.DeleteAsync(new Uri(string.Concat(ApiUri, "/api/game/", game.Id)));
+            var result = await _httpClient.DeleteAsync(new Uri(string.Concat(ApiUri, "/api/games/", game.Id)));
             return result.IsSuccessStatusCode;
         }
     }

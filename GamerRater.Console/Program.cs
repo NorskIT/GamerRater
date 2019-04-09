@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace GamerRater.Application.Core
+namespace GamerRater.Console
 {
 	class Program
 	{
