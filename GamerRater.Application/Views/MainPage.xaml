@@ -29,7 +29,7 @@
                     Padding="{StaticResource XSmallLeftTopRightBottomMargin}"
                     Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}">
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Image Source="https://images.igdb.com/igdb/image/upload/t_thumb/gvisgk6fn87gv0bkmtmy.jpg"/>
+                            <Image Source="{x:Bind url}"/>
                         <TextBlock
                         Margin="{StaticResource XXSmallTopMargin}"
                         HorizontalAlignment="Center"

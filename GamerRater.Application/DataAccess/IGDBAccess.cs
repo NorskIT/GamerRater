@@ -28,11 +28,15 @@ namespace GamerRater.Application.DataAccess
             {
                 var results = await _httpClient.PostAsync(new Uri(Url + _urlCovers), new HttpStringContent(
                     "fields *;" +
-                    "limit 10;",
+                    "limit 50;",
                     UnicodeEncoding.Utf8,
                     "application/json"));
                 var jsonGame = await results.Content.ReadAsStringAsync();
                 var coversArr = JsonConvert.DeserializeObject<GameCover[]>(jsonGame);
+                foreach (var cover in coversArr)
+                {
+                    cover.url = "https:" + cover.url;
+                }
                 return coversArr;
             }
         }
