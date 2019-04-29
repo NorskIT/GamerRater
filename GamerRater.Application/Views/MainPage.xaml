@@ -12,12 +12,14 @@
     mc:Ignorable="d">
 	<Grid x:Name="ContentArea">
 		<controls:AdaptiveGridView
-        ItemsSource="{x:Bind ViewModel.Games ,Mode=OneWay}"
+        Name="GameTemplateBoxes"
+        ItemsSource="{x:Bind ViewModel.Games ,Mode=TwoWay}"
         ItemClickCommand="{x:Bind ViewModel.ItemClickCommand}"
         StretchContentForSingleRow="False"
         SelectionMode="None"
         IsItemClickEnabled="True"
         Padding="{StaticResource MediumLeftRightMargin}"
+        DataContextChanged="{x:Bind ViewModel.UpdateTemplate}"
         animations:Connected.ListItemElementName="itemThumbnail"
         animations:Connected.ListItemKey="animationKeyContentGrid"
         DesiredWidth="180"
@@ -29,11 +31,12 @@
                     Padding="{StaticResource XSmallLeftTopRightBottomMargin}"
                     Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}">
 						<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-							<Image Source="{x:Bind GameCover.url, Mode=OneWay}"/>
+                            <Image Height="200" Width="130"  Source="{Binding GameCover.url, Mode=OneWay, FallbackValue='https://dummyimage.com/400x600/dbdbdb/000000&amp;text=No+image' }"/>
 							<TextBlock
                         Margin="{StaticResource XXSmallTopMargin}"
                         HorizontalAlignment="Center"
                         Text="{x:Bind name}"
+                        Height="100"
                         Style="{ThemeResource BodyTextStyle}"/>
 						</StackPanel>
 					</Grid>
@@ -41,11 +44,8 @@
 			</controls:AdaptiveGridView.ItemTemplate>
 		</controls:AdaptiveGridView>
 		<RelativePanel HorizontalAlignment="Center" Height="32" Margin="0,10,0,0" VerticalAlignment="Top" Width="1004">
-			<TextBox Name="GameSearchBar" PlaceholderText="Search" Margin="325,0,0,0" Text="" VerticalAlignment="Center" HorizontalAlignment="Left" Width="355"/>
-			<Button Click="{x:Bind ViewModel.SearchForGame}" DataContext="{x:Bind GameSearchBar.Text, Mode=OneWay}" HorizontalAlignment="Center" Height="32" Margin="0,0,0,0" VerticalAlignment="Center" RelativePanel.RightOf="GameSearchBar">
-                <SymbolIcon Symbol="Find"/>
-            </Button>
-		</RelativePanel>
+            <TextBox KeyDown="{x:Bind ViewModel.SearchForGame}" Name="GameSearchBar" PlaceholderText="Search" Margin="325,0,0,0" Text="" VerticalAlignment="Center" HorizontalAlignment="Left" Width="355"/>
+        </RelativePanel>
 
 	</Grid>
 </Page>

@@ -1,11 +1,16 @@
 ﻿using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Windows.System;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 using GamerRater.Application.DataAccess;
 using GamerRater.Application.Helpers;
 using GamerRater.Model.IGDBModels;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Toolkit.Uwp.UI.Controls;
 
 namespace GamerRater.Application.ViewModels
 {
@@ -13,18 +18,28 @@ namespace GamerRater.Application.ViewModels
     {
         private readonly IGDBAccess IGDBCovers = new IGDBAccess();
         public ICommand _itemClickCommand;
-        public ICommand _searchButtonCommand;
+        private AdaptiveGridView agv;
         public ObservableCollection<GameRoot> Games = new ObservableCollection<GameRoot>();
 
-        public ICommand ItemClickCommand => _itemClickCommand ?? (_itemClickCommand = new RelayCommand<Game>(OnItemClick));
+        public ICommand ItemClickCommand =>
+            _itemClickCommand ?? (_itemClickCommand = new RelayCommand<GameRoot>(OnItemClick));
 
-        public void SearchForGame(object sender, RoutedEventArgs e)
+        public void UpdateTemplate(object sender, DataContextChangedEventArgs e)
         {
-            Button button = (Button) sender;
-            GetGamesAsync(button.DataContext.ToString());
+            agv = (AdaptiveGridView) sender;
         }
 
-        private void OnItemClick(Game clickedItem)
+        public void SearchForGame(object sender, KeyRoutedEventArgs e)
+        {
+            if (e.Key == VirtualKey.Enter)
+            {
+                var textFIeld = (TextBox)sender;
+                string text = textFIeld.Text;
+                GetGamesAsync(text);
+            }
+        }
+
+        private void OnItemClick(GameRoot clickedItem)
         {
             /*if (clickedItem != null)
             {
@@ -36,19 +51,31 @@ namespace GamerRater.Application.ViewModels
         public async void GetGamesAsync(string gameName)
         {
             Games.Clear();
-            IGDBAccess context = new IGDBAccess();
-            foreach (GameRoot game in await context.GetGamesAsync(gameName))
+            var context = new IGDBAccess();
+            var games = await context.GetGamesAsync(gameName);
+            var toFindCoverList = new GameRoot[5];
+            int x = 0;
+            for (var index = 0; index < games.Length; index++)
             {
-                Games.Add(game);
+                if (toFindCoverList[4] != null)
+                {
+                    await context.GetCoversToGamesAsync(toFindCoverList);
+                    foreach (GameRoot gamesRoot in toFindCoverList)
+                    {
+                        Games.Add(gamesRoot);
+                    }
+                    toFindCoverList = new GameRoot[5];
+                    x = 0;
+                }
+                toFindCoverList[x] = games[index];
+                x++;
             }
-
-            FindCoversToNewlyAddedGames();
-
         }
 
         private async Task FindCoversToNewlyAddedGames()
         {
-            using(IGDBAccess context = new IGDBAccess()) {
+            using (var context = new IGDBAccess())
+            {
                 var toFindCoverList = new GameRoot[5];
                 foreach (var t in Games)
                 {
@@ -57,6 +84,8 @@ namespace GamerRater.Application.ViewModels
                     await context.GetCoversToGamesAsync(toFindCoverList);
                     toFindCoverList = new GameRoot[5];
                 }
+
+                foreach (var gameRoot in Games) Games.Add(gameRoot);
             }
         }
     }
