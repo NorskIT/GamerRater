@@ -10,8 +10,8 @@
     xmlns:models="using:GamerRater.Model.IGDBModels"
     Style="{StaticResource PageStyle}"
     mc:Ignorable="d">
-    <Grid x:Name="ContentArea">
-    <controls:AdaptiveGridView
+	<Grid x:Name="ContentArea">
+		<controls:AdaptiveGridView
         ItemsSource="{x:Bind ViewModel.Games ,Mode=OneWay}"
         ItemClickCommand="{x:Bind ViewModel.ItemClickCommand}"
         StretchContentForSingleRow="False"
@@ -21,24 +21,31 @@
         animations:Connected.ListItemElementName="itemThumbnail"
         animations:Connected.ListItemKey="animationKeyContentGrid"
         DesiredWidth="180"
-        ItemHeight="270">
-        <controls:AdaptiveGridView.ItemTemplate>
-            <DataTemplate x:DataType="models:GameCover">
-                <Grid
+        ItemHeight="270" Margin="0,60,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+			<controls:AdaptiveGridView.ItemTemplate>
+				<DataTemplate x:DataType="models:GameRoot">
+					<Grid
                     x:Name="itemThumbnail"
                     Padding="{StaticResource XSmallLeftTopRightBottomMargin}"
                     Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}">
-                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Image Source="{x:Bind url}"/>
-                        <TextBlock
+						<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+							<Image Source="{x:Bind GameCover.url, Mode=OneWay}"/>
+							<TextBlock
                         Margin="{StaticResource XXSmallTopMargin}"
                         HorizontalAlignment="Center"
-                        Text="{x:Bind game}"
+                        Text="{x:Bind name}"
                         Style="{ThemeResource BodyTextStyle}"/>
-                        </StackPanel>
-                </Grid>
-            </DataTemplate>
-        </controls:AdaptiveGridView.ItemTemplate>
-    </controls:AdaptiveGridView>
-    </Grid>
+						</StackPanel>
+					</Grid>
+				</DataTemplate>
+			</controls:AdaptiveGridView.ItemTemplate>
+		</controls:AdaptiveGridView>
+		<RelativePanel HorizontalAlignment="Center" Height="32" Margin="0,10,0,0" VerticalAlignment="Top" Width="1004">
+			<TextBox Name="GameSearchBar" PlaceholderText="Search" Margin="325,0,0,0" Text="" VerticalAlignment="Center" HorizontalAlignment="Left" Width="355"/>
+			<Button Click="{x:Bind ViewModel.SearchForGame}" DataContext="{x:Bind GameSearchBar.Text, Mode=OneWay}" HorizontalAlignment="Center" Height="32" Margin="0,0,0,0" VerticalAlignment="Center" RelativePanel.RightOf="GameSearchBar">
+                <SymbolIcon Symbol="Find"/>
+            </Button>
+		</RelativePanel>
+
+	</Grid>
 </Page>

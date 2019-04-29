@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace GamerRater.Application.DataAccess
 {
-    internal class IGDBAccess
+    internal class IGDBAccess : IDisposable
     {
         private readonly HttpClient _httpClient = new HttpClient();
         private const string Url = "https://api-v3.igdb.com/";
@@ -22,13 +22,11 @@ namespace GamerRater.Application.DataAccess
             _httpClient.DefaultRequestHeaders.Add("user-key", "d1f0748dd028fe160ba161dfd05fe3b1");
         }
 
-        public async Task<GameCover[]> GetCoversAsync()
+        public async Task GetCoversToGamesAsync(GameRoot[] games)
         {
-            using (_httpClient)
-            {
                 var results = await _httpClient.PostAsync(new Uri(Url + _urlCovers), new HttpStringContent(
                     "fields *;" +
-                    "limit 50;",
+                    "where id  = (" + BuildGameCoverIdString(games) + ");",
                     UnicodeEncoding.Utf8,
                     "application/json"));
                 var jsonGame = await results.Content.ReadAsStringAsync();
@@ -36,23 +34,49 @@ namespace GamerRater.Application.DataAccess
                 foreach (var cover in coversArr)
                 {
                     cover.url = "https:" + cover.url;
+                    foreach (GameRoot game in games)
+                        if (cover.id == game.cover)
+                            game.GameCover = cover;
                 }
-                return coversArr;
+        }
+
+        public async Task<GameRoot[]> GetGamesAsync(string gameNames)
+        {
+            using (_httpClient)
+            {
+                var results = await _httpClient.PostAsync(new Uri(Url + _urlGames), new HttpStringContent(
+                    "fields *;" +
+                    "where name = \"" + gameNames + "\"*;" +
+                    "sort name asc;" +
+                    "limit 50;",
+                    UnicodeEncoding.Utf8,
+                    "application/json"));
+                var jsonGame = await results.Content.ReadAsStringAsync();
+                var gamesArr = JsonConvert.DeserializeObject<GameRoot[]>(jsonGame);
+                return gamesArr;
             }
         }
 
-        public async Task<GameRoot> GetGameAsync(int id)
+        private string BuildGameCoverIdString(GameRoot[] games)
         {
-            var results = await _httpClient.PostAsync(new Uri(Url + _urlCovers), new HttpStringContent(
-                "fields *;" +
-                "limit "+ id + ";",
-                UnicodeEncoding.Utf8,
-                "application/json"));
-            var jsonGame = await results.Content.ReadAsStringAsync();
-            var coversArr = JsonConvert.DeserializeObject<GameRoot>(jsonGame);
-            return coversArr;
+            string ids = "";
+            bool firstIterate = true;
+            foreach (GameRoot game in games)
+            {
+                if (firstIterate)
+                    ids += game.cover;
+                else
+                    ids += ", " + game.cover;
+                firstIterate = false;
+
+            }
+
+            return ids;
         }
-        
-        
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -6,6 +6,7 @@ namespace GamerRater.Model.IGDBModels
 {
 	public class GameRoot
 	{
+		public GameCover GameCover { get; set; }
 		public int id { get; set; }
 		public int category { get; set; }
 		public int cover { get; set; }

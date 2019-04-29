@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using GamerRater.Model.IGDBModels;
 
 namespace GamerRater.Model
 {
