@@ -8,8 +8,11 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using GamerRater.Application.DataAccess;
 using GamerRater.Application.Helpers;
+using GamerRater.Application.Services;
+using GamerRater.Application.Views;
 using GamerRater.Model.IGDBModels;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Toolkit.Uwp.UI.Animations;
 using Microsoft.Toolkit.Uwp.UI.Controls;
 
 namespace GamerRater.Application.ViewModels
@@ -41,11 +44,11 @@ namespace GamerRater.Application.ViewModels
 
         private void OnItemClick(GameRoot clickedItem)
         {
-            /*if (clickedItem != null)
+            if (clickedItem != null)
             {
                 NavigationService.Frame.SetListDataItemForNextConnectedAnimation(clickedItem);
-                NavigationService.Navigate<ContentGridGameDetailPage>(clickedItem);
-            }*/
+                NavigationService.Navigate<GameDetailsPage>(clickedItem);
+            }
         }
 
         public async void GetGamesAsync(string gameName)
@@ -89,8 +92,5 @@ namespace GamerRater.Application.ViewModels
             }
         }
     }
-
-    internal class ContentGridGameDetailPage
-    {
-    }
+    
 }
