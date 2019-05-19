@@ -47,7 +47,8 @@ namespace GamerRater.Application.DataAccess
             var results = await _httpClient.PostAsync(new Uri(Url + _urlGames), new HttpStringContent(
                 "fields *;" +
                 "search \"" + gameNames + "\"*;" +
-                "limit 50;",
+                "where cover != 0;" +
+                "limit 50;" ,
                 UnicodeEncoding.Utf8,
                 "application/json"));
             var jsonGame = await results.Content.ReadAsStringAsync();
@@ -55,6 +56,7 @@ namespace GamerRater.Application.DataAccess
             return gamesArr;
         }
 
+        //Builds a string compatible with the api query. Etc : (123, 432, 12994, 392)
         private string BuildGameCoverIdString(GameRoot[] games)
         {
             string ids = "";
@@ -76,5 +78,25 @@ namespace GamerRater.Application.DataAccess
         {
             throw new NotImplementedException();
         }
+
+        /*public async Task<GameRoot[]> GetHqCoverToGameAsync(GameRoot game)
+        {
+            var results = await _httpClient.PostAsync(new Uri(Url + _urlCovers), new HttpStringContent(
+                "fields *;" +
+                "where id  = (" + game.cover + ");",
+                UnicodeEncoding.Utf8,
+                "application/json"));
+            var jsonGame = await results.Content.ReadAsStringAsync();
+            var coversArr = JsonConvert.DeserializeObject<GameCover[]>(jsonGame);
+            foreach (var cover in coversArr)
+            {
+                cover.url = "https:" + cover.url;
+                foreach (GameRoot game in games)
+                    if (cover.id == game.cover)
+                        game.GameCover = cover;
+            }
+
+            return games;
+        }*/
     }
 }

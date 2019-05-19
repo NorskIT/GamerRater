@@ -20,9 +20,10 @@ namespace GamerRater.Application.Views
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            if (e.Parameter is GameRoot orderId)
+            if (e.Parameter is GameRoot game)
             {
-                ViewModel.Initialize(orderId);
+                game.GameCover.url = "https://images.igdb.com/igdb/image/upload/t_720p/" + game.GameCover.image_id + ".jpg";
+                ViewModel.Initialize(game);
             }
         }
     }
