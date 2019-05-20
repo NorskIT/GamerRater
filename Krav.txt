@@ -14,3 +14,11 @@ Krav til prosjektet:
 - Skal fungere med og uten internett.
 	-	Skal altså ikke kræsje om internett ikke er der.
 - Må fungere på Windows 10, version 1809(10.0: Build 17763)
+
+Hva som bør være med i .NET prosjektet:
+*Enum
+*Database
+*Vise frem arv
+*UX Guidelines <--- Viser at du har kontroll
+*Feilhåndtering med logging
+*Generics

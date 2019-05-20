@@ -126,7 +126,7 @@
     <comment>Application description</comment>
   </data>
   <data name="Shell_Main.Content" xml:space="preserve">
-    <value>Main</value>
+    <value>Spill</value>
     <comment>Navigation view item name for Main</comment>
   </data>
 </root>

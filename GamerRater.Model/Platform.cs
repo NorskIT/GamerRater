@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace GamerRater.Model
 {
 	public class Platform
 	{
-		public int Id { get; set; }
+        [System.ComponentModel.DataAnnotations.KeyAttribute()]
+        public int Id { get; set; }
 		public String Name { get; set; }
-		public List<Game> Games { get; } = new List<Game>();
+		public List<GameRoot> Games { get; } = new List<GameRoot>();
 	}
 }

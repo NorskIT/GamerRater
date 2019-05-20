@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
-    xmlns:models="using:GamerRater.Model.IGDBModels"
+    xmlns:models="using:GamerRater.Model"
     Style="{StaticResource PageStyle}"
     mc:Ignorable="d">
 	<Grid x:Name="ContentArea">
@@ -35,7 +35,7 @@
 							<TextBlock
                         Margin="{StaticResource XXSmallTopMargin}"
                         HorizontalAlignment="Center"
-                        Text="{x:Bind name}"
+                        Text="{x:Bind Name}"
                         Height="100"
                         Style="{ThemeResource BodyTextStyle}"/>
 						</StackPanel>

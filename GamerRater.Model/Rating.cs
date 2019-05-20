@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace GamerRater.Model
 {
@@ -8,8 +6,9 @@ namespace GamerRater.Model
 	{
 		public int Id { get; set; }
 		public DateTime date { get; set; }
-		public Game Game { get; set; }
-		public Stars Stars { get; set; }
+		public GameRoot Game { get; set; }
+		public User User { get; set; }
+		public int Stars { get; set; }
 		public string Review { get; set; }
 	}
 }

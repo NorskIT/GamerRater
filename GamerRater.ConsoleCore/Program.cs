@@ -29,17 +29,6 @@ namespace GamerRater.ConsoleCore
 				conn.Platforms.Add(new Platform() { Name = "Nintendo Switch" });
 				conn.Platforms.Add(new Platform() { Name = "PC" });
 
-				conn.Stars.Add(new Stars() { Value = "Awful" });
-				conn.Stars.Add(new Stars() { Value = "Very bad" });
-				conn.Stars.Add(new Stars() { Value = "Bad" });
-				conn.Stars.Add(new Stars() { Value = "Unimpressive" });
-				conn.Stars.Add(new Stars() { Value = "Average" });
-				conn.Stars.Add(new Stars() { Value = "Fair" });
-				conn.Stars.Add(new Stars() { Value = "Alright" });
-				conn.Stars.Add(new Stars() { Value = "Good" });
-				conn.Stars.Add(new Stars() { Value = "Great" });
-				conn.Stars.Add(new Stars() { Value = "Superb" });
-
 				conn.UserGroups.Add(new UserGroup() { Group = "User" });
 				conn.UserGroups.Add(new UserGroup() { Group = "Admin" });
 

@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.Storage.Streams;
 using Windows.Web.Http;
-using GamerRater.Model.IGDBModels;
+using GamerRater.Model;
 using Newtonsoft.Json;
 
 namespace GamerRater.Application.DataAccess
@@ -35,7 +35,7 @@ namespace GamerRater.Application.DataAccess
                 {
                     cover.url = "https:" + cover.url;
                     foreach (GameRoot game in games)
-                        if (cover.id == game.cover)
+                        if (cover.id == game.Cover)
                             game.GameCover = cover;
                 }
 
@@ -64,9 +64,9 @@ namespace GamerRater.Application.DataAccess
             foreach (GameRoot game in games)
             {
                 if (firstIterate)
-                    ids += game.cover;
+                    ids += game.Cover;
                 else
-                    ids += ", " + game.cover;
+                    ids += ", " + game.Cover;
                 firstIterate = false;
 
             }
@@ -78,25 +78,5 @@ namespace GamerRater.Application.DataAccess
         {
             throw new NotImplementedException();
         }
-
-        /*public async Task<GameRoot[]> GetHqCoverToGameAsync(GameRoot game)
-        {
-            var results = await _httpClient.PostAsync(new Uri(Url + _urlCovers), new HttpStringContent(
-                "fields *;" +
-                "where id  = (" + game.cover + ");",
-                UnicodeEncoding.Utf8,
-                "application/json"));
-            var jsonGame = await results.Content.ReadAsStringAsync();
-            var coversArr = JsonConvert.DeserializeObject<GameCover[]>(jsonGame);
-            foreach (var cover in coversArr)
-            {
-                cover.url = "https:" + cover.url;
-                foreach (GameRoot game in games)
-                    if (cover.id == game.cover)
-                        game.GameCover = cover;
-            }
-
-            return games;
-        }*/
     }
 }

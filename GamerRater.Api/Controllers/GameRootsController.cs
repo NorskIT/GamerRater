@@ -12,46 +12,46 @@ namespace GamerRater.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GamesController : ControllerBase
+    public class GameRootsController : ControllerBase
     {
         private readonly DataContext _context;
 
-        public GamesController(DataContext context)
+        public GameRootsController(DataContext context)
         {
             _context = context;
         }
 
-        // GET: api/Games
+        // GET: api/GameRoots
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Game>>> GetGame()
+        public async Task<ActionResult<IEnumerable<GameRoot>>> GetGames()
         {
             return await _context.Games.ToListAsync();
         }
 
-        // GET: api/Games/5
+        // GET: api/GameRoots/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Game>> GetGame(int id)
+        public async Task<ActionResult<GameRoot>> GetGameRoot(int id)
         {
-            var game = await _context.Games.FindAsync(id);
+            var gameRoot = await _context.Games.FindAsync(id);
 
-            if (game == null)
+            if (gameRoot == null)
             {
                 return NotFound();
             }
 
-            return game;
+            return gameRoot;
         }
 
-        // PUT: api/Games/5
+        // PUT: api/GameRoots/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutGame(int id, Game game)
+        public async Task<IActionResult> PutGameRoot(int id, GameRoot gameRoot)
         {
-            if (id != game.Id)
+            if (id != gameRoot.id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(game).State = EntityState.Modified;
+            _context.Entry(gameRoot).State = EntityState.Modified;
 
             try
             {
@@ -59,7 +59,7 @@ namespace GamerRater.Api.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!GameExists(id))
+                if (!GameRootExists(id))
                 {
                     return NotFound();
                 }
@@ -72,35 +72,35 @@ namespace GamerRater.Api.Controllers
             return NoContent();
         }
 
-        // POST: api/Games
+        // POST: api/GameRoots
         [HttpPost]
-        public async Task<ActionResult<Game>> PostGame(Game game)
+        public async Task<ActionResult<GameRoot>> PostGameRoot(GameRoot gameRoot)
         {
-            _context.Games.Add(game);
+            _context.Games.Add(gameRoot);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetGame", new { id = game.Id }, game);
+            return CreatedAtAction("GetGameRoot", new { id = gameRoot.id }, gameRoot);
         }
 
-        // DELETE: api/Games/5
+        // DELETE: api/GameRoots/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Game>> DeleteGame(int id)
+        public async Task<ActionResult<GameRoot>> DeleteGameRoot(int id)
         {
-            var game = await _context.Games.FindAsync(id);
-            if (game == null)
+            var gameRoot = await _context.Games.FindAsync(id);
+            if (gameRoot == null)
             {
                 return NotFound();
             }
 
-            _context.Games.Remove(game);
+            _context.Games.Remove(gameRoot);
             await _context.SaveChangesAsync();
 
-            return game;
+            return gameRoot;
         }
 
-        private bool GameExists(int id)
+        private bool GameRootExists(int id)
         {
-            return _context.Games.Any(e => e.Id == id);
+            return _context.Games.Any(e => e.id == id);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.SqlClient;
+using System.Security.Cryptography.X509Certificates;
 using GamerRater.Model;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,12 +9,11 @@ namespace GamerRater.DataAccess
 	public class DataContext : DbContext
 	{
 
-		public DbSet<Game> Games { get; set; }
+		public DbSet<GameRoot> Games { get; set; }
 		public DbSet<Rating> Ratings { get; set; }
 		public DbSet<User> Users { get; set; }
-		public DbSet<Stars> Stars { get; set; }
-		public DbSet<Platform> Platforms { get; set; }
 		public DbSet<UserGroup> UserGroups { get; set; }
+		public DbSet<Platform> Platforms { get; set; }
 		
 
 		public DataContext()
@@ -37,12 +37,22 @@ namespace GamerRater.DataAccess
 				InitialCatalog = "GamerRater",
 				IntegratedSecurity = true
 			};
-			
-			optionsBuilder.UseSqlServer(builder.ConnectionString, b => b.MigrationsAssembly("GamerRater.Api"));
+
+            optionsBuilder.UseSqlServer(builder.ConnectionString, b => b.MigrationsAssembly("GamerRater.Api"));
 		}
 		
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-		}
+
+            modelBuilder.Entity<GameRoot>().Property(t => t.id).ValueGeneratedNever();
+            modelBuilder.Entity<GameCover>().Property(t => t.id).ValueGeneratedNever();
+            modelBuilder.Entity<Platform>().Property(t => t.Id).ValueGeneratedNever();
+
+            modelBuilder.Entity<GameRoot>().HasOne<GameCover>();
+            modelBuilder.Entity<GameRoot>().HasMany<Rating>().WithOne(x => x.Game);
+            modelBuilder.Entity<Rating>().HasOne<GameRoot>().WithMany(x => x.Ratings);
+            modelBuilder.Entity<Rating>().HasOne<User>().WithMany(x => x.Ratings);
+
+        }
 	}
 }

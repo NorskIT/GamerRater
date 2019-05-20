@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace GamerRater.Model.IGDBModels
+namespace GamerRater.Model
 {
 	public class GameCover
 	{
-		public int id { get; set; }
+        [System.ComponentModel.DataAnnotations.KeyAttribute()]
+        public int id { get; set; }
 		public int game { get; set; }
 		public int height { get; set; }
 		public string image_id { get; set; }

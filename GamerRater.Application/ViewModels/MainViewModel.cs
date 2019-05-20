@@ -10,8 +10,7 @@ using GamerRater.Application.DataAccess;
 using GamerRater.Application.Helpers;
 using GamerRater.Application.Services;
 using GamerRater.Application.Views;
-using GamerRater.Model.IGDBModels;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using GamerRater.Model;
 using Microsoft.Toolkit.Uwp.UI.Animations;
 using Microsoft.Toolkit.Uwp.UI.Controls;
 
@@ -42,10 +41,14 @@ namespace GamerRater.Application.ViewModels
             }
         }
 
-        private void OnItemClick(GameRoot clickedItem)
+        private async void OnItemClick(GameRoot clickedItem)
         {
             if (clickedItem != null)
             {
+                Games conn = new Games();
+                var GameFromDB = await conn.GetGame(clickedItem);
+                if (GameFromDB != null)
+                    clickedItem = GameFromDB;
                 NavigationService.Frame.SetListDataItemForNextConnectedAnimation(clickedItem);
                 NavigationService.Navigate<GameDetailsPage>(clickedItem);
             }
