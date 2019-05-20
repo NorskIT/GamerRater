@@ -11,5 +11,6 @@ namespace GamerRater.Application.DataAccess
         private static readonly string RootUrl = "http://localhost:61971/api/";
         public static readonly string Games = RootUrl + "GameRoots/";
         public static readonly string Covers = RootUrl + "Covers/";
+        public static readonly string Users = RootUrl + "Users/";
     }
 }

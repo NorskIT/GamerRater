@@ -22,3 +22,8 @@ Hva som bør være med i .NET prosjektet:
 *UX Guidelines <--- Viser at du har kontroll
 *Feilhåndtering med logging
 *Generics
+
+
+TIPS:
+
+Windows.Networking.Connectivity.Netwrokstatechangereventdetails

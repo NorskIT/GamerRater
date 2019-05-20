@@ -15,7 +15,7 @@ namespace GamerRater.Api.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.3-servicing-35854")
+                .HasAnnotation("ProductVersion", "2.2.4-servicing-10062")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -35,12 +35,12 @@ namespace GamerRater.Api.Migrations
 
                     b.HasKey("id");
 
-                    b.ToTable("GameCover");
+                    b.ToTable("Covers");
                 });
 
             modelBuilder.Entity("GamerRater.Model.GameRoot", b =>
                 {
-                    b.Property<int>("id");
+                    b.Property<int>("Id");
 
                     b.Property<int>("Category");
 
@@ -50,15 +50,11 @@ namespace GamerRater.Api.Migrations
 
                     b.Property<int?>("GameCoverid");
 
-                    b.Property<int?>("GameCoverid1");
-
                     b.Property<string>("Name");
 
                     b.Property<int?>("PlatformId");
 
                     b.Property<double>("Popularity");
-
-                    b.Property<string>("Slug");
 
                     b.Property<string>("Storyline");
 
@@ -66,15 +62,9 @@ namespace GamerRater.Api.Migrations
 
                     b.Property<double>("Total_rating");
 
-                    b.Property<int>("Updated_at");
-
-                    b.Property<string>("Url");
-
-                    b.HasKey("id");
+                    b.HasKey("Id");
 
                     b.HasIndex("GameCoverid");
-
-                    b.HasIndex("GameCoverid1");
 
                     b.HasIndex("PlatformId");
 
@@ -98,9 +88,7 @@ namespace GamerRater.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("GameRootid");
-
-                    b.Property<int?>("Gameid");
+                    b.Property<int?>("GameId");
 
                     b.Property<string>("Review");
 
@@ -108,19 +96,13 @@ namespace GamerRater.Api.Migrations
 
                     b.Property<int?>("UserId");
 
-                    b.Property<int?>("UserId1");
-
                     b.Property<DateTime>("date");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GameRootid");
-
-                    b.HasIndex("Gameid");
+                    b.HasIndex("GameId");
 
                     b.HasIndex("UserId");
-
-                    b.HasIndex("UserId1");
 
                     b.ToTable("Ratings");
                 });
@@ -167,10 +149,6 @@ namespace GamerRater.Api.Migrations
                         .WithMany()
                         .HasForeignKey("GameCoverid");
 
-                    b.HasOne("GamerRater.Model.GameCover")
-                        .WithMany()
-                        .HasForeignKey("GameCoverid1");
-
                     b.HasOne("GamerRater.Model.Platform")
                         .WithMany("Games")
                         .HasForeignKey("PlatformId");
@@ -178,21 +156,13 @@ namespace GamerRater.Api.Migrations
 
             modelBuilder.Entity("GamerRater.Model.Rating", b =>
                 {
-                    b.HasOne("GamerRater.Model.GameRoot")
-                        .WithMany("Ratings")
-                        .HasForeignKey("GameRootid");
-
                     b.HasOne("GamerRater.Model.GameRoot", "Game")
-                        .WithMany()
-                        .HasForeignKey("Gameid");
-
-                    b.HasOne("GamerRater.Model.User")
                         .WithMany("Ratings")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("GameId");
 
                     b.HasOne("GamerRater.Model.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId1");
+                        .WithMany("Ratings")
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("GamerRater.Model.User", b =>

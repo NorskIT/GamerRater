@@ -46,7 +46,7 @@ namespace GamerRater.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutGameRoot(int id, GameRoot gameRoot)
         {
-            if (id != gameRoot.id)
+            if (id != gameRoot.Id)
             {
                 return BadRequest();
             }
@@ -79,7 +79,7 @@ namespace GamerRater.Api.Controllers
             _context.Games.Add(gameRoot);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetGameRoot", new { id = gameRoot.id }, gameRoot);
+            return CreatedAtAction("GetGameRoot", new { id = gameRoot.Id }, gameRoot);
         }
 
         // DELETE: api/GameRoots/5
@@ -100,7 +100,7 @@ namespace GamerRater.Api.Controllers
 
         private bool GameRootExists(int id)
         {
-            return _context.Games.Any(e => e.id == id);
+            return _context.Games.Any(e => e.Id == id);
         }
     }
 }

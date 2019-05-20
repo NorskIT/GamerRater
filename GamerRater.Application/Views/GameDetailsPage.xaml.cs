@@ -7,6 +7,7 @@ using GamerRater.Application.ViewModels;
 
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using GamerRater.Application.DataAccess;
 using GamerRater.Model;
 using Newtonsoft.Json;
 
@@ -44,8 +45,10 @@ namespace GamerRater.Application.Views
 
         private async void AddReviewToGame_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
+            User user = await new Users().GetUser(1);
+
             Rating rating = new Rating()
-                {date = DateTime.Now, Game = ViewModel.mainGame, Review = "Best game ever!", Stars = 5};
+                {date = DateTime.Now, Game = ViewModel.mainGame, Review = "Best game ever!", Stars = 5, User = user};
             var payload = JsonConvert.SerializeObject(rating);
             HttpContent cont = new StringContent(payload, Encoding.UTF8, "application/json");
             var result = await _httpClient.PostAsync(string.Concat(uri, "/api/Ratings"), cont);

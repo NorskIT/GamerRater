@@ -9,7 +9,7 @@ namespace GamerRater.Api.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "GameCover",
+                name: "Covers",
                 columns: table => new
                 {
                     id = table.Column<int>(nullable: false),
@@ -21,7 +21,7 @@ namespace GamerRater.Api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GameCover", x => x.id);
+                    table.PrimaryKey("PK_Covers", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -53,7 +53,7 @@ namespace GamerRater.Api.Migrations
                 name: "Games",
                 columns: table => new
                 {
-                    id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false),
                     GameCoverid = table.Column<int>(nullable: true),
                     Category = table.Column<int>(nullable: false),
                     Cover = table.Column<int>(nullable: false),
@@ -62,26 +62,16 @@ namespace GamerRater.Api.Migrations
                     Storyline = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true),
                     Popularity = table.Column<double>(nullable: false),
-                    Slug = table.Column<string>(nullable: true),
                     Summary = table.Column<string>(nullable: true),
-                    Updated_at = table.Column<int>(nullable: false),
-                    Url = table.Column<string>(nullable: true),
-                    GameCoverid1 = table.Column<int>(nullable: true),
                     PlatformId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Games", x => x.id);
+                    table.PrimaryKey("PK_Games", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Games_GameCover_GameCoverid",
+                        name: "FK_Games_Covers_GameCoverid",
                         column: x => x.GameCoverid,
-                        principalTable: "GameCover",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Games_GameCover_GameCoverid1",
-                        column: x => x.GameCoverid1,
-                        principalTable: "GameCover",
+                        principalTable: "Covers",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -122,37 +112,23 @@ namespace GamerRater.Api.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     date = table.Column<DateTime>(nullable: false),
-                    Gameid = table.Column<int>(nullable: true),
-                    UserId1 = table.Column<int>(nullable: true),
+                    GameId = table.Column<int>(nullable: true),
+                    UserId = table.Column<int>(nullable: true),
                     Stars = table.Column<int>(nullable: false),
-                    Review = table.Column<string>(nullable: true),
-                    GameRootid = table.Column<int>(nullable: true),
-                    UserId = table.Column<int>(nullable: true)
+                    Review = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Ratings", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Ratings_Games_GameRootid",
-                        column: x => x.GameRootid,
+                        name: "FK_Ratings_Games_GameId",
+                        column: x => x.GameId,
                         principalTable: "Games",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Ratings_Games_Gameid",
-                        column: x => x.Gameid,
-                        principalTable: "Games",
-                        principalColumn: "id",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Ratings_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Ratings_Users_UserId1",
-                        column: x => x.UserId1,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -164,34 +140,19 @@ namespace GamerRater.Api.Migrations
                 column: "GameCoverid");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Games_GameCoverid1",
-                table: "Games",
-                column: "GameCoverid1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Games_PlatformId",
                 table: "Games",
                 column: "PlatformId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Ratings_GameRootid",
+                name: "IX_Ratings_GameId",
                 table: "Ratings",
-                column: "GameRootid");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Ratings_Gameid",
-                table: "Ratings",
-                column: "Gameid");
+                column: "GameId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Ratings_UserId",
                 table: "Ratings",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Ratings_UserId1",
-                table: "Ratings",
-                column: "UserId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_GroupId",
@@ -211,7 +172,7 @@ namespace GamerRater.Api.Migrations
                 name: "Users");
 
             migrationBuilder.DropTable(
-                name: "GameCover");
+                name: "Covers");
 
             migrationBuilder.DropTable(
                 name: "Platforms");

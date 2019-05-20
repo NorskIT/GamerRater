@@ -10,6 +10,7 @@ namespace GamerRater.DataAccess
 	{
 
 		public DbSet<GameRoot> Games { get; set; }
+		public DbSet<GameCover> Covers { get; set; }
 		public DbSet<Rating> Ratings { get; set; }
 		public DbSet<User> Users { get; set; }
 		public DbSet<UserGroup> UserGroups { get; set; }
@@ -44,14 +45,17 @@ namespace GamerRater.DataAccess
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 
-            modelBuilder.Entity<GameRoot>().Property(t => t.id).ValueGeneratedNever();
+            modelBuilder.Entity<GameRoot>().Property(t => t.Id).ValueGeneratedNever();
             modelBuilder.Entity<GameCover>().Property(t => t.id).ValueGeneratedNever();
             modelBuilder.Entity<Platform>().Property(t => t.Id).ValueGeneratedNever();
 
-            modelBuilder.Entity<GameRoot>().HasOne<GameCover>();
-            modelBuilder.Entity<GameRoot>().HasMany<Rating>().WithOne(x => x.Game);
-            modelBuilder.Entity<Rating>().HasOne<GameRoot>().WithMany(x => x.Ratings);
-            modelBuilder.Entity<Rating>().HasOne<User>().WithMany(x => x.Ratings);
+            modelBuilder.Entity<GameRoot>()
+                .HasMany<Rating>(r => r.Ratings)
+                .WithOne(g => g.Game);
+
+            modelBuilder.Entity<Rating>()
+                .HasOne<GameRoot>(g => g.Game)
+                .WithMany(r => r.Ratings);
 
         }
 	}
