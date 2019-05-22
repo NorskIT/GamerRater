@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -34,10 +35,15 @@ namespace GamerRater.Api.Controllers
         {
             var gameRoot = await _context.Games.FindAsync(id);
 
+            
             if (gameRoot == null)
             {
                 return NotFound();
             }
+
+            await _context.Entry(gameRoot).Collection(r => r.Ratings) .LoadAsync();
+            await _context.Entry(gameRoot).Reference(x => x.GameCover).LoadAsync();
+
 
             return gameRoot;
         }
@@ -76,6 +82,11 @@ namespace GamerRater.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<GameRoot>> PostGameRoot(GameRoot gameRoot)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             _context.Games.Add(gameRoot);
             await _context.SaveChangesAsync();
 

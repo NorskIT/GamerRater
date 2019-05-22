@@ -54,7 +54,7 @@ namespace GamerRater.Api.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false),
-                    GameCoverid = table.Column<int>(nullable: true),
+                    GameCoverId = table.Column<int>(nullable: false),
                     Category = table.Column<int>(nullable: false),
                     Cover = table.Column<int>(nullable: false),
                     Created_at = table.Column<int>(nullable: false),
@@ -69,11 +69,11 @@ namespace GamerRater.Api.Migrations
                 {
                     table.PrimaryKey("PK_Games", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Games_Covers_GameCoverid",
-                        column: x => x.GameCoverid,
+                        name: "FK_Games_Covers_GameCoverId",
+                        column: x => x.GameCoverId,
                         principalTable: "Covers",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Games_Platforms_PlatformId",
                         column: x => x.PlatformId,
@@ -92,17 +92,17 @@ namespace GamerRater.Api.Migrations
                     Email = table.Column<string>(nullable: true),
                     FirstName = table.Column<string>(nullable: true),
                     LastName = table.Column<string>(nullable: true),
-                    GroupId = table.Column<int>(nullable: true)
+                    UserGroupId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Users_UserGroups_GroupId",
-                        column: x => x.GroupId,
+                        name: "FK_Users_UserGroups_UserGroupId",
+                        column: x => x.UserGroupId,
                         principalTable: "UserGroups",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -112,8 +112,8 @@ namespace GamerRater.Api.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     date = table.Column<DateTime>(nullable: false),
-                    GameId = table.Column<int>(nullable: true),
-                    UserId = table.Column<int>(nullable: true),
+                    GameRootId = table.Column<int>(nullable: false),
+                    UserId = table.Column<int>(nullable: false),
                     Stars = table.Column<int>(nullable: false),
                     Review = table.Column<string>(nullable: true)
                 },
@@ -121,23 +121,23 @@ namespace GamerRater.Api.Migrations
                 {
                     table.PrimaryKey("PK_Ratings", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Ratings_Games_GameId",
-                        column: x => x.GameId,
+                        name: "FK_Ratings_Games_GameRootId",
+                        column: x => x.GameRootId,
                         principalTable: "Games",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Ratings_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Games_GameCoverid",
+                name: "IX_Games_GameCoverId",
                 table: "Games",
-                column: "GameCoverid");
+                column: "GameCoverId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Games_PlatformId",
@@ -145,9 +145,9 @@ namespace GamerRater.Api.Migrations
                 column: "PlatformId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Ratings_GameId",
+                name: "IX_Ratings_GameRootId",
                 table: "Ratings",
-                column: "GameId");
+                column: "GameRootId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Ratings_UserId",
@@ -155,9 +155,9 @@ namespace GamerRater.Api.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_GroupId",
+                name: "IX_Users_UserGroupId",
                 table: "Users",
-                column: "GroupId");
+                column: "UserGroupId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

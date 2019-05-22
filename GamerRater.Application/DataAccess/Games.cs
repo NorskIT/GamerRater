@@ -19,12 +19,9 @@ namespace GamerRater.Application.DataAccess
             using (_httpClient)
             {
                 var httpResponse = await _httpClient.GetAsync(new Uri(BaseUri.Games + game.Id));
-                //var jsonCourses = await result.Content.ReadAsStringAsync();
-                var jsonCourses = await httpResponse.Content.ReadAsStringAsync();
-                var resultGame = JsonConvert.DeserializeObject<GameRoot>(jsonCourses);
-                if (resultGame.Id != 0)
-                    return resultGame;
-                return null;
+                var jsonGame = await httpResponse.Content.ReadAsStringAsync();
+                var resultGame = JsonConvert.DeserializeObject<GameRoot>(jsonGame);
+                return resultGame.Id != 0 ? resultGame : null;
             }
             
         }

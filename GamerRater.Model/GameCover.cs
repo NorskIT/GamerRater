@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GamerRater.Model
 {
 	public class GameCover
 	{
-        [System.ComponentModel.DataAnnotations.KeyAttribute()]
+        [DatabaseGenerated(databaseGeneratedOption: DatabaseGeneratedOption.None)]
         public int id { get; set; }
 		public int game { get; set; }
 		public int height { get; set; }

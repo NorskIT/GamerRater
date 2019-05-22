@@ -46,10 +46,10 @@ namespace GamerRater.Application.ViewModels
             if (clickedItem != null)
             {
                 // TODO: Find own game in DB first.
-                /*Games conn = new Games();
-                var GameFromDB = await conn.GetGame(clickedItem);
-                if (GameFromDB != null)
-                    clickedItem = GameFromDB;*/
+                var conn = new Games();
+                var gameFromDb = await conn.GetGame(clickedItem);
+                if (gameFromDb != null)
+                    clickedItem = gameFromDb;
                 NavigationService.Frame.SetListDataItemForNextConnectedAnimation(clickedItem);
                 NavigationService.Navigate<GameDetailsPage>(clickedItem);
             }

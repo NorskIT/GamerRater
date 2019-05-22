@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -74,8 +75,10 @@ namespace GamerRater.Api.Controllers
 
         // POST: api/Ratings
         [HttpPost]
-        public async Task<ActionResult<Rating>> PostRating(Rating rating)
+        public async Task<ActionResult<Rating>> PostRating([FromBody]Rating rating)
         {
+            //As user always exist, we set its state to unchanged.
+            _context.Entry(rating.User).State = EntityState.Unchanged;
             _context.Ratings.Add(rating);
             await _context.SaveChangesAsync();
 

@@ -45,13 +45,16 @@ namespace GamerRater.Application.Views
 
         private async void AddReviewToGame_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
+            //Get logged in user
             User user = await new Users().GetUser(1);
 
             Rating rating = new Rating()
-                {date = DateTime.Now, Game = ViewModel.mainGame, Review = "Best game ever!", Stars = 5, User = user};
+                {date = DateTime.Now, GameRootId = ViewModel.mainGame.Id, Review = "Best game ever!", Stars = 5, User = user};
             var payload = JsonConvert.SerializeObject(rating);
             HttpContent cont = new StringContent(payload, Encoding.UTF8, "application/json");
             var result = await _httpClient.PostAsync(string.Concat(uri, "/api/Ratings"), cont);
+
+            GameRoot thisGame = await new Games().GetGame(ViewModel.mainGame);
         }
     }
 }

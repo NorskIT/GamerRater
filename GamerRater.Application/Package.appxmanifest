@@ -15,7 +15,7 @@
   <mp:PhoneIdentity PhoneProductId="5F363485-764E-4DD4-8DAF-B5538219DA61" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>GamerRater.Application</DisplayName>
+    <DisplayName>GameRootrRater.Application</DisplayName>
     <PublisherDisplayName>Magnus</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -31,7 +31,7 @@
   <Applications>
     <Application Id="App"
       Executable="$targetnametoken$.exe"
-      EntryPoint="GamerRater.Application.App">
+      EntryPoint="GameRootrRater.Application.App">
       <uap:VisualElements
         DisplayName="ms-resource:AppDisplayName"
         Square150x150Logo="Assets\Square150x150Logo.png"

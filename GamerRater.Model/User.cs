@@ -11,8 +11,9 @@ namespace GamerRater.Model
 		public string Email { get; set; }
 		public string FirstName { get; set; }
 		public string LastName { get; set; }
-        public UserGroup Group { get; set; }
-        public ICollection<Rating> Ratings { get; set; }
+        public int UserGroupId { get; set; }
+        public UserGroup UserGroup { get; set; }
+        public virtual ICollection<Rating> Ratings { get; set; }
 
     }
 }

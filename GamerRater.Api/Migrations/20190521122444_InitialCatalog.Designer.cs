@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GamerRater.Api.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20190520105406_InitialCatalog")]
+    [Migration("20190521122444_InitialCatalog")]
     partial class InitialCatalog
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,7 +50,7 @@ namespace GamerRater.Api.Migrations
 
                     b.Property<int>("Created_at");
 
-                    b.Property<int?>("GameCoverid");
+                    b.Property<int>("GameCoverId");
 
                     b.Property<string>("Name");
 
@@ -66,7 +66,7 @@ namespace GamerRater.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GameCoverid");
+                    b.HasIndex("GameCoverId");
 
                     b.HasIndex("PlatformId");
 
@@ -90,19 +90,19 @@ namespace GamerRater.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("GameId");
+                    b.Property<int>("GameRootId");
 
                     b.Property<string>("Review");
 
                     b.Property<int>("Stars");
 
-                    b.Property<int?>("UserId");
+                    b.Property<int>("UserId");
 
                     b.Property<DateTime>("date");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GameId");
+                    b.HasIndex("GameRootId");
 
                     b.HasIndex("UserId");
 
@@ -119,15 +119,15 @@ namespace GamerRater.Api.Migrations
 
                     b.Property<string>("FirstName");
 
-                    b.Property<int?>("GroupId");
-
                     b.Property<string>("LastName");
+
+                    b.Property<int>("UserGroupId");
 
                     b.Property<string>("Username");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GroupId");
+                    b.HasIndex("UserGroupId");
 
                     b.ToTable("Users");
                 });
@@ -149,7 +149,8 @@ namespace GamerRater.Api.Migrations
                 {
                     b.HasOne("GamerRater.Model.GameCover", "GameCover")
                         .WithMany()
-                        .HasForeignKey("GameCoverid");
+                        .HasForeignKey("GameCoverId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("GamerRater.Model.Platform")
                         .WithMany("Games")
@@ -158,20 +159,23 @@ namespace GamerRater.Api.Migrations
 
             modelBuilder.Entity("GamerRater.Model.Rating", b =>
                 {
-                    b.HasOne("GamerRater.Model.GameRoot", "Game")
+                    b.HasOne("GamerRater.Model.GameRoot")
                         .WithMany("Ratings")
-                        .HasForeignKey("GameId");
+                        .HasForeignKey("GameRootId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("GamerRater.Model.User", "User")
                         .WithMany("Ratings")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("GamerRater.Model.User", b =>
                 {
-                    b.HasOne("GamerRater.Model.UserGroup", "Group")
+                    b.HasOne("GamerRater.Model.UserGroup", "UserGroup")
                         .WithMany("Users")
-                        .HasForeignKey("GroupId");
+                        .HasForeignKey("UserGroupId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

@@ -12,7 +12,7 @@
     mc:Ignorable="d">
 	<Grid x:Name="ContentArea">
 		<controls:AdaptiveGridView
-        Name="GameTemplateBoxes"
+        Name="GameRootTemplateBoxes"
         ItemsSource="{x:Bind ViewModel.Games ,Mode=TwoWay}"
         ItemClickCommand="{x:Bind ViewModel.ItemClickCommand}"
         StretchContentForSingleRow="False"
@@ -44,7 +44,7 @@
 			</controls:AdaptiveGridView.ItemTemplate>
 		</controls:AdaptiveGridView>
 		<RelativePanel HorizontalAlignment="Center" Height="32" Margin="0,10,0,0" VerticalAlignment="Top" Width="1004">
-            <TextBox KeyDown="{x:Bind ViewModel.SearchForGame}" Name="GameSearchBar" PlaceholderText="Search" Margin="325,0,0,0" Text="" VerticalAlignment="Center" HorizontalAlignment="Left" Width="355"/>
+            <TextBox KeyDown="{x:Bind ViewModel.SearchForGame}" Name="GameRootSearchBar" PlaceholderText="Search" Margin="325,0,0,0" Text="" VerticalAlignment="Center" HorizontalAlignment="Left" Width="355"/>
         </RelativePanel>
 
 	</Grid>

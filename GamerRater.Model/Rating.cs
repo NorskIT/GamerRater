@@ -6,7 +6,8 @@ namespace GamerRater.Model
 	{
 		public int Id { get; set; }
 		public DateTime date { get; set; }
-		public GameRoot Game { get; set; }
+		public int GameRootId { get; set; }
+		public int UserId { get; set; }
 		public User User { get; set; }
 		public int Stars { get; set; }
 		public string Review { get; set; }

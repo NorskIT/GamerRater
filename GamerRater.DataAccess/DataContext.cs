@@ -43,20 +43,14 @@ namespace GamerRater.DataAccess
 		}
 		
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
-		{
-
-            modelBuilder.Entity<GameRoot>().Property(t => t.Id).ValueGeneratedNever();
-            modelBuilder.Entity<GameCover>().Property(t => t.id).ValueGeneratedNever();
-            modelBuilder.Entity<Platform>().Property(t => t.Id).ValueGeneratedNever();
-
-            modelBuilder.Entity<GameRoot>()
-                .HasMany<Rating>(r => r.Ratings)
-                .WithOne(g => g.Game);
+        {
 
             modelBuilder.Entity<Rating>()
-                .HasOne<GameRoot>(g => g.Game)
-                .WithMany(r => r.Ratings);
+                .HasOne<GameRoot>()
+                .WithMany(r => r.Ratings)
+                .HasForeignKey(f => f.GameRootId);
 
+            base.OnModelCreating(modelBuilder);
         }
 	}
 }
