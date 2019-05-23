@@ -12,5 +12,6 @@ namespace GamerRater.Application.DataAccess
         public static readonly string Games = RootUrl + "GameRoots/";
         public static readonly string Covers = RootUrl + "Covers/";
         public static readonly string Users = RootUrl + "Users/";
+        public static readonly string Ratings = RootUrl + "Ratings/";
     }
 }

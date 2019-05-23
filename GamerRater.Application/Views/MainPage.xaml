@@ -19,7 +19,6 @@
         SelectionMode="None"
         IsItemClickEnabled="True"
         Padding="{StaticResource MediumLeftRightMargin}"
-        DataContextChanged="{x:Bind ViewModel.UpdateTemplate}"
         animations:Connected.ListItemElementName="itemThumbnail"
         animations:Connected.ListItemKey="animationKeyContentGrid"
         DesiredWidth="180"
@@ -45,6 +44,7 @@
 		</controls:AdaptiveGridView>
 		<RelativePanel HorizontalAlignment="Center" Height="32" Margin="0,10,0,0" VerticalAlignment="Top" Width="1004">
             <TextBox KeyDown="{x:Bind ViewModel.SearchForGame}" Name="GameRootSearchBar" PlaceholderText="Search" Margin="325,0,0,0" Text="" VerticalAlignment="Center" HorizontalAlignment="Left" Width="355"/>
+            <Button Command="{x:Bind ViewModel.GoToLoginPage}" RelativePanel.AlignRightWithPanel="True" >Login</Button>
         </RelativePanel>
 
 	</Grid>

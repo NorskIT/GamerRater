@@ -24,14 +24,14 @@ namespace GamerRater.Api.Controllers
 
         // GET: api/Ratings
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Rating>>> GetRating()
+        public async Task<ActionResult<IEnumerable<Review>>> GetRating()
         {
             return await _context.Ratings.ToListAsync();
         }
 
         // GET: api/Ratings/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Rating>> GetRating(int id)
+        public async Task<ActionResult<Review>> GetRating(int id)
         {
             var rating = await _context.Ratings.FindAsync(id);
 
@@ -45,7 +45,7 @@ namespace GamerRater.Api.Controllers
 
         // PUT: api/Ratings/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutRating(int id, Rating rating)
+        public async Task<IActionResult> PutRating(int id, Review rating)
         {
             if (id != rating.Id)
             {
@@ -75,7 +75,7 @@ namespace GamerRater.Api.Controllers
 
         // POST: api/Ratings
         [HttpPost]
-        public async Task<ActionResult<Rating>> PostRating([FromBody]Rating rating)
+        public async Task<ActionResult<Review>> PostRating([FromBody]Review rating)
         {
             //As user always exist, we set its state to unchanged.
             _context.Entry(rating.User).State = EntityState.Unchanged;
@@ -87,7 +87,7 @@ namespace GamerRater.Api.Controllers
 
         // DELETE: api/Ratings/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Rating>> DeleteRating(int id)
+        public async Task<ActionResult<Review>> DeleteRating(int id)
         {
             var rating = await _context.Ratings.FindAsync(id);
             if (rating == null)

@@ -11,7 +11,7 @@ namespace GamerRater.DataAccess
 
 		public DbSet<GameRoot> Games { get; set; }
 		public DbSet<GameCover> Covers { get; set; }
-		public DbSet<Rating> Ratings { get; set; }
+		public DbSet<Review> Ratings { get; set; }
 		public DbSet<User> Users { get; set; }
 		public DbSet<UserGroup> UserGroups { get; set; }
 		public DbSet<Platform> Platforms { get; set; }
@@ -45,9 +45,9 @@ namespace GamerRater.DataAccess
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
-            modelBuilder.Entity<Rating>()
+            modelBuilder.Entity<Review>()
                 .HasOne<GameRoot>()
-                .WithMany(r => r.Ratings)
+                .WithMany(r => r.Reviews)
                 .HasForeignKey(f => f.GameRootId);
 
             base.OnModelCreating(modelBuilder);

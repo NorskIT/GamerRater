@@ -12,39 +12,39 @@
     mc:Ignorable="d">
     <Grid x:Name="GridView">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        <RelativePanel HorizontalAlignment="Stretch" Margin="0,0,0,0"
+        <RelativePanel HorizontalAlignment="Center" Margin="0,0,0,0"
                        VerticalAlignment="Stretch"
-                       MaxWidth="800" MinWidth="500" Grid.Column="0" Grid.Row="0" >
+                       MaxWidth="800" MinWidth="500" Grid.Column="0" Grid.Row="0">
             <TextBlock Name="GameRootTitle" FontSize="30" TextAlignment="Center" FontWeight="Bold"
-                       MaxHeight="89" MaxWidth="515" Text="{x:Bind ViewModel.mainGame.Name}"
+                       MaxHeight="89" MaxWidth="515" Text="{x:Bind ViewModel.MainGame.Name}"
                        TextWrapping="Wrap" Margin="10,0,-515,0" />
             <StackPanel Name="TitleBox" Orientation="Horizontal" RelativePanel.Below="GameRootTitle">
                 <StackPanel Width="100" Orientation="Vertical" Margin="0,0,0,0" BorderBrush="DarkGray"
                             BorderThickness="2" Padding="5">
                     <TextBlock FontWeight="Bold" Text="Score: " VerticalAlignment="Stretch" />
-                    <TextBlock Height="19" Margin="10,0,0,0" Text="{x:Bind ViewModel.mainGame.Popularity }" />
+                    <TextBlock Height="19" Margin="10,0,0,0" Text="{x:Bind ViewModel.MainGame.Popularity }" />
                 </StackPanel>
                 <StackPanel Width="100" Orientation="Vertical" Margin="10,0,0,0" BorderBrush="DarkGray"
                             BorderThickness="2" Padding="5">
                     <TextBlock FontWeight="Bold" Text="GameRoot ID: " VerticalAlignment="Stretch" />
-                    <TextBlock Height="19" Margin="10,0,0,0" Text="{x:Bind ViewModel.mainGame.Id }" />
+                    <TextBlock Height="19" Margin="10,0,0,0" Text="{x:Bind ViewModel.MainGame.Id }" />
                 </StackPanel>
                 <StackPanel Width="100" Orientation="Vertical" Margin="10,0,0,0" BorderBrush="DarkGray"
                             BorderThickness="2" Padding="5">
                     <TextBlock FontWeight="Bold" Text="Reviews: " VerticalAlignment="Stretch" />
-                    <TextBlock Height="19" Margin="10,0,0,0" Text="{x:Bind ViewModel.mainGame.Ratings }" />
+                    <TextBlock Height="19" Margin="10,0,0,0" Text="{x:Bind ViewModel.MainGame.Reviews }" />
                 </StackPanel>
             </StackPanel>
             <StackPanel Name="DescriptionBox" RelativePanel.Below="TitleBox" Margin="0,10,0,0" Orientation="Vertical"
                         VerticalAlignment="Stretch" BorderBrush="DarkGray" BorderThickness="2" Padding="5">
                 <TextBlock FontWeight="Bold" Text="Description: " />
-                <TextBlock Name="GameRootSummary" Text="{x:Bind ViewModel.mainGame.Summary}" Margin="10,0,0,0"
+                <TextBlock Name="GameRootSummary" Text="{x:Bind ViewModel.MainGame.Summary}" Margin="10,0,0,0"
                            TextWrapping="Wrap" MaxWidth="500" />
             </StackPanel>
             <Button Width="100" Height="50" Margin="0,10,0,0" RelativePanel.Below="DescriptionBox"
@@ -55,31 +55,56 @@
                     Name="AddReviewToGameRoot" Click="AddReviewToGame_Click">
                 Add Review
             </Button>
-            
-            <Image Source="{x:Bind ViewModel.mainGame.GameCover.url}" Height="360" Margin="527,9,0,-9" Width="262" />
+
+            <Image Source="{x:Bind ViewModel.MainGame.GameCover.url}" Height="360" Margin="527,9,0,-9" Width="262" />
         </RelativePanel>
 
-        <Grid HorizontalAlignment="Stretch" Margin="0,0,0,0"
+        <Grid HorizontalAlignment="Center" Margin="5,5,5,50"
               VerticalAlignment="Stretch"
-              MaxWidth="800" MinWidth="500" Grid.Column="0" Grid.Row="1" >
+              Grid.Column="1" Grid.Row="0" Padding="10,10,10,10"
+              BorderThickness="5" BorderBrush="LightGray" Background="WhiteSmoke" >
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" FontSize="28">/ Reviews /</TextBlock>
             <controls:AdaptiveGridView
-                ItemsSource="{x:Bind ViewModel.mainGame.Ratings,Mode=OneWay}"
+                Grid.Row="1"
+                BorderBrush="Black"
+                BorderThickness="0,5,0,5"
+                ItemsSource="{x:Bind ViewModel.Reviews,Mode=OneWay}"
                 StretchContentForSingleRow="False"
+                MinWidth="520"
+                Width="520"
                 SelectionMode="None"
                 IsItemClickEnabled="False"
-                Padding="{StaticResource MediumLeftRightMargin}"
                 animations:Connected.ListItemElementName="itemThumbnail"
                 animations:Connected.ListItemKey="animationKeyContentGrid"
                 ItemHeight="160">
                 <controls:AdaptiveGridView.ItemTemplate>
-                    <DataTemplate x:DataType="model:Rating">
-                        <StackPanel HorizontalAlignment="Stretch" Width="500">
-                            <TextBlock
-                                Text="{x:Bind Review}"
-                                Style="{ThemeResource BodyTextStyle}" />
+                    <DataTemplate x:DataType="model:Review">
+                        <StackPanel Padding="3" Width="520" Background="White" BorderBrush="Black"
+                                    BorderThickness="2" >
+
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock xml:space="preserve" FontWeight="Bold" Text="Written by:" Padding="0,0,5,0" />
+                                <TextBlock Text="{x:Bind User.Username}" />
+                            </StackPanel>
+                            <TextBlock Text="{x:Bind date}" />
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontWeight="Bold" Padding="0,0,5,0" Text="Stars:" />
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{x:Bind  Stars}" />
+                                    <TextBlock Text=" of 5" />
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontWeight="Bold" Padding="0,0,5,0" Text="Review:" />
+                                <TextBlock Width="450" TextWrapping="Wrap" Text="{x:Bind  ReviewText}" />
+                            </StackPanel>
                         </StackPanel>
                     </DataTemplate>
                 </controls:AdaptiveGridView.ItemTemplate>

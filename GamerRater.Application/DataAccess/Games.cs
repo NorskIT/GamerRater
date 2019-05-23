@@ -25,5 +25,13 @@ namespace GamerRater.Application.DataAccess
             }
             
         }
+
+        public async Task<bool> AddGame(GameRoot mainGame)
+        {
+            var payload = JsonConvert.SerializeObject(mainGame);
+            HttpContent cont = new StringContent(payload, Encoding.UTF8, "application/json");
+            var result = await _httpClient.PostAsync(new Uri(BaseUri.Games), cont);
+            return result.StatusCode == HttpStatusCode.Created;
+        }
     }
 }

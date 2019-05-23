@@ -15,10 +15,7 @@ namespace GamerRater.Application.Views
 {
     public sealed partial class GameDetailsPage : Page
     {
-        private readonly HttpClient _httpClient = new HttpClient();
 
-        //Change this to correct url.
-        private readonly string uri = "http://localhost:61971";
 
         public GameDetailsViewModel ViewModel { get; } = new GameDetailsViewModel();
 
@@ -36,25 +33,19 @@ namespace GamerRater.Application.Views
             }
         }
 
-        private async void AddGameButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private void AddGameButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            var payload = JsonConvert.SerializeObject(ViewModel.mainGame);
-            HttpContent cont = new StringContent(payload, Encoding.UTF8, "application/json");
-            var result = await _httpClient.PostAsync(string.Concat(uri, "/api/GameRoots"), cont);
+            ViewModel.AddGame(ViewModel.MainGame);
         }
 
         private async void AddReviewToGame_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            //Get logged in user
-            User user = await new Users().GetUser(1);
-
-            Rating rating = new Rating()
-                {date = DateTime.Now, GameRootId = ViewModel.mainGame.Id, Review = "Best game ever!", Stars = 5, User = user};
-            var payload = JsonConvert.SerializeObject(rating);
-            HttpContent cont = new StringContent(payload, Encoding.UTF8, "application/json");
-            var result = await _httpClient.PostAsync(string.Concat(uri, "/api/Ratings"), cont);
-
-            GameRoot thisGame = await new Games().GetGame(ViewModel.mainGame);
+            if (await ViewModel.AddReview())
+            {
+                //TODO:Tell user review was added.
+                return;
+            }
+            //TODO:Tell user it failed.
         }
     }
 }

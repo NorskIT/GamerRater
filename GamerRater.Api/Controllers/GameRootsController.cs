@@ -34,17 +34,15 @@ namespace GamerRater.Api.Controllers
         public async Task<ActionResult<GameRoot>> GetGameRoot(int id)
         {
             var gameRoot = await _context.Games.FindAsync(id);
-
             
             if (gameRoot == null)
             {
                 return NotFound();
             }
 
-            await _context.Entry(gameRoot).Collection(r => r.Ratings) .LoadAsync();
+            await _context.Entry(gameRoot).Collection(r => r.Reviews).LoadAsync();
             await _context.Entry(gameRoot).Reference(x => x.GameCover).LoadAsync();
-
-
+            
             return gameRoot;
         }
 
@@ -57,7 +55,7 @@ namespace GamerRater.Api.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(gameRoot).State = EntityState.Modified;
+            _context.Entry(gameRoot).State = EntityState.Unchanged;
 
             try
             {

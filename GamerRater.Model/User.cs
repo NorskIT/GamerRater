@@ -13,7 +13,7 @@ namespace GamerRater.Model
 		public string LastName { get; set; }
         public int UserGroupId { get; set; }
         public UserGroup UserGroup { get; set; }
-        public virtual ICollection<Rating> Ratings { get; set; }
+        public virtual ICollection<Review> Reviews { get; set; }
 
     }
 }

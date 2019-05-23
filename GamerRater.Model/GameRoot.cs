@@ -8,13 +8,11 @@ namespace GamerRater.Model
 {
 	public class GameRoot
 	{
-        //TODO: Add JsonProperty
         [DatabaseGenerated(databaseGeneratedOption: DatabaseGeneratedOption.None)]
         public int Id { get; set; }
-        [ForeignKey("GameCover")]
         public int GameCoverId { get; set; }
         public virtual GameCover GameCover { get; set; }
-        public virtual ICollection<Rating> Ratings { get; set; }
+        public virtual ICollection<Review> Reviews { get; set; }
         public int Category { get; set; }
 		public int Cover { get; set; }
         public int Created_at { get; set; }

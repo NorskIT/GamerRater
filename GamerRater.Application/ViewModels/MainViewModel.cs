@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Windows.System;
@@ -18,13 +19,16 @@ namespace GamerRater.Application.ViewModels
 {
     public class MainViewModel : Observable
     {
-        private readonly IGDBAccess IGDBCovers = new IGDBAccess();
-        public ICommand _itemClickCommand;
+        private readonly IGDBAccess _igdbCovers = new IGDBAccess();
+        public ICommand _ItemClickCommand;
+        public ICommand GoToLoginPageCommand;
         private AdaptiveGridView agv;
         public ObservableCollection<GameRoot> Games = new ObservableCollection<GameRoot>();
 
         public ICommand ItemClickCommand =>
-            _itemClickCommand ?? (_itemClickCommand = new RelayCommand<GameRoot>(OnItemClick));
+            _ItemClickCommand ?? (_ItemClickCommand = new RelayCommand<GameRoot>(OnItemClick));
+
+        public ICommand GoToLoginPage => new RelayCommand(() => NavigationService.Navigate<LoginPage>());
 
         public void UpdateTemplate(object sender, DataContextChangedEventArgs e)
         {
@@ -33,26 +37,17 @@ namespace GamerRater.Application.ViewModels
 
         public void SearchForGame(object sender, KeyRoutedEventArgs e)
         {
-            if (e.Key == VirtualKey.Enter)
-            {
-                var textFIeld = (TextBox)sender;
-                string text = textFIeld.Text;
-                GetGamesAsync(text);
-            }
+            if (e.Key != VirtualKey.Enter) return;
+            var textField = (TextBox)sender;
+            var text = textField.Text;
+            GetGamesAsync(text);
         }
-
-        private async void OnItemClick(GameRoot clickedItem)
+        
+        private static void OnItemClick(GameRoot clickedItem)
         {
-            if (clickedItem != null)
-            {
-                // TODO: Find own game in DB first.
-                var conn = new Games();
-                var gameFromDb = await conn.GetGame(clickedItem);
-                if (gameFromDb != null)
-                    clickedItem = gameFromDb;
-                NavigationService.Frame.SetListDataItemForNextConnectedAnimation(clickedItem);
-                NavigationService.Navigate<GameDetailsPage>(clickedItem);
-            }
+            if (clickedItem == null) return;
+            NavigationService.Frame.SetListDataItemForNextConnectedAnimation(clickedItem);
+            NavigationService.Navigate<GameDetailsPage>(clickedItem);
         }
 
         public async void GetGamesAsync(string gameName)
@@ -61,38 +56,37 @@ namespace GamerRater.Application.ViewModels
             var context = new IGDBAccess();
             var games = await context.GetGamesAsync(gameName);
             var toFindCoverList = new GameRoot[5];
-            int x = 0;
-            for (var index = 0; index < games.Length; index++)
-            {
-                if (toFindCoverList[4] != null)
+            var x = 0;
+            if(games.Length > 4) { 
+                foreach (var t in games)
                 {
-                    await context.GetCoversToGamesAsync(toFindCoverList);
-                    foreach (GameRoot gamesRoot in toFindCoverList)
+                    if (toFindCoverList[4] != null)
                     {
-                        Games.Add(gamesRoot);
+                        await context.GetCoversToGamesAsync(toFindCoverList);
+                        foreach (var gamesRoot in toFindCoverList)
+                        {
+                            Games.Add(gamesRoot);
+                        }
+                        toFindCoverList = new GameRoot[5];
+                        x = 0;
                     }
-                    toFindCoverList = new GameRoot[5];
-                    x = 0;
+                    toFindCoverList[x] = t;
+                    x++;
                 }
-                toFindCoverList[x] = games[index];
-                x++;
             }
-        }
-
-        private async Task FindCoversToNewlyAddedGames()
-        {
-            using (var context = new IGDBAccess())
+            else
             {
-                var toFindCoverList = new GameRoot[5];
-                foreach (var t in Games)
+                toFindCoverList = new GameRoot[games.Length];
+                foreach (var t in games)
                 {
-                    for (var j = 0; j < 5; j++) toFindCoverList[j] = t;
-
-                    await context.GetCoversToGamesAsync(toFindCoverList);
-                    toFindCoverList = new GameRoot[5];
+                    toFindCoverList[x] = t;
+                    x++;
                 }
-
-                foreach (var gameRoot in Games) Games.Add(gameRoot);
+                await context.GetCoversToGamesAsync(toFindCoverList);
+                foreach (var gamesRoot in toFindCoverList)
+                {
+                    Games.Add(gamesRoot);
+                }
             }
         }
     }
