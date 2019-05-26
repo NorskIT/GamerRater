@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -41,6 +42,23 @@ namespace GamerRater.Api.Controllers
 
             return user;
         }
+        // GET: api/Users/username
+        [HttpGet("Username/{username}")]
+        public async Task<ActionResult<User>> GetUserWithUsername(string username)
+        {
+            User user = null;
+            try
+            {
+                user = await _context.Users.Where(x => x.Username == username).FirstAsync();
+            }
+            catch (InvalidOperationException e)
+            {
+                //User was not found.
+                return NotFound();
+            }
+
+            return user;
+        }
 
         // PUT: api/Users/5
         [HttpPut("{id}")]
@@ -76,6 +94,8 @@ namespace GamerRater.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<User>> PostUser(User user)
         {
+            //To prevent users from setting their own groupId?
+            _context.Entry(user.UserGroup).State = EntityState.Unchanged;
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 

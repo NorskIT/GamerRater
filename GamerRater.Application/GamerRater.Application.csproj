@@ -122,16 +122,22 @@
     <Compile Include="DataAccess\Games.cs" />
     <Compile Include="DataAccess\IGDBAccess.cs" />
     <Compile Include="DataAccess\Reviews.cs" />
+    <Compile Include="DataAccess\UserGroups.cs" />
     <Compile Include="DataAccess\Users.cs" />
+    <Compile Include="Helpers\CheckIfUserIsOwner.cs" />
+    <Compile Include="Helpers\RevertBool.cs" />
     <Compile Include="Helpers\NavHelper.cs" />
     <Compile Include="Helpers\Observable.cs" />
     <Compile Include="Helpers\RelayCommand.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Services\ActivationService.cs" />
     <Compile Include="Activation\DefaultLaunchActivationHandler.cs" />
     <Compile Include="Services\NavigationService.cs" />
+    <Compile Include="Services\UserAuthenticator.cs" />
     <Compile Include="ViewModels\GameDetailsViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\RegistrationViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="Views\GameDetailsPage.xaml.cs">
       <DependentUpon>GameDetailsPage.xaml</DependentUpon>
@@ -141,6 +147,9 @@
     </Compile>
     <Compile Include="Views\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RegistrationPage.xaml.cs">
+      <DependentUpon>RegistrationPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ShellPage.xaml.cs">
       <DependentUpon>ShellPage.xaml</DependentUpon>
@@ -184,6 +193,10 @@
     <Page Include="Views\MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\RegistrationPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ShellPage.xaml">
       <Generator>MSBuild:Compile</Generator>

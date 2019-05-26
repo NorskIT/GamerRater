@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Timers;
 using System.Windows.Input;
 using Windows.System;
-using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -13,36 +12,25 @@ using GamerRater.Application.Services;
 using GamerRater.Application.Views;
 using GamerRater.Model;
 using Microsoft.Toolkit.Uwp.UI.Animations;
-using Microsoft.Toolkit.Uwp.UI.Controls;
 
 namespace GamerRater.Application.ViewModels
 {
     public class MainViewModel : Observable
     {
-        private readonly IGDBAccess _igdbCovers = new IGDBAccess();
         public ICommand _ItemClickCommand;
-        public ICommand GoToLoginPageCommand;
-        private AdaptiveGridView agv;
+        public static ObservableCollection<GameRoot> lastGamesList = new ObservableCollection<GameRoot>();
         public ObservableCollection<GameRoot> Games = new ObservableCollection<GameRoot>();
 
         public ICommand ItemClickCommand =>
             _ItemClickCommand ?? (_ItemClickCommand = new RelayCommand<GameRoot>(OnItemClick));
 
-        public ICommand GoToLoginPage => new RelayCommand(() => NavigationService.Navigate<LoginPage>());
-
-        public void UpdateTemplate(object sender, DataContextChangedEventArgs e)
+        public void SubmitSearch(SearchBox sender, SearchBoxQuerySubmittedEventArgs args)
         {
-            agv = (AdaptiveGridView) sender;
-        }
-
-        public void SearchForGame(object sender, KeyRoutedEventArgs e)
-        {
-            if (e.Key != VirtualKey.Enter) return;
-            var textField = (TextBox)sender;
-            var text = textField.Text;
-            GetGamesAsync(text);
+            sender.IsFocusEngaged = false;
+            GetGamesAsync(args.QueryText);
         }
         
+
         private static void OnItemClick(GameRoot clickedItem)
         {
             if (clickedItem == null) return;
@@ -50,6 +38,12 @@ namespace GamerRater.Application.ViewModels
             NavigationService.Navigate<GameDetailsPage>(clickedItem);
         }
 
+
+        /**
+            Searches for any games close to @param gameName via IGDB Api.
+            We receive an array with games which we then need to locate their covers(Images).
+            After covers are found, we bind them togheter and then show them in the list.
+         */
         public async void GetGamesAsync(string gameName)
         {
             Games.Clear();
@@ -57,19 +51,18 @@ namespace GamerRater.Application.ViewModels
             var games = await context.GetGamesAsync(gameName);
             var toFindCoverList = new GameRoot[5];
             var x = 0;
-            if(games.Length > 4) { 
+            if (games.Length > 4)
+            {
                 foreach (var t in games)
                 {
                     if (toFindCoverList[4] != null)
                     {
                         await context.GetCoversToGamesAsync(toFindCoverList);
-                        foreach (var gamesRoot in toFindCoverList)
-                        {
-                            Games.Add(gamesRoot);
-                        }
+                        foreach (var gamesRoot in toFindCoverList) Games.Add(gamesRoot);
                         toFindCoverList = new GameRoot[5];
                         x = 0;
                     }
+
                     toFindCoverList[x] = t;
                     x++;
                 }
@@ -82,13 +75,20 @@ namespace GamerRater.Application.ViewModels
                     toFindCoverList[x] = t;
                     x++;
                 }
+
                 await context.GetCoversToGamesAsync(toFindCoverList);
-                foreach (var gamesRoot in toFindCoverList)
-                {
-                    Games.Add(gamesRoot);
-                }
+                foreach (var gamesRoot in toFindCoverList) Games.Add(gamesRoot);
+            }
+
+            lastGamesList = Games;
+        }
+
+        public void CheckCache()
+        {
+            if (lastGamesList.Count != 0)
+            {
+                Games = lastGamesList;
             }
         }
     }
-    
 }

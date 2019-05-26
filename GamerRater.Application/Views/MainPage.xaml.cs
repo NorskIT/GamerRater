@@ -13,6 +13,7 @@ namespace GamerRater.Application.Views
         public MainPage()
         {
             InitializeComponent();
+            ViewModel.CheckCache();
         }
     }
 }

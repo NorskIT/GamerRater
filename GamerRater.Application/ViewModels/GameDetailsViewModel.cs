@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Net.Http;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using GamerRater.Application.DataAccess;
+using GamerRater.Application.Helpers;
+using GamerRater.Application.Services;
+using GamerRater.Application.Views;
 using GamerRater.Model;
-using Newtonsoft.Json;
 
 namespace GamerRater.Application.ViewModels
 {
@@ -17,6 +16,13 @@ namespace GamerRater.Application.ViewModels
         public GameRoot MainGame;
 
         public ObservableCollection<Review> Reviews = new ObservableCollection<Review>();
+        public UserAuthenticator Session = UserAuthenticator.SessionUserAuthenticator;
+
+        public ICommand GoToLoginPage => new RelayCommand(() => NavigationService.Navigate<LoginPage>());
+        public ICommand LogOutCommand => new RelayCommand(() => UserAuthenticator.SessionUserAuthenticator.LogOut());
+        public ICommand CloseReviewWriter => new RelayCommand(() => ShowReviewEditor = false);
+        public ICommand OpenReviewWriter => new RelayCommand(() => ShowReviewEditor = true);
+        public bool ShowReviewEditor { get; set; }
 
         public void Initialize(GameRoot game)
         {
@@ -33,25 +39,24 @@ namespace GamerRater.Application.ViewModels
             var conn = new Games();
             var gameFromDb = await conn.GetGame(game);
             if (gameFromDb != null)
-            {
                 foreach (var rating in gameFromDb.Reviews)
                 {
                     var usersConn = new Users();
                     rating.User = await usersConn.GetUser(rating.UserId);
                     Reviews.Add(rating);
                 }
-            }
         }
 
         public async Task<bool> AddReview()
         {
             //TODO:Get logged in user. Get custom reviewText
-            var newReview = new Review{
-                    date = DateTime.Now,
-                    GameRootId = MainGame.Id,
-                    ReviewText = "Best game ever!",
-                    Stars = 5,
-                    User = await new Users().GetUser(1)
+            var newReview = new Review
+            {
+                date = DateTime.Now,
+                GameRootId = MainGame.Id,
+                ReviewText = "Best game ever!",
+                Stars = 5,
+                User = UserAuthenticator.LoggedInUser
             };
 
             //If review was successfully added to db, return true.
@@ -70,7 +75,7 @@ namespace GamerRater.Application.ViewModels
             {
                 var usersConn = new Users();
                 review.User = await usersConn.GetUser(review.UserId);
-                if(Reviews.All(x => x.Id != review.Id))
+                if (Reviews.All(x => x.Id != review.Id))
                     Reviews.Add(review);
             }
         }
@@ -82,6 +87,4 @@ namespace GamerRater.Application.ViewModels
             //TODO: HANDLE ERROR
         }
     }
-
-
 }

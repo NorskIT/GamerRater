@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using GamerRater.Application.ViewModels;
+using GamerRater.Model;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -28,6 +29,17 @@ namespace GamerRater.Application.Views
         public LoginPage()
         {
             this.InitializeComponent();
+            ViewModel.Initialize();
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            if (!(e.Parameter is User user)) return;
+            Username.Text = user.Username;
+            Password.Password = user.Password;
+            RegistrationComplete.Text = Username.Text + " successfully registered.";
+            RegistrationComplete.Visibility = Visibility.Visible;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿<Page
+    x:Name="LayoutRoot"
     x:Class="GamerRater.Application.Views.MainPage"
     xmlns:application="using:GamerRater.Application"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -8,44 +9,60 @@
     xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     xmlns:models="using:GamerRater.Model"
+    xmlns:helpers="using:GamerRater.Application.Helpers"
     Style="{StaticResource PageStyle}"
     mc:Ignorable="d">
-	<Grid x:Name="ContentArea">
-		<controls:AdaptiveGridView
-        Name="GameRootTemplateBoxes"
-        ItemsSource="{x:Bind ViewModel.Games ,Mode=TwoWay}"
-        ItemClickCommand="{x:Bind ViewModel.ItemClickCommand}"
-        StretchContentForSingleRow="False"
-        SelectionMode="None"
-        IsItemClickEnabled="True"
-        Padding="{StaticResource MediumLeftRightMargin}"
-        animations:Connected.ListItemElementName="itemThumbnail"
-        animations:Connected.ListItemKey="animationKeyContentGrid"
-        DesiredWidth="180"
-        ItemHeight="270" Margin="0,60,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-			<controls:AdaptiveGridView.ItemTemplate>
-				<DataTemplate x:DataType="models:GameRoot">
-					<Grid
-                    x:Name="itemThumbnail"
-                    Padding="{StaticResource XSmallLeftTopRightBottomMargin}"
-                    Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}">
-						<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Image Height="200" Width="130"  Source="{Binding GameCover.url, Mode=OneWay, FallbackValue='https://dummyimage.com/400x600/dbdbdb/000000&amp;text=No+image' }"/>
-							<TextBlock
-                        Margin="{StaticResource XXSmallTopMargin}"
-                        HorizontalAlignment="Center"
-                        Text="{x:Bind Name}"
-                        Height="100"
-                        Style="{ThemeResource BodyTextStyle}"/>
-						</StackPanel>
-					</Grid>
-				</DataTemplate>
-			</controls:AdaptiveGridView.ItemTemplate>
-		</controls:AdaptiveGridView>
-		<RelativePanel HorizontalAlignment="Center" Height="32" Margin="0,10,0,0" VerticalAlignment="Top" Width="1004">
-            <TextBox KeyDown="{x:Bind ViewModel.SearchForGame}" Name="GameRootSearchBar" PlaceholderText="Search" Margin="325,0,0,0" Text="" VerticalAlignment="Center" HorizontalAlignment="Left" Width="355"/>
-            <Button Command="{x:Bind ViewModel.GoToLoginPage}" RelativePanel.AlignRightWithPanel="True" >Login</Button>
-        </RelativePanel>
+    <Page.Resources>
+        <ResourceDictionary>
+            <helpers:RevertBool x:Key="RevertBool" />
+        </ResourceDictionary>
+    </Page.Resources>
+    <Grid x:Name="ContentArea">
+        <controls:AdaptiveGridView
+            Name="GameRootTemplateBoxes"
+            ItemsSource="{x:Bind ViewModel.Games ,Mode=TwoWay}"
+            ItemClickCommand="{x:Bind ViewModel.ItemClickCommand}"
+            StretchContentForSingleRow="False"
+            SelectionMode="None"
+            IsItemClickEnabled="True"
+            Padding="{StaticResource MediumLeftRightMargin}"
+            animations:Connected.ListItemElementName="itemThumbnail"
+            animations:Connected.ListItemKey="animationKeyContentGrid"
+            DesiredWidth="180"
+            ItemHeight="270" Margin="0,60,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <controls:AdaptiveGridView.ItemTemplate>
+                <DataTemplate x:DataType="models:GameRoot">
+                    <Grid
+                        x:Name="itemThumbnail"
+                        Padding="{StaticResource XSmallLeftTopRightBottomMargin}"
+                        Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Image Height="200" Width="130"
+                                   Source="{Binding GameCover.url, Mode=OneWay, FallbackValue='https://dummyimage.com/400x600/dbdbdb/000000&amp;text=No+image' }" />
+                            <TextBlock
+                                Margin="{StaticResource XXSmallTopMargin}"
+                                HorizontalAlignment="Center"
+                                Text="{x:Bind Name}"
+                                Height="100"
+                                Style="{ThemeResource BodyTextStyle}" />
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+            </controls:AdaptiveGridView.ItemTemplate>
+        </controls:AdaptiveGridView>
+        <Grid HorizontalAlignment="Center" Height="32" Margin="0,10,0,0" VerticalAlignment="Top" Width="1004">
+            <SearchBox Name="GameRootSearchBar" PlaceholderText="Characters, Games, Platforms..."
+                       FocusOnKeyboardInput="True" VerticalAlignment="Center"
+                       HorizontalAlignment="Center" Width="355" QuerySubmitted="{x:Bind ViewModel.SubmitSearch}" />
+            <!--<Button
+                Visibility="{x:Bind ViewModel.Session.UserLoggedIn, Mode=OneWay, Converter={StaticResource RevertBool}}"
+                Command="{x:Bind ViewModel.GoToLoginPage}" HorizontalAlignment="Right" Content="Login">
 
-	</Grid>
+            </Button>
+            <Button Visibility="{x:Bind ViewModel.Session.UserLoggedIn, Mode=OneWay}"
+                    Command="{x:Bind ViewModel.LogOutCommand}" HorizontalAlignment="Right" Content="Logout">
+            </Button>-->
+        </Grid>
+
+    </Grid>
 </Page>

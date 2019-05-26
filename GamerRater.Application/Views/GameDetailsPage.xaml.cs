@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
+using System.Linq;
+using Windows.UI.Xaml;
 using GamerRater.Application.ViewModels;
-
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using GamerRater.Application.DataAccess;
 using GamerRater.Model;
-using Newtonsoft.Json;
 
 namespace GamerRater.Application.Views
 {
@@ -46,6 +42,20 @@ namespace GamerRater.Application.Views
                 return;
             }
             //TODO:Tell user it failed.
+        }
+
+        private async void DeleteReview(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (!(sender is Button button)) return;
+                if (button.DataContext is Review review && await new Reviews().DeleteReview(review.Id))
+                    ViewModel.Reviews.Remove(review);
+            }
+            catch (NullReferenceException ex)
+            {
+                //Tried connecting to db without internet
+            }
         }
     }
 }

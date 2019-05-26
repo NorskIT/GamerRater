@@ -11,6 +11,11 @@
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     mc:Ignorable="d">
+    <Page.Resources>
+        <ResourceDictionary>
+            <helpers:RevertBool x:Key="RevertBool" />
+        </ResourceDictionary>
+    </Page.Resources>
 
     <i:Interaction.Behaviors>
         <ic:EventTriggerBehavior EventName="Loaded">
@@ -39,6 +44,7 @@
             </winui:NavigationViewItem>
         </winui:NavigationView.MenuItems>
         <i:Interaction.Behaviors>
+
             <behaviors:NavigationViewHeaderBehavior
                 DefaultHeader="{x:Bind ViewModel.Selected.Content, Mode=OneWay}">
                 <behaviors:NavigationViewHeaderBehavior.DefaultHeaderTemplate>
@@ -48,6 +54,7 @@
                                 Text="{Binding}"
                                 Style="{ThemeResource TitleTextBlockStyle}"
                                 Margin="{StaticResource SmallLeftRightMargin}" />
+                            
                         </Grid>
                     </DataTemplate>
                 </behaviors:NavigationViewHeaderBehavior.DefaultHeaderTemplate>
@@ -56,8 +63,23 @@
                 <ic:InvokeCommandAction Command="{x:Bind ViewModel.ItemInvokedCommand}" />
             </ic:EventTriggerBehavior>
         </i:Interaction.Behaviors>
-        <Grid>
-            <Frame x:Name="shellFrame" />
+        <Grid >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0" Margin="0,0,35,0">
+                <Button
+                    Visibility="{x:Bind ViewModel.IsLoggedIn, Mode=OneWay, Converter={StaticResource RevertBool}}" Command="{x:Bind ViewModel.GoToLoginPage}" HorizontalAlignment="Right" Content="Login">
+
+                </Button>
+                <Button Visibility="{x:Bind ViewModel.IsLoggedIn, Mode=OneWay}"
+                        Command="{x:Bind ViewModel.LogOutCommand}" HorizontalAlignment="Right" Content="Logout">
+                </Button>
+            </Grid>
+            <Frame Grid.Row="1" x:Name="shellFrame" >
+
+            </Frame>
         </Grid>
     </winui:NavigationView>
 </Page>

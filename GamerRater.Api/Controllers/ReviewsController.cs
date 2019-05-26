@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,46 +12,46 @@ namespace GamerRater.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RatingsController : ControllerBase
+    public class ReviewsController : ControllerBase
     {
         private readonly DataContext _context;
 
-        public RatingsController(DataContext context)
+        public ReviewsController(DataContext context)
         {
             _context = context;
         }
 
-        // GET: api/Ratings
+        // GET: api/Reviews
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Review>>> GetRating()
+        public async Task<ActionResult<IEnumerable<Review>>> GetRatings()
         {
             return await _context.Ratings.ToListAsync();
         }
 
-        // GET: api/Ratings/5
+        // GET: api/Reviews/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Review>> GetRating(int id)
+        public async Task<ActionResult<Review>> GetReview(int id)
         {
-            var rating = await _context.Ratings.FindAsync(id);
+            var review = await _context.Ratings.FindAsync(id);
 
-            if (rating == null)
+            if (review == null)
             {
                 return NotFound();
             }
 
-            return rating;
+            return review;
         }
 
-        // PUT: api/Ratings/5
+        // PUT: api/Reviews/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutRating(int id, Review rating)
+        public async Task<IActionResult> PutReview(int id, Review review)
         {
-            if (id != rating.Id)
+            if (id != review.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(rating).State = EntityState.Modified;
+            _context.Entry(review).State = EntityState.Modified;
 
             try
             {
@@ -60,7 +59,7 @@ namespace GamerRater.Api.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!RatingExists(id))
+                if (!ReviewExists(id))
                 {
                     return NotFound();
                 }
@@ -73,35 +72,35 @@ namespace GamerRater.Api.Controllers
             return NoContent();
         }
 
-        // POST: api/Ratings
+        // POST: api/Reviews
         [HttpPost]
-        public async Task<ActionResult<Review>> PostRating([FromBody]Review rating)
+        public async Task<ActionResult<Review>> PostReview(Review review)
         {
             //As user always exist, we set its state to unchanged.
-            _context.Entry(rating.User).State = EntityState.Unchanged;
-            _context.Ratings.Add(rating);
+            _context.Entry(review.User).State = EntityState.Unchanged;
+            _context.Ratings.Add(review);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetRating", new { id = rating.Id }, rating);
+            return CreatedAtAction("GetReview", new { id = review.Id }, review);
         }
 
-        // DELETE: api/Ratings/5
+        // DELETE: api/Reviews/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Review>> DeleteRating(int id)
+        public async Task<ActionResult<Review>> DeleteReview(int id)
         {
-            var rating = await _context.Ratings.FindAsync(id);
-            if (rating == null)
+            var review = await _context.Ratings.FindAsync(id);
+            if (review == null)
             {
                 return NotFound();
             }
 
-            _context.Ratings.Remove(rating);
+            _context.Ratings.Remove(review);
             await _context.SaveChangesAsync();
 
-            return rating;
+            return review;
         }
 
-        private bool RatingExists(int id)
+        private bool ReviewExists(int id)
         {
             return _context.Ratings.Any(e => e.Id == id);
         }

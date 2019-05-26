@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -10,17 +8,31 @@ using Newtonsoft.Json;
 
 namespace GamerRater.Application.DataAccess
 {
-    class Reviews
+    internal class Reviews
     {
         private readonly HttpClient _httpClient = new HttpClient();
-        
-        
+
+
         public async Task<bool> AddReview(Review review)
         {
             var payload = JsonConvert.SerializeObject(review);
             HttpContent cont = new StringContent(payload, Encoding.UTF8, "application/json");
-            var result = await _httpClient.PostAsync(new Uri(BaseUri.Ratings), cont);
+            var result = await _httpClient.PostAsync(new Uri(BaseUri.Reviews), cont);
             return result.StatusCode == HttpStatusCode.Created;
+        }
+
+        public async Task<bool> DeleteReview(int id)
+        {
+            var result =
+                await _httpClient.DeleteAsync(new Uri(string.Concat(BaseUri.Reviews, id)));
+            return result.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> UpdateReview(int id)
+        {
+            var result =
+                await _httpClient.DeleteAsync(new Uri(string.Concat(BaseUri.Reviews, id)));
+            return result.IsSuccessStatusCode;
         }
     }
 }

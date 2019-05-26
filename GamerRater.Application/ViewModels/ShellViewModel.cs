@@ -10,17 +10,26 @@ using Windows.System;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Navigation;
-
+using GamerRater.Application.Views;
 using WinUI = Microsoft.UI.Xaml.Controls;
 
 namespace GamerRater.Application.ViewModels
 {
     public class ShellViewModel : Observable
     {
+        public UserAuthenticator Session = UserAuthenticator.SessionUserAuthenticator;
         private readonly KeyboardAccelerator _altLeftKeyboardAccelerator = BuildKeyboardAccelerator(VirtualKey.Left, VirtualKeyModifiers.Menu);
         private readonly KeyboardAccelerator _backKeyboardAccelerator = BuildKeyboardAccelerator(VirtualKey.GoBack);
 
+        public ICommand GoToLoginPage => new RelayCommand(() => NavigationService.Navigate<LoginPage>());
+        public ICommand LogOutCommand => new RelayCommand(() =>
+        {
+            IsLoggedIn = false;
+            UserAuthenticator.SessionUserAuthenticator.LogOut();
+        });
+
         private bool _isBackEnabled;
+        private bool _isLoggedIn;
         private IList<KeyboardAccelerator> _keyboardAccelerators;
         private WinUI.NavigationView _navigationView;
         private WinUI.NavigationViewItem _selected;
@@ -31,6 +40,12 @@ namespace GamerRater.Application.ViewModels
         {
             get { return _isBackEnabled; }
             set { Set(ref _isBackEnabled, value); }
+        }
+
+        public bool IsLoggedIn
+        {
+            get { return _isLoggedIn; }
+            set { Set(ref _isLoggedIn, value); }
         }
 
         public WinUI.NavigationViewItem Selected
@@ -84,6 +99,7 @@ namespace GamerRater.Application.ViewModels
 
         private void Frame_Navigated(object sender, NavigationEventArgs e)
         {
+            IsLoggedIn = Session.UserLoggedIn;
             IsBackEnabled = NavigationService.CanGoBack;
             Selected = _navigationView.MenuItems
                             .OfType<WinUI.NavigationViewItem>()
