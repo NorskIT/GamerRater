@@ -25,18 +25,6 @@ namespace GamerRater.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Platforms",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false),
-                    Name = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Platforms", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "UserGroups",
                 columns: table => new
                 {
@@ -62,8 +50,7 @@ namespace GamerRater.Api.Migrations
                     Storyline = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true),
                     Popularity = table.Column<double>(nullable: false),
-                    Summary = table.Column<string>(nullable: true),
-                    PlatformId = table.Column<int>(nullable: true)
+                    Summary = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -74,12 +61,6 @@ namespace GamerRater.Api.Migrations
                         principalTable: "Covers",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Games_Platforms_PlatformId",
-                        column: x => x.PlatformId,
-                        principalTable: "Platforms",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -104,6 +85,35 @@ namespace GamerRater.Api.Migrations
                         principalTable: "UserGroups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Platforms",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false),
+                    Abbreviation = table.Column<string>(nullable: true),
+                    Alternative_name = table.Column<string>(nullable: true),
+                    Category = table.Column<int>(nullable: false),
+                    Created_at = table.Column<int>(nullable: false),
+                    Name = table.Column<string>(nullable: true),
+                    Platform_logo = table.Column<int>(nullable: false),
+                    Product_family = table.Column<int>(nullable: false),
+                    Slug = table.Column<string>(nullable: true),
+                    Summary = table.Column<string>(nullable: true),
+                    Updated_at = table.Column<int>(nullable: false),
+                    Url = table.Column<string>(nullable: true),
+                    GameRootId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Platforms", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Platforms_Games_GameRootId",
+                        column: x => x.GameRootId,
+                        principalTable: "Games",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -141,9 +151,9 @@ namespace GamerRater.Api.Migrations
                 column: "GameCoverId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Games_PlatformId",
-                table: "Games",
-                column: "PlatformId");
+                name: "IX_Platforms_GameRootId",
+                table: "Platforms",
+                column: "GameRootId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Ratings_GameRootId",
@@ -164,6 +174,9 @@ namespace GamerRater.Api.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "Platforms");
+
+            migrationBuilder.DropTable(
                 name: "Ratings");
 
             migrationBuilder.DropTable(
@@ -174,9 +187,6 @@ namespace GamerRater.Api.Migrations
 
             migrationBuilder.DropTable(
                 name: "Covers");
-
-            migrationBuilder.DropTable(
-                name: "Platforms");
 
             migrationBuilder.DropTable(
                 name: "UserGroups");

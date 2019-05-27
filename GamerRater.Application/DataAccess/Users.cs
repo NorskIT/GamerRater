@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace GamerRater.Application.DataAccess
 {
-    class Users
+    internal class Users
     {
         private readonly HttpClient _httpClient = new HttpClient();
 

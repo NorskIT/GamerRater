@@ -11,7 +11,7 @@ using GamerRater.Model;
 
 namespace GamerRater.Application.ViewModels
 {
-    internal class RegistrationViewModel : Observable, INotifyPropertyChanged
+    internal class RegistrationViewModel : Observable
     {
         private Button button;
         private User newUser;
@@ -21,7 +21,6 @@ namespace GamerRater.Application.ViewModels
             RegisterUserCommand =
                 new RelayCommand<User>(async user =>
                 {
-                    //Forces every registered user to join User group.
                     button.IsEnabled = false;
                     user.UserGroup = await new UserGroups().GetUserGroup(1);
                     if (await new Users().AddUser(user))
@@ -39,7 +38,7 @@ namespace GamerRater.Application.ViewModels
             button.IsEnabled = false;
         }
 
-        //RelayCommand refreshes user object everytime its model parameters are changed.
+        //RelayCommand refreshes user object every time the model parameters are changed.
         public bool SetUser(User user)
         {
             newUser = user;

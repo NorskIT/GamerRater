@@ -69,15 +69,14 @@ namespace GamerRater.Api.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok();
         }
 
         // POST: api/Reviews
         [HttpPost]
         public async Task<ActionResult<Review>> PostReview(Review review)
         {
-            //As user always exist, we set its state to unchanged.
-            _context.Entry(review.User).State = EntityState.Unchanged;
+            _context.Entry(review.User).State = EntityState.Modified;
             _context.Ratings.Add(review);
             await _context.SaveChangesAsync();
 

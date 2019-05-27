@@ -85,8 +85,17 @@ namespace GamerRater.Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            _context.Games.Add(gameRoot);
-            await _context.SaveChangesAsync();
+            try
+            {
+                gameRoot.PlatformList = null;
+                _context.Games.Add(gameRoot);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
+            
 
             return CreatedAtAction("GetGameRoot", new { id = gameRoot.Id }, gameRoot);
         }

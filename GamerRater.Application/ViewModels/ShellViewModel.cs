@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
-
 using GamerRater.Application.Helpers;
 using GamerRater.Application.Services;
 
 using Windows.System;
+using Windows.UI.Notifications;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Navigation;
 using GamerRater.Application.Views;
+using Microsoft.Toolkit.Uwp.Notifications;
 using WinUI = Microsoft.UI.Xaml.Controls;
 
 namespace GamerRater.Application.ViewModels
@@ -24,8 +25,10 @@ namespace GamerRater.Application.ViewModels
         public ICommand GoToLoginPage => new RelayCommand(() => NavigationService.Navigate<LoginPage>());
         public ICommand LogOutCommand => new RelayCommand(() =>
         {
-            IsLoggedIn = false;
             UserAuthenticator.SessionUserAuthenticator.LogOut();
+            IsLoggedIn = false;
+            NavigationService.Navigate<LoginPage>();
+            SendLogoutToast();
         });
 
         private bool _isBackEnabled;
@@ -36,22 +39,42 @@ namespace GamerRater.Application.ViewModels
         private ICommand _loadedCommand;
         private ICommand _itemInvokedCommand;
 
+        public void SendLogoutToast()
+        {
+            var visual = new ToastVisual()
+            {
+                BindingGeneric = new ToastBindingGeneric()
+                {
+                    Children =
+                    {
+                        new AdaptiveText()
+                        {
+                            Text = "Logged out"
+                        },
+                    },
+                }
+            };
+            var toastContent = new ToastContent(){ Visual = visual};
+            var toast = new ToastNotification(toastContent.GetXml()) {ExpirationTime = DateTime.Now.AddSeconds(2)};
+            ToastNotificationManager.CreateToastNotifier().Show(toast);
+        }
+
         public bool IsBackEnabled
         {
-            get { return _isBackEnabled; }
-            set { Set(ref _isBackEnabled, value); }
+            get => _isBackEnabled;
+            set => Set(ref _isBackEnabled, value);
         }
 
         public bool IsLoggedIn
         {
-            get { return _isLoggedIn; }
-            set { Set(ref _isLoggedIn, value); }
+            get => _isLoggedIn;
+            set => Set(ref _isLoggedIn, value);
         }
 
         public WinUI.NavigationViewItem Selected
         {
-            get { return _selected; }
-            set { Set(ref _selected, value); }
+            get => _selected;
+            set => Set(ref _selected, value);
         }
 
         public ICommand LoadedCommand => _loadedCommand ?? (_loadedCommand = new RelayCommand(OnLoaded));
@@ -67,10 +90,7 @@ namespace GamerRater.Application.ViewModels
             _navigationView = navigationView;
             _keyboardAccelerators = keyboardAccelerators;
             NavigationService.Frame = frame;
-            NavigationService.NavigationFailed += (sender, e) =>
-            {
-                throw e.Exception;
-            };
+            NavigationService.NavigationFailed += (sender, e) => throw e.Exception;
             NavigationService.Navigated += Frame_Navigated;
             _navigationView.BackRequested += OnBackRequested;
         }
@@ -85,6 +105,7 @@ namespace GamerRater.Application.ViewModels
 
         private void OnItemInvoked(WinUI.NavigationViewItemInvokedEventArgs args)
         {
+            var b = _navigationView.Content;
             var item = _navigationView.MenuItems
                             .OfType<WinUI.NavigationViewItem>()
                             .First(menuItem => (string)menuItem.Content == (string)args.InvokedItem);
@@ -99,6 +120,7 @@ namespace GamerRater.Application.ViewModels
 
         private void Frame_Navigated(object sender, NavigationEventArgs e)
         {
+            var b = _navigationView;
             IsLoggedIn = Session.UserLoggedIn;
             IsBackEnabled = NavigationService.CanGoBack;
             Selected = _navigationView.MenuItems

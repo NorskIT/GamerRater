@@ -20,9 +20,7 @@ namespace GamerRater.Application.DataAccess
                 var httpResponse = await _httpClient.GetAsync(new Uri(BaseUri.UserGroups + id));
                 var jsonCourses = await httpResponse.Content.ReadAsStringAsync();
                 var userResult = JsonConvert.DeserializeObject<UserGroup>(jsonCourses);
-                if (userResult.Id != 0)
-                    return userResult;
-                return null;
+                return userResult.Id != 0 ? userResult : null;
             }
         }
     }

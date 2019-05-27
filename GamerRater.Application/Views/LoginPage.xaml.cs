@@ -23,19 +23,19 @@ namespace GamerRater.Application.Views
 
     public sealed partial class LoginPage : Page
     {
-
-        LoginViewModel ViewModel = new LoginViewModel();
+        private readonly LoginViewModel _viewModel = new LoginViewModel();
 
         public LoginPage()
         {
             this.InitializeComponent();
-            ViewModel.Initialize();
+            _viewModel.Initialize();
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
             if (!(e.Parameter is User user)) return;
+            _viewModel.registeredUser = user;
             Username.Text = user.Username;
             Password.Password = user.Password;
             RegistrationComplete.Text = Username.Text + " successfully registered.";

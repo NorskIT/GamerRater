@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GamerRater.Api.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20190523163316_InitialCatalog")]
+    [Migration("20190527164302_InitialCatalog")]
     partial class InitialCatalog
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,8 +54,6 @@ namespace GamerRater.Api.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<int?>("PlatformId");
-
                     b.Property<double>("Popularity");
 
                     b.Property<string>("Storyline");
@@ -68,8 +66,6 @@ namespace GamerRater.Api.Migrations
 
                     b.HasIndex("GameCoverId");
 
-                    b.HasIndex("PlatformId");
-
                     b.ToTable("Games");
                 });
 
@@ -77,9 +73,33 @@ namespace GamerRater.Api.Migrations
                 {
                     b.Property<int>("Id");
 
+                    b.Property<string>("Abbreviation");
+
+                    b.Property<string>("Alternative_name");
+
+                    b.Property<int>("Category");
+
+                    b.Property<int>("Created_at");
+
+                    b.Property<int?>("GameRootId");
+
                     b.Property<string>("Name");
 
+                    b.Property<int>("Platform_logo");
+
+                    b.Property<int>("Product_family");
+
+                    b.Property<string>("Slug");
+
+                    b.Property<string>("Summary");
+
+                    b.Property<int>("Updated_at");
+
+                    b.Property<string>("Url");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("GameRootId");
 
                     b.ToTable("Platforms");
                 });
@@ -153,10 +173,13 @@ namespace GamerRater.Api.Migrations
                         .WithMany()
                         .HasForeignKey("GameCoverId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
 
-                    b.HasOne("GamerRater.Model.Platform")
-                        .WithMany("Games")
-                        .HasForeignKey("PlatformId");
+            modelBuilder.Entity("GamerRater.Model.Platform", b =>
+                {
+                    b.HasOne("GamerRater.Model.GameRoot")
+                        .WithMany("PlatformList")
+                        .HasForeignKey("GameRootId");
                 });
 
             modelBuilder.Entity("GamerRater.Model.Review", b =>

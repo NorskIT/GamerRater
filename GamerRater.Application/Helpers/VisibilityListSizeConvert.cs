@@ -1,15 +1,15 @@
 ﻿using System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
-using GamerRater.Application.ViewModels;
+using GamerRater.Application.Services;
 
 namespace GamerRater.Application.Helpers
 {
-    public class RevertBool : ResourceDictionary, IValueConverter
+    public class VisibilityListSizeConvert : ResourceDictionary, IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            return (bool)value ? Visibility.Collapsed : Visibility.Visible;
+            return (int)value > 0 ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

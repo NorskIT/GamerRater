@@ -33,13 +33,14 @@ namespace GamerRater.Api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
-            var user = await _context.Users.FindAsync(id);
-
+            var user = await _context.Users.Where(x => x.Id == id).Include(x => x.Reviews).FirstAsync();
+            
             if (user == null)
             {
                 return NotFound();
             }
-
+            foreach (var review in user.Reviews)
+                review.User = null;
             return user;
         }
         // GET: api/Users/username

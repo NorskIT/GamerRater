@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace GamerRater.Model
 {
@@ -11,7 +12,10 @@ namespace GamerRater.Model
         [DatabaseGenerated(databaseGeneratedOption: DatabaseGeneratedOption.None)]
         public int Id { get; set; }
         public int GameCoverId { get; set; }
-        public virtual GameCover GameCover { get; set; }
+        public GameCover GameCover { get; set; }
+        [JsonProperty("platforms"), NotMapped]
+        public virtual int[] PlatformsIds { get; set; }
+        public ICollection<Platform> PlatformList { get; set; }
         public virtual ICollection<Review> Reviews { get; set; }
         public int Category { get; set; }
 		public int Cover { get; set; }

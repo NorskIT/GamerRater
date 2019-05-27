@@ -10,21 +10,18 @@ using Newtonsoft.Json;
 
 namespace GamerRater.Application.DataAccess
 {
-    internal class IGDBAccess : IDisposable
+    internal class IgdbAccess : IDisposable
     {
         private readonly HttpClient _httpClient = new HttpClient();
-        private const string Url = "https://api-v3.igdb.com/";
-        private readonly string _urlGames = "Games/";
-        private readonly string _urlCovers = "Covers/";
 
-        public IGDBAccess()
+        public IgdbAccess()
         {
             _httpClient.DefaultRequestHeaders.Add("user-key", "d1f0748dd028fe160ba161dfd05fe3b1");
         }
 
         public async Task<GameRoot[]> GetCoversToGamesAsync(GameRoot[] games)
         {
-                var results = await _httpClient.PostAsync(new Uri(Url + _urlCovers), new HttpStringContent(
+                var results = await _httpClient.PostAsync(new Uri(BaseUri.IGDBCovers), new HttpStringContent(
                     "fields *;" +
                     "where id  = (" + BuildGameCoverIdString(games) + ");",
                     UnicodeEncoding.Utf8,
@@ -44,7 +41,7 @@ namespace GamerRater.Application.DataAccess
 
         public async Task<GameRoot[]> GetGamesAsync(string gameNames)
         {
-            var results = await _httpClient.PostAsync(new Uri(Url + _urlGames), new HttpStringContent(
+            var results = await _httpClient.PostAsync(new Uri(BaseUri.IGDBGames), new HttpStringContent(
                 "fields *;" +
                 "search \"" + gameNames + "\"*;" +
                 "where cover != 0;" +
@@ -56,12 +53,12 @@ namespace GamerRater.Application.DataAccess
             return gamesArr;
         }
 
-        //Builds a string compatible with the api query. Etc : (123, 432, 12994, 392)
-        private string BuildGameCoverIdString(GameRoot[] games)
+        //Builds a Cover ID string compatible with the api query. Etc : (123, 432, 12994, 392)
+        private static string BuildGameCoverIdString(GameRoot[] games)
         {
-            string ids = "";
-            bool firstIterate = true;
-            foreach (GameRoot game in games)
+            var ids = "";
+            var firstIterate = true;
+            foreach (var game in games)
             {
                 if (firstIterate)
                     ids += game.Cover;
@@ -73,10 +70,38 @@ namespace GamerRater.Application.DataAccess
 
             return ids;
         }
+        //Builds a Platform ID string compatible with the api query. Etc : (123, 432, 12994, 392)
+        private static string BuildGamePlatformIdString(GameRoot game)
+        {
+            var ids = "";
+            var firstIterate = true;
+            foreach (var id in game.PlatformsIds)
+            {
+                if (firstIterate)
+                    ids += id;
+                else
+                    ids += ", " + id;
+                firstIterate = false;
+
+            }
+            return ids;
+        }
 
         public void Dispose()
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<Platform[]> GetPlatformsAsync(GameRoot game)
+        {
+            var results = await _httpClient.PostAsync(new Uri(BaseUri.IGDBPlatforms), new HttpStringContent(
+                "fields *;" +
+                "where id = (" + BuildGamePlatformIdString(game) + ");",
+                UnicodeEncoding.Utf8,
+                "application/json"));
+            var jsonGame = await results.Content.ReadAsStringAsync();
+            var platforms = JsonConvert.DeserializeObject<Platform[]>(jsonGame);
+            return platforms;
         }
     }
 }

@@ -8,7 +8,7 @@ namespace GamerRater.Model
 		public DateTime date { get; set; }
 		public int GameRootId { get; set; }
 		public int UserId { get; set; }
-		public User User { get; set; }
+		public virtual User User { get; set; }
 		public int Stars { get; set; }
 		public string ReviewText { get; set; }
 	}

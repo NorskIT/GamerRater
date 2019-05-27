@@ -25,22 +25,22 @@
                 </StackPanel>
             </StackPanel>
             <Grid>
-                <Button Command="{x:Bind ViewModel.LoginUserCommand}" Content="Login">
+                <Button Command="{x:Bind _viewModel.LoginUserCommand}" Content="Login">
                     <Button.CommandParameter>
                         <model:User
                             Username="{x:Bind Username.Text, Mode=OneWay}"
                             Password="{x:Bind Password.Password, Mode=OneWay}" />
                     </Button.CommandParameter>
                 </Button>
-                <Button Command="{x:Bind ViewModel.CancelCommand}" HorizontalAlignment="Right">Cancel</Button>
+                <Button Command="{x:Bind _viewModel.CancelCommand}" HorizontalAlignment="Right">Cancel</Button>
             </Grid>
             <Grid Padding="0,25,0,0">
-                <TextBlock Visibility="{x:Bind ViewModel.ErrorLogin, Mode=OneWay}" Foreground="Red"
+                <TextBlock Visibility="{x:Bind _viewModel.ErrorLogin, Mode=OneWay}" Foreground="Red"
                            HorizontalAlignment="Left" Width="100" TextWrapping="Wrap">
                     User not found, or password/username was incorrect
                 </TextBlock>
                 <TextBlock Visibility="Collapsed" x:Name="RegistrationComplete" Foreground="LimeGreen" HorizontalAlignment="Left" Width="100" TextWrapping="Wrap" > Hello world</TextBlock>
-                <Button Command="{x:Bind ViewModel.RegisterUserCommand}" HorizontalAlignment="Right">Register</Button>
+                <Button Command="{x:Bind _viewModel.RegisterUserCommand}" HorizontalAlignment="Right">Register</Button>
             </Grid>
         </StackPanel>
     </Grid>

@@ -47,7 +47,7 @@ namespace GamerRater.Application.ViewModels
         public async void GetGamesAsync(string gameName)
         {
             Games.Clear();
-            var context = new IGDBAccess();
+            var context = new IgdbAccess();
             var games = await context.GetGamesAsync(gameName);
             var toFindCoverList = new GameRoot[5];
             var x = 0;

@@ -28,10 +28,12 @@ namespace GamerRater.Application.DataAccess
             return result.IsSuccessStatusCode;
         }
 
-        public async Task<bool> UpdateReview(int id)
+        public async Task<bool> UpdateReview(Review review)
         {
+            var payload = JsonConvert.SerializeObject(review);
+            HttpContent cont = new StringContent(payload, Encoding.UTF8, "application/json");
             var result =
-                await _httpClient.DeleteAsync(new Uri(string.Concat(BaseUri.Reviews, id)));
+                await _httpClient.PutAsync(new Uri(string.Concat(BaseUri.Reviews, review.Id)), cont);
             return result.IsSuccessStatusCode;
         }
     }

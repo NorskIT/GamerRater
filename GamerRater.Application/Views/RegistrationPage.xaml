@@ -44,7 +44,8 @@
                                     LastName="{x:Bind Lastname.Text, Mode=OneWay}"
                                     Email="{x:Bind Mail.Text, Mode=OneWay}"
                                     Username="{x:Bind Username.Text, Mode=OneWay}"
-                                    Password="{x:Bind Password.Password, Mode=OneWay}"/>
+                                    Password="{x:Bind Password.Password, Mode=OneWay}"
+                                    UserGroupId="1"/>
                     </Button.CommandParameter>
                 </Button>
 
