@@ -40,5 +40,23 @@ namespace GamerRater.Application.DataAccess
             var result = await _httpClient.PostAsync(new Uri(BaseUri.Games), cont);
             return result.StatusCode == HttpStatusCode.Created;
         }
+
+        public async Task<GameRoot> GetGameById(int Id)
+        {
+            using (_httpClient)
+            {
+                try
+                {
+                    var httpResponse = await _httpClient.GetAsync(new Uri(BaseUri.Games + Id));
+                    var jsonGame = await httpResponse.Content.ReadAsStringAsync();
+                    var resultGame = JsonConvert.DeserializeObject<GameRoot>(jsonGame);
+                    return resultGame.Id != 0 ? resultGame : null;
+                }
+                catch (Exception ex)
+                {
+                    return null;
+                }
+            }
+        }
     }
 }

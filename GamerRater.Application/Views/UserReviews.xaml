@@ -1,6 +1,6 @@
 ﻿<Page
     x:Name="LayoutRoot"
-    x:Class="GamerRater.Application.Views.MainPage"
+    x:Class="GamerRater.Application.Views.UserReviews"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -18,20 +18,10 @@
         </ResourceDictionary>
     </Page.Resources>
     <Grid x:Name="ContentArea">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="60"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Grid Grid.Row="0" HorizontalAlignment="Center" Height="32" Margin="0,10,0,0" VerticalAlignment="Top" Width="1004">
-            <SearchBox Name="GameRootSearchBar" PlaceholderText="Characters, Games, Platforms..."
-                       FocusOnKeyboardInput="True" VerticalAlignment="Center"
-                       HorizontalAlignment="Center" Width="355" QuerySubmitted="{x:Bind ViewModel.SubmitSearch}" />
-        </Grid>
         <controls:AdaptiveGridView
-            Grid.Row="1"
             Name="GameRootTemplateBoxes"
-            ItemsSource="{x:Bind ViewModel.Games ,Mode=TwoWay}"
-            ItemClickCommand="{x:Bind ViewModel.ItemClickCommand}"
+            ItemsSource="{x:Bind _viewModel.Games, Mode=OneWay}"
+            ItemClickCommand="{x:Bind _viewModel.ItemClickCommand}"
             StretchContentForSingleRow="False"
             SelectionMode="None"
             IsItemClickEnabled="True"
@@ -60,7 +50,5 @@
                 </DataTemplate>
             </controls:AdaptiveGridView.ItemTemplate>
         </controls:AdaptiveGridView>
-        
-
     </Grid>
 </Page>

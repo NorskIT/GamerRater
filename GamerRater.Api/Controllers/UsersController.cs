@@ -95,8 +95,8 @@ namespace GamerRater.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<User>> PostUser(User user)
         {
-            //To prevent users from setting their own groupId?
-            _context.Entry(user.UserGroup).State = EntityState.Unchanged;
+            if(user.UserGroup != null)
+                _context.Entry(user.UserGroup).State = EntityState.Unchanged;
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 

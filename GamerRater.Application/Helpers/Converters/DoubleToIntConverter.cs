@@ -1,16 +1,13 @@
 ﻿using System;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
-using GamerRater.Application.Views;
 
-namespace GamerRater.Application.Helpers
+namespace GamerRater.Application.Helpers.Converters
 {
-    public class StringToIntConverter : IValueConverter
+    public class DoubleToIntConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            
-            return value.Equals("") ? 0 : int.Parse((string) value);
+            return value == null ? 0 : System.Convert.ToInt32((double)value);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

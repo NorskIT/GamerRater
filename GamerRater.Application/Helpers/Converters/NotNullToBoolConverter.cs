@@ -5,14 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
+using GamerRater.Application.Services;
 
-namespace GamerRater.Application.Helpers
+namespace GamerRater.Application.Helpers.Converters
 {
-    internal class RoundDoubleToTwoDecimalsConverter : ResourceDictionary, IValueConverter
+    class NotNullToBoolConverter : ResourceDictionary, IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            return string.Concat(Math.Round(double.Parse(value.ToString()), 1));
+            return value != null;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Windows.Input;
 using Windows.UI.Core;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using GamerRater.Application.DataAccess;
@@ -15,6 +16,18 @@ namespace GamerRater.Application.ViewModels
     {
         private Button button;
         private User newUser;
+        private Visibility _faultyData = Visibility.Collapsed;
+        public Visibility FaultyData
+        {
+            get => _faultyData;
+            set => Set(ref _faultyData, value);
+        }
+        private Visibility _userAlreadyRegistered = Visibility.Collapsed;
+        public Visibility UserAlreadyRegistered
+        {
+            get => _userAlreadyRegistered;
+            set => Set(ref _userAlreadyRegistered, value);
+        }
 
         public RegistrationViewModel()
         {
@@ -22,9 +35,16 @@ namespace GamerRater.Application.ViewModels
                 new RelayCommand<User>(async user =>
                 {
                     button.IsEnabled = false;
-                    user.UserGroup = await new UserGroups().GetUserGroup(1);
-                    if (await new Users().AddUser(user))
-                        NavigationService.Navigate<LoginPage>(user);
+                    if(Users.UserDataValidator(user)) {
+                        if(await new Users().GetUser(user.Username) == null) { 
+                            if (await new Users().AddUser(user)) {
+                                NavigationService.Navigate<LoginPage>(user);
+                            }
+                            //TODO: NO INTERNET
+                        }
+                        UserAlreadyRegistered = Visibility.Visible;
+                    } else
+                        FaultyData = Visibility.Visible;
                     button.IsEnabled = true;
                 }, SetUser);
         }

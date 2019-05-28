@@ -18,8 +18,9 @@ namespace GamerRater.Application.ViewModels
     public class MainViewModel : Observable
     {
         public ICommand _ItemClickCommand;
-        public static ObservableCollection<GameRoot> lastGamesList = new ObservableCollection<GameRoot>();
+        public static ObservableCollection<GameRoot> PreviousGamesObservableCollection = new ObservableCollection<GameRoot>();
         public ObservableCollection<GameRoot> Games = new ObservableCollection<GameRoot>();
+        public MainPage Page;
 
         public ICommand ItemClickCommand =>
             _ItemClickCommand ?? (_ItemClickCommand = new RelayCommand<GameRoot>(OnItemClick));
@@ -46,6 +47,7 @@ namespace GamerRater.Application.ViewModels
          */
         public async void GetGamesAsync(string gameName)
         {
+            Page.WaitVisual(false);
             Games.Clear();
             var context = new IgdbAccess();
             var games = await context.GetGamesAsync(gameName);
@@ -61,6 +63,7 @@ namespace GamerRater.Application.ViewModels
                         foreach (var gamesRoot in toFindCoverList) Games.Add(gamesRoot);
                         toFindCoverList = new GameRoot[5];
                         x = 0;
+                        Page.WaitVisual(true);
                     }
 
                     toFindCoverList[x] = t;
@@ -76,18 +79,18 @@ namespace GamerRater.Application.ViewModels
                     x++;
                 }
 
+                Page.WaitVisual(true);
                 await context.GetCoversToGamesAsync(toFindCoverList);
                 foreach (var gamesRoot in toFindCoverList) Games.Add(gamesRoot);
             }
-
-            lastGamesList = Games;
+            PreviousGamesObservableCollection = Games;
         }
 
         public void CheckCache()
         {
-            if (lastGamesList.Count != 0)
+            if (PreviousGamesObservableCollection.Count != 0)
             {
-                Games = lastGamesList;
+                Games = PreviousGamesObservableCollection;
             }
         }
     }

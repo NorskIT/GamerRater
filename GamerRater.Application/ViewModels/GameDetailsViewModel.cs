@@ -19,18 +19,26 @@ namespace GamerRater.Application.ViewModels
     public class GameDetailsViewModel : Observable
     {
         public GameRoot MainGame;
-        
+        public GameDetailsPage Page;
         public ObservableCollection<Platform> Platforms = new ObservableCollection<Platform>();
+        public ObservableCollection<int> Stars = new ObservableCollection<int>() {1,2,3,4,5};
+        private User _loggedUser;
 
-        public ObservableCollection<int> Stars = new ObservableCollection<int>();
-        public User LoggedUser = UserAuthenticator.LoggedInUser;
+        public User LoggedUser
+        {
+            get => _loggedUser;
+            set => Set(ref _loggedUser, value);
+        }
         public UserAuthenticator Session = UserAuthenticator.SessionUserAuthenticator;
-        private GameDetailsPage Page { get; set; }
         public ICommand CloseReviewWriter => new RelayCommand(() => ShowReviewEditor = Visibility.Collapsed);
-        public ICommand OpenReviewWriter => new RelayCommand(() => ShowReviewEditor = Visibility.Visible);
+        public ICommand OpenReviewWriter => new RelayCommand(() =>
+        {
+            ShowReviewEditor = Visibility.Visible;
+            Page.BringViewToReviewEditBox();
+        });
         public ICommand AddReviewCommand;
-        private int SelectedStar { get; set; }
-        private int _averageScore;
+
+        private int _averageScore = -1;
         private Visibility _showReviewEditor = Visibility.Collapsed;
         public Visibility ShowReviewEditor
         {
@@ -46,18 +54,14 @@ namespace GamerRater.Application.ViewModels
         public ObservableCollection<Review> Reviews = new ObservableCollection<Review>();
         
 
-        public void Initialize(GameRoot game, GameDetailsPage page)
+        public void Initialize()
         {
-            this.Page = page;
-            for(var x = 1; x<=5;x++)
-                Stars.Add(x);
             // Do no want to wait for it to fetch reviews.
 #pragma warning disable 4014
-            InitializeReviews(game);
-            InitializePlatforms(game);
+            InitializeReviews(MainGame);
+            InitializePlatforms(MainGame);
 #pragma warning restore 4014
-            game.GameCover.url = "https://images.igdb.com/igdb/image/upload/t_720p/" + game.GameCover.image_id + ".jpg";
-            MainGame = game;
+            MainGame.GameCover.url = "https://images.igdb.com/igdb/image/upload/t_720p/" + MainGame.GameCover.image_id + ".jpg";
 
             AddReviewCommand = new RelayCommand<Review>(AddReview);
         }
@@ -97,30 +101,31 @@ namespace GamerRater.Application.ViewModels
         public async void AddReview(Review review)
         {
 
-            if (SelectedStar == 0)
+            if (review.Stars == -1)
             {
-                Page.ComboBoxBorderColor(true);
+                Page.RatingGridBorderColor(true);
                 return;
             }
-            Page.ComboBoxBorderColor(false);
+            Page.RatingGridBorderColor(false);
             var conn = new Games();
-
-            var gameFromDb = await conn.GetGame(MainGame);
-            if (gameFromDb == null)
+            try
             {
-                if (!await new Games().AddGame(MainGame))
-                    return;
+                var gameFromDb = await conn.GetGame(MainGame);
+                if (gameFromDb == null)
+                {
+                    if (!await new Games().AddGame(MainGame))
+                        return;
+                }
             }
-            review.date = DateTime.UtcNow;
-            review.GameRootId = MainGame.Id;
-            review.UserId = LoggedUser.Id;
-            review.Stars = SelectedStar;
-
-
+            catch (Exception ex)
+            {
+                //TODO: SOMETHING HAPPEND
+            }
             try
             {
                 try
                 {
+                    review.date = DateTime.UtcNow;
                     if (review.Id != 0) { 
                         if(!await new Reviews().UpdateReview(review))
                             return;
@@ -140,8 +145,10 @@ namespace GamerRater.Application.ViewModels
                 Console.WriteLine(e);
                 throw;
             }
-            
+            ShowReviewEditor = Visibility.Collapsed;
             UpdateRatings(review);
+            Page.BringViewToReviews();
+            Page.ClearReviewBox(null, null);
         }
 
         public async void UpdateRatings(Review newReview)
@@ -160,30 +167,28 @@ namespace GamerRater.Application.ViewModels
                 if (Reviews.All(x => x.Id != review.Id))
                     Reviews.Insert(0,review);
             }
-
-            
-        }
-
-        public void StarsUpdate(object sender, SelectionChangedEventArgs e)
-        {
-            var x = (ComboBox) sender;
-            SelectedStar = int.Parse(x.SelectedItem?.ToString());
         }
 
         private void SetAverageScore()
         {
             if (Reviews.Count == 0)
                 return;
-            
-            var avg = 0;
+            var avg = 0.00;
             foreach (var review in Reviews)
             {
                 avg += review.Stars;
             }
+            AverageScore = Convert.ToInt32(avg / Reviews.Count);
+        }
 
-            AverageScore = (avg / Reviews.Count);
-
-
+        public async void DeleteReview(Review review)
+        {
+            if (await new Reviews().DeleteReview(review.Id))
+            {
+                if (await UserAuthenticator.SessionUserAuthenticator.UpdateUser())
+                    Reviews.Remove(review);
+            }
+            //TODO: NO INTERNET
         }
     }
 }

@@ -9,15 +9,19 @@
     xmlns:model="using:GamerRater.Model"
     xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
     xmlns:helpers="using:GamerRater.Application.Helpers"
+    xmlns:converters="using:GamerRater.Application.Helpers.Converters"
     Style="{StaticResource PageStyle}"
     mc:Ignorable="d">
     <Page.Resources>
         <ResourceDictionary>
-            <helpers:CheckIfUserIsOwner x:Key="CheckIfUserIsOwner" />
-            <helpers:CanWriteReviewConverter x:Key="CanWriteReviewConverter" />
-            <helpers:VisibilityListSizeConvert x:Key="VisibilityListSizeConvert" />
-            <helpers:RoundDoubleToTwoDecimalsConverter x:Key="RoundDoubleToTwoDecimalsConverter" />
-            <helpers:StringToIntConverter x:Key="StringToIntConverter" />
+            <converters:CheckIfUserIsOwner x:Key="CheckIfUserIsOwner" />
+            <converters:CanWriteReviewConverter x:Key="CanWriteReviewConverter" />
+            <converters:VisibilityListSizeConvert x:Key="VisibilityListSizeConvert" />
+            <converters:RoundDoubleToTwoDecimalsConverter x:Key="RoundDoubleToTwoDecimalsConverter" />
+            <converters:StringToIntConverter x:Key="StringToIntConverter" />
+            <converters:DoubleToIntConverter x:Key="DoubleToIntConverter" />
+            <converters:ColorIfOwnerConverter x:Key="ColorIfOwnerConverter" />
+            <converters:NotNullToBoolConverter x:Key="NotNullToBoolConverter" />
         </ResourceDictionary>
     </Page.Resources>
     <ScrollViewer Name="ScrollViewer">
@@ -32,7 +36,7 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Grid VerticalAlignment="Stretch" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="1"
+            <Grid Width="600" VerticalAlignment="Stretch" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="1"
                   Margin="25,0,25,12">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="90" />
@@ -62,34 +66,37 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,10,0,10">
-                        <StackPanel Width="100" Orientation="Vertical" Margin="25,0,10,0" BorderBrush="DarkGray"
+                        <StackPanel Width="100" Orientation="Vertical" Margin="0,0,10,0" BorderBrush="DarkGray"
                                     BorderThickness="2" Padding="5">
                             <TextBlock FontWeight="Bold" Text="IGDB Score: " />
                             <TextBlock Height="19" Margin="10,0,0,0" Text="{x:Bind ViewModel.MainGame.Popularity, Converter={StaticResource RoundDoubleToTwoDecimalsConverter}}" />
                         </StackPanel>
-                        <StackPanel Width="100" Orientation="Vertical" Margin="0,0,10,0" BorderBrush="DarkGray"
+                        <StackPanel Width="150" Orientation="Vertical" Margin="0,0,10,0" BorderBrush="DarkGray"
                                     BorderThickness="2" Padding="5">
                             <TextBlock FontWeight="Bold" Text="GR Score: " />
-                            <TextBlock Height="19" Margin="10,0,0,0" Text="{x:Bind ViewModel.AverageScore, Mode=OneWay }" />
+                            <RatingControl Grid.Row="2" Value="{x:Bind ViewModel.AverageScore, Mode=OneWay}" IsEnabled="False" />
                         </StackPanel>
                     </StackPanel>
-                    <Button Grid.Row="1" Width="100" Height="50" Margin="0,0,10,0" HorizontalAlignment="Right"
-                            Name="AddReviewToGameRoot" IsEnabled="{x:Bind ViewModel.Session.UserLoggedIn}"
+                    <Button Grid.Row="1" Height="50" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                            Name="AddReviewToGameRoot" Click="WriteReviewButtonClicked" IsEnabled="{x:Bind ViewModel.Session.User, Converter={StaticResource NotNullToBoolConverter}}"
                             Visibility="{x:Bind ViewModel.Reviews, Mode=TwoWay, Converter={StaticResource CanWriteReviewConverter}}"
                             Command="{x:Bind ViewModel.OpenReviewWriter}" Content="Write Review" />
-                    <StackPanel Grid.Row="1" Orientation="Vertical" Margin="25,0,10,0"
+                    <StackPanel Grid.Row="1" Orientation="Vertical" Margin="0,0,10,0"
                                 BorderBrush="DarkGray"
                                 BorderThickness="2" Padding="5" HorizontalAlignment="Left">
                         <TextBlock FontWeight="Bold" Text="Platforms: " />
 
                         <Grid MaxWidth="400">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
                             <controls:AdaptiveGridView
                                 ItemsSource="{x:Bind ViewModel.Platforms, Mode=OneWay}"
                                 SelectionMode="None"
                                 IsItemClickEnabled="False">
                                 <controls:AdaptiveGridView.ItemTemplate>
                                     <DataTemplate x:DataType="model:Platform">
-                                        <TextBlock Width="100" HorizontalAlignment="Center" TextWrapping="WrapWholeWords" Text="{x:Bind Abbreviation}" />
+                                        <TextBlock Width="100" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="WrapWholeWords" Text="{x:Bind Abbreviation}" />
                                     </DataTemplate>
                                 </controls:AdaptiveGridView.ItemTemplate>
                             </controls:AdaptiveGridView>
@@ -104,9 +111,9 @@
                 </StackPanel>
             </Grid>
 
-            <Grid Width="600" Visibility="{x:Bind ViewModel.ShowReviewEditor, Mode=OneWay}" Margin="0,25,0,25"
+            <Grid x:Name="ReviewEditBox" Width="600" Visibility="{x:Bind ViewModel.ShowReviewEditor, Mode=OneWay}" Margin="0,25,0,25"
                   Padding="25"
-                  Grid.Row="2" Grid.Column="0" Name="WriteReviewBox"
+                  Grid.Row="2" Grid.Column="0"
                   BorderBrush="DarkGray" BorderThickness="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -122,9 +129,11 @@
                     <TextBlock FontWeight="Black" Text="{x:Bind ViewModel.MainGame.Name}" />
                 </StackPanel>
 
-                <ComboBox Name="StarsBox" Margin="0,0,0,5" Grid.Row="1" Header="Stars" PlaceholderText="Star rating"
-                          SelectionChanged="{x:Bind ViewModel.StarsUpdate}" ItemsSource="{x:Bind ViewModel.Stars}" />
-
+                <!--<ComboBox Name="StarsBox" Margin="0,0,0,5" Grid.Row="1" Header="Stars" PlaceholderText="Star rating"
+                          SelectionChanged="{x:Bind ViewModel.StarsUpdate}" ItemsSource="{x:Bind ViewModel.Stars}" />-->
+                <Grid Grid.Row="1" HorizontalAlignment="Left"  Name="RatingStarsGrid" BorderBrush="white" BorderThickness="1" Margin="0,0,0,5">
+                    <RatingControl Name="RatingStars" />
+                </Grid>
                 <HyperlinkButton Grid.Row="0" Click="ClearReviewBox" Command="{x:Bind ViewModel.CloseReviewWriter}"
                                  HorizontalAlignment="Right"
                                  VerticalAlignment="Top">
@@ -138,19 +147,23 @@
                         Command="{x:Bind ViewModel.AddReviewCommand}">
                     <Button.CommandParameter>
                         <model:Review ReviewText="{x:Bind ReviewText.Text, Mode=OneWay}"
-                                      User="{x:Bind ViewModel.LoggedUser, Mode=OneWay}"
+                                      User="{x:Bind ViewModel.Session.User, Mode=OneWay}"
+                                      GameRootId="{x:Bind ViewModel.MainGame.Id}"
+                                      UserId="{x:Bind ViewModel.Session.User.Id}"
+                                      Stars="{x:Bind RatingStars.Value, Mode=OneWay, Converter={StaticResource DoubleToIntConverter}}"
                                       Id="{x:Bind ReviewId.Text, Mode=OneWay, Converter={StaticResource StringToIntConverter}}"/>
                     </Button.CommandParameter>
                 </Button>
             </Grid>
 
             <Grid HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,12,0,30"
+                  x:Name="ReviewGridView"
                   MinHeight="200"
                   MaxHeight="890"
                   Width="600"
                   Visibility="{x:Bind ViewModel.Reviews.Count, Mode=OneWay, Converter={StaticResource VisibilityListSizeConvert}}"
                   Grid.Column="0" Grid.Row="3" Padding="10,10,10,10"
-                  BorderThickness="5" BorderBrush="LightGray" Background="WhiteSmoke">
+                  BorderThickness="2" BorderBrush="Gray" Background="White">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
@@ -168,41 +181,39 @@
                     IsItemClickEnabled="False"
                     animations:Connected.ListItemElementName="itemThumbnail"
                     animations:Connected.ListItemKey="animationKeyContentGrid"
-                    ItemHeight="160">
+                    >
                     <controls:AdaptiveGridView.ItemTemplate>
 
                         <DataTemplate x:DataType="model:Review">
-                            <Grid Padding="3" Width="auto" Background="White" BorderBrush="Black"
-                                        BorderThickness="2">
+                            <Grid Padding="3" MinWidth="450" MinHeight="200" Width="auto" Background="{x:Bind UserId, Converter={StaticResource ColorIfOwnerConverter}}" BorderBrush="Gray"
+                                        BorderThickness="2" Margin="0,0,0,15" >
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="20" />
-                                    <RowDefinition Height="20" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="35" />
                                     <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
                                 <StackPanel Grid.Row="0" Orientation="Horizontal">
                                     <TextBlock xml:space="preserve" FontWeight="Bold" Text="Written by:"
                                                Padding="0,0,5,0" />
-                                    <TextBlock Foreground="Black" Text="{x:Bind User.Username}" />
+                                    <TextBlock TextWrapping="Wrap" Width="140" Foreground="Black" Text="{x:Bind User.Username}" />
                                 </StackPanel>
-                                <TextBlock Grid.Row="0" HorizontalAlignment="Right" Foreground="black" Text="{x:Bind date}" />
-                                <StackPanel VerticalAlignment="Top" Grid.Row="1" Orientation="Horizontal">
-                                    <TextBlock FontWeight="Bold" Padding="0,0,5,0" Text="Stars:" />
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Foreground="red" Text="{x:Bind  Stars}" />
-                                        <TextBlock Foreground="black" Text=" of 5" />
-                                    </StackPanel>
+                                <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" >
+                                    <TextBlock Text="Last edited:" Margin="0,0,10,0" />
+                                    <TextBlock  Foreground="black" Text="{x:Bind date}" />
                                 </StackPanel>
-                                <StackPanel Grid.Row="2" Orientation="Vertical">
-                                    <TextBlock FontWeight="Bold" Padding="0,0,5,0" Text="Review:" />
-                                    <TextBlock Foreground="black" Width="450" TextWrapping="Wrap"
-                                               Text="{x:Bind  ReviewText}" />
+                                <RatingControl HorizontalAlignment="Left" Grid.Row="1"  Value="{x:Bind Stars}" IsEnabled="False"/>
+                                <StackPanel Background="White" BorderBrush="Gray" BorderThickness="0,2,0,0" Grid.Row="2" Orientation="Vertical">
+                                    <TextBlock FontWeight="Bold" Padding="0,0,5,0"  Text="Review:" />
+                                    <TextBlock Margin="15,5,15,0" MinHeight="10"  TextWrapping="Wrap"
+                                               Text="{x:Bind ReviewText}" />
                                 </StackPanel>
-                                <Grid Grid.Row="4" VerticalAlignment="Bottom">
-                                    <Button HorizontalAlignment="Right" Content="Delete" Click="DeleteReview" DataContext="{x:Bind}"
+                                <StackPanel   HorizontalAlignment="Right" Orientation="Horizontal"  Background="{x:Bind UserId, Converter={StaticResource ColorIfOwnerConverter}}" Grid.Row="1" >
+                                    <Button Margin="0,0,5,0" FontSize="12" Content="Delete" Click="DeleteReview" DataContext="{x:Bind}"
                                             Visibility="{x:Bind UserId , Converter={StaticResource CheckIfUserIsOwner}}" />
-                                    <Button Content="Update" Click="UpdateReview" DataContext="{x:Bind}"
+                                    <Button FontSize="12" Content="Update" Click="SetReviewBox" DataContext="{x:Bind}"
                                             Visibility="{x:Bind UserId , Converter={StaticResource CheckIfUserIsOwner}}" />
-                                </Grid>
+                                </StackPanel>
                             </Grid>
                         </DataTemplate>
                     </controls:AdaptiveGridView.ItemTemplate>

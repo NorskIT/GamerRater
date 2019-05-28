@@ -11,6 +11,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Navigation;
 using GamerRater.Application.Views;
+using GamerRater.Model;
 using Microsoft.Toolkit.Uwp.Notifications;
 using WinUI = Microsoft.UI.Xaml.Controls;
 
@@ -18,21 +19,31 @@ namespace GamerRater.Application.ViewModels
 {
     public class ShellViewModel : Observable
     {
-        public UserAuthenticator Session = UserAuthenticator.SessionUserAuthenticator;
+        private UserAuthenticator _session;
+        public UserAuthenticator Session
+        {
+            get => _session;
+            set
+            {
+                _session = value;
+                LoggedInUser = value.User;
+            }
+        }
         private readonly KeyboardAccelerator _altLeftKeyboardAccelerator = BuildKeyboardAccelerator(VirtualKey.Left, VirtualKeyModifiers.Menu);
         private readonly KeyboardAccelerator _backKeyboardAccelerator = BuildKeyboardAccelerator(VirtualKey.GoBack);
-
+        
         public ICommand GoToLoginPage => new RelayCommand(() => NavigationService.Navigate<LoginPage>());
         public ICommand LogOutCommand => new RelayCommand(() =>
         {
             UserAuthenticator.SessionUserAuthenticator.LogOut();
-            IsLoggedIn = false;
             NavigationService.Navigate<LoginPage>();
             SendLogoutToast();
         });
 
+        public ShellPage Page { get; set; }
+        private bool _notOnRegistrationLoginPage;
         private bool _isBackEnabled;
-        private bool _isLoggedIn;
+        public Model.User _loggedInUser;
         private IList<KeyboardAccelerator> _keyboardAccelerators;
         private WinUI.NavigationView _navigationView;
         private WinUI.NavigationViewItem _selected;
@@ -65,16 +76,22 @@ namespace GamerRater.Application.ViewModels
             set => Set(ref _isBackEnabled, value);
         }
 
-        public bool IsLoggedIn
-        {
-            get => _isLoggedIn;
-            set => Set(ref _isLoggedIn, value);
-        }
-
         public WinUI.NavigationViewItem Selected
         {
             get => _selected;
             set => Set(ref _selected, value);
+        }
+
+        public Model.User LoggedInUser
+        {
+            get => _loggedInUser;
+            set => Set(ref _loggedInUser, value);
+        }
+
+        public bool NotOnRegistrationLoginPage
+        {
+            get => _notOnRegistrationLoginPage;
+            set => Set(ref _notOnRegistrationLoginPage, value);
         }
 
         public ICommand LoadedCommand => _loadedCommand ?? (_loadedCommand = new RelayCommand(OnLoaded));
@@ -105,7 +122,6 @@ namespace GamerRater.Application.ViewModels
 
         private void OnItemInvoked(WinUI.NavigationViewItemInvokedEventArgs args)
         {
-            var b = _navigationView.Content;
             var item = _navigationView.MenuItems
                             .OfType<WinUI.NavigationViewItem>()
                             .First(menuItem => (string)menuItem.Content == (string)args.InvokedItem);
@@ -120,8 +136,9 @@ namespace GamerRater.Application.ViewModels
 
         private void Frame_Navigated(object sender, NavigationEventArgs e)
         {
-            var b = _navigationView;
-            IsLoggedIn = Session.UserLoggedIn;
+            var frame = (Frame) sender;
+            NotOnRegistrationLoginPage = !(frame.Content is RegistrationPage || frame.Content is LoginPage);
+            Session = UserAuthenticator.SessionUserAuthenticator;
             IsBackEnabled = NavigationService.CanGoBack;
             Selected = _navigationView.MenuItems
                             .OfType<WinUI.NavigationViewItem>()

@@ -21,24 +21,25 @@ namespace GamerRater.Application.Views
         public GameDetailsPage()
         {
             InitializeComponent();
+            ViewModel.Page = this;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            if (e.Parameter is GameRoot game)
-            {
-                ViewModel.Initialize(game, this);
-            }
+            if (!(e.Parameter is GameRoot game)) return;
+            ViewModel.MainGame = game;
+            ViewModel.Initialize();
         }
 
         private async void DeleteReview(object sender, RoutedEventArgs e)
         {
+
             try
             {
                 if (!(sender is Button button)) return;
-                if (button.DataContext is Review review && await new Reviews().DeleteReview(review.Id))
-                    ViewModel.Reviews.Remove(review);
+                if (button.DataContext is Review review)
+                    ViewModel.DeleteReview(review);
             }
             catch (NullReferenceException ex)
             {
@@ -46,29 +47,42 @@ namespace GamerRater.Application.Views
             }
         }
 
-        public void ComboBoxBorderColor(bool x)
+        public void RatingGridBorderColor(bool x)
         {
-            StarsBox.BorderBrush = x ? new SolidColorBrush(Colors.Red) : new SolidColorBrush(Colors.Gray);
+            RatingStarsGrid.BorderBrush = x ? new SolidColorBrush(Colors.Red) : new SolidColorBrush(Colors.Gray);
         }
 
-        private void UpdateReview(object sender, RoutedEventArgs e)
+        private void SetReviewBox(object sender, RoutedEventArgs e)
         {
             var button = (Button) sender;
             var review = (Review)button.DataContext;
             ReviewText.Text = review.ReviewText;
             ReviewId.Text = review.Id.ToString();
-            StarsBox.SelectedIndex = (review.Stars==0) ? 0 : review.Stars-1;
+            RatingStars.Value = review.Stars;
             ViewModel.ShowReviewEditor = Visibility.Visible;
-            ScrollViewer.SetBringIntoViewOnFocusChange(WriteReviewBox, true);
-            ScrollViewer.StartBringIntoView();
-            StartBringIntoView();
+            BringViewToReviewEditBox();
         }
 
-        private void ClearReviewBox(object sender, RoutedEventArgs e)
+        public void ClearReviewBox(object sender, RoutedEventArgs e)
         {
             ReviewText.Text = "";
             ReviewId.Text = "";
-            StarsBox.SelectedIndex = 0;
+            RatingStars.Value = -1;
+        }
+
+        public void BringViewToReviews()
+        {
+            ReviewGridView.StartBringIntoView();
+        }
+
+        public void BringViewToReviewEditBox()
+        {
+            ReviewEditBox.StartBringIntoView();
+        }
+
+        private void WriteReviewButtonClicked(object sender, RoutedEventArgs e)
+        {
+            BringViewToReviewEditBox();
         }
     }
 }

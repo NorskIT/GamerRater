@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace GamerRater.Model
 {
@@ -15,6 +14,5 @@ namespace GamerRater.Model
         public int UserGroupId { get; set; }
         public UserGroup UserGroup { get; set; }
         public virtual ICollection<Review> Reviews { get; set; }
-
     }
 }

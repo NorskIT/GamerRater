@@ -5,7 +5,7 @@ using Windows.UI.Xaml.Data;
 using GamerRater.Application.Services;
 using GamerRater.Model;
 
-namespace GamerRater.Application.Helpers
+namespace GamerRater.Application.Helpers.Converters
 {
     public class CanWriteReviewConverter : ResourceDictionary, IValueConverter
     {
@@ -14,13 +14,15 @@ namespace GamerRater.Application.Helpers
             if (value is ObservableCollection<Review> reviews)
             {
                 if (reviews.Count == 0) return Visibility.Visible;
-                if(UserAuthenticator.LoggedInUser == null) return Visibility.Visible;
+                if(UserAuthenticator.SessionUserAuthenticator.User == null) return Visibility.Visible;
                 foreach (var review in reviews)
                 {
-                    if (review.UserId == UserAuthenticator.LoggedInUser.Id) return Visibility.Collapsed;
+                    if (review.UserId == UserAuthenticator.SessionUserAuthenticator.User.Id) return Visibility.Collapsed;
                 }
             }
             return Visibility.Visible;
+
+
 
         }
 

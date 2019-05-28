@@ -14,6 +14,12 @@ namespace GamerRater.Application.Views
         {
             InitializeComponent();
             ViewModel.CheckCache();
+            ViewModel.Page = this;
+        }
+
+        public void WaitVisual(bool enabled)
+        {
+            GameRootSearchBar.IsEnabled = enabled;
         }
     }
 }

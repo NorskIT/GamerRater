@@ -126,7 +126,11 @@
     <comment>Application description</comment>
   </data>
   <data name="Shell_Main.Content" xml:space="preserve">
-    <value>Spill</value>
+    <value>Games</value>
     <comment>Navigation view item name for Main</comment>
+  </data>
+  <data name="Shell_UserReviews.Content" xml:space="preserve">
+    <value>My reviews</value>
+    <comment>Navigation view item names for User reviews</comment>
   </data>
 </root>

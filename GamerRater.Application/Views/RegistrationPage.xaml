@@ -10,7 +10,7 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Padding="15,15,15,15" Orientation="Vertical">
+        <StackPanel Width="230" HorizontalAlignment="Center" VerticalAlignment="Top" Padding="15,15,15,15" Orientation="Vertical">
             <StackPanel Padding="0,0,0,15">
                 <TextBlock FontSize="32" HorizontalAlignment="Center" Text="GamerRater"/>
             </StackPanel>
@@ -34,7 +34,6 @@
                 <TextBlock Text="Password"/>
                 <PasswordBox PasswordChanged="{x:Bind ViewModel.CanRegister}" Width="200" Name="Password"></PasswordBox>
             </StackPanel>
-
             <Grid>
                 <Button x:Name="RegisterButton" Content="Register"
                                   Command="{x:Bind ViewModel.RegisterUserCommand}">
@@ -48,10 +47,10 @@
                                     UserGroupId="1"/>
                     </Button.CommandParameter>
                 </Button>
-
                 <Button Command="{x:Bind ViewModel.CancelCommand}" HorizontalAlignment="Right">Cancel</Button>
             </Grid>
-            
+            <TextBlock Foreground="Red" TextWrapping="Wrap" Visibility="{x:Bind ViewModel.FaultyData, Mode=OneWay}" Text="* Fields cannot contain symbols or spaces!" />
+            <TextBlock Foreground="Red" TextWrapping="Wrap" Visibility="{x:Bind ViewModel.UserAlreadyRegistered, Mode=OneWay}" Text="* Username already in use" />
         </StackPanel>
     </Grid>
 </Page>

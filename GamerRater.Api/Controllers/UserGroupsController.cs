@@ -42,6 +42,23 @@ namespace GamerRater.Api.Controllers
             return userGroup;
         }
 
+        [HttpGet("Group/{groupName}")]
+        public async Task<ActionResult<UserGroup>> GetUserGroupWithGroupName(string groupName)
+        {
+            UserGroup userGroup = null;
+            try
+            {
+                userGroup = await _context.UserGroups.Where(x => x.Group == groupName).FirstAsync();
+            }
+            catch (InvalidOperationException e)
+            {
+                //UserGroup was not found.
+                return NotFound();
+            }
+
+            return userGroup;
+        }
+
         // PUT: api/UserGroups/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUserGroup(int id, UserGroup userGroup)

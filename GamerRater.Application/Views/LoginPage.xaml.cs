@@ -29,6 +29,7 @@ namespace GamerRater.Application.Views
         {
             this.InitializeComponent();
             _viewModel.Initialize();
+            _viewModel.Page = this;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -40,6 +41,11 @@ namespace GamerRater.Application.Views
             Password.Password = user.Password;
             RegistrationComplete.Text = Username.Text + " successfully registered.";
             RegistrationComplete.Visibility = Visibility.Visible;
+        }
+
+        public void VisualWait(bool enabled)
+        {
+            LoginButton.IsEnabled = enabled;
         }
     }
 }
