@@ -42,7 +42,8 @@ namespace GamerRater.Application.ViewModels
             foreach (var review in UserAuthenticator.SessionUserAuthenticator.User.Reviews)
             {
                 var game = await new Games().GetGameById(review.GameRootId);
-                Games.Add(game);
+                if(Games.All(x => x.Id != game.Id))
+                    Games.Add(game);
             }
         }
     }

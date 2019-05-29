@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
 using GamerRater.Application.DataAccess;
 using GamerRater.Application.Helpers;
 using GamerRater.Application.Services;
@@ -18,67 +14,73 @@ namespace GamerRater.Application.ViewModels
 {
     public class GameDetailsViewModel : Observable
     {
+        //TODO: Fix this focking shiet?!?!? Why the hell wont you call notifyChange when items are added :((((((((((((((((
+        public static ObservableCollection<Review> _reviews = new ObservableCollection<Review>();
+        private int _averageScore = -1;
+
+        private Visibility _showReviewEditor = Visibility.Collapsed;
+
+        public ICommand AddReviewCommand;
         public GameRoot MainGame;
         public GameDetailsPage Page;
         public ObservableCollection<Platform> Platforms = new ObservableCollection<Platform>();
-        public ObservableCollection<int> Stars = new ObservableCollection<int>() {1,2,3,4,5};
-        private User _loggedUser;
-
-        public User LoggedUser
-        {
-            get => _loggedUser;
-            set => Set(ref _loggedUser, value);
-        }
         public UserAuthenticator Session = UserAuthenticator.SessionUserAuthenticator;
+
         public ICommand CloseReviewWriter => new RelayCommand(() => ShowReviewEditor = Visibility.Collapsed);
+
         public ICommand OpenReviewWriter => new RelayCommand(() =>
         {
             ShowReviewEditor = Visibility.Visible;
             Page.BringViewToReviewEditBox();
         });
-        public ICommand AddReviewCommand;
 
-        private int _averageScore = -1;
-        private Visibility _showReviewEditor = Visibility.Collapsed;
         public Visibility ShowReviewEditor
         {
             get => _showReviewEditor;
             set => Set(ref _showReviewEditor, value);
         }
-        public int AverageScore {
+
+        public int AverageScore
+        {
             get => _averageScore;
             set => Set(ref _averageScore, value);
         }
 
-        //TODO: Fix this focking shiet?!?!? Why the hell wont you call notifyChange when items are added :((((((((((((((((
-        public ObservableCollection<Review> Reviews = new ObservableCollection<Review>();
-        
+        public ObservableCollection<Review> Reviews
+        {
+            get => _reviews;
+            set => Set(ref _reviews, value);
+        }
 
-        public void Initialize()
+
+        public async void Initialize()
         {
             // Do no want to wait for it to fetch reviews.
-#pragma warning disable 4014
-            InitializeReviews(MainGame);
-            InitializePlatforms(MainGame);
-#pragma warning restore 4014
-            MainGame.GameCover.url = "https://images.igdb.com/igdb/image/upload/t_720p/" + MainGame.GameCover.image_id + ".jpg";
-
+            await InitializeReviews(MainGame);
+            await InitializePlatforms(MainGame);
             AddReviewCommand = new RelayCommand<Review>(AddReview);
         }
 
         public async Task InitializeReviews(GameRoot game)
         {
-            var conn = new Games();
-            var gameFromDb = await conn.GetGame(game);
-            if (gameFromDb != null)
-                foreach (var rating in gameFromDb.Reviews)
-                {
-                    var usersConn = new Users();
-                    rating.User = await usersConn.GetUser(rating.UserId);
-                    Reviews.Add(rating);
-                }
-            
-            SetAverageScore();
+            Reviews.Clear();
+            try
+            {
+                var conn = new Games();
+                var gameFromDb = await conn.GetGame(game);
+                if (gameFromDb != null)
+                    foreach (var rating in gameFromDb.Reviews)
+                    {
+                        var usersConn = new Users();
+                        rating.User = await usersConn.GetUser(rating.UserId);
+                        Reviews.Add(rating);
+                    }
+
+                SetAverageScore();
+            }
+            catch (Exception exception)
+            {
+            }
         }
 
         public async Task InitializePlatforms(GameRoot game)
@@ -86,51 +88,52 @@ namespace GamerRater.Application.ViewModels
             if (game.PlatformsIds.Length == 0) return;
             try
             {
-                game.PlatformList = await new IgdbAccess().GetPlatformsAsync(game);
-                foreach (var platform in game.PlatformList)
+                using (var igdb = new IgdbAccess())
                 {
-                    Platforms.Add(platform);
+                    game.PlatformList = await igdb.GetPlatformsAsync(game);
+                    foreach (var platform in game.PlatformList) Platforms.Add(platform);
                 }
             }
             catch (Exception ex)
             {
-                
+                //TODO: NO internet?
             }
         }
 
         public async void AddReview(Review review)
         {
-
+            Page.EnableReviewSubmitButton(false);
             if (review.Stars == -1)
             {
                 Page.RatingGridBorderColor(true);
                 return;
             }
+
             Page.RatingGridBorderColor(false);
-            var conn = new Games();
             try
             {
-                var gameFromDb = await conn.GetGame(MainGame);
+                var gameFromDb = await new Games().GetGame(MainGame);
                 if (gameFromDb == null)
-                {
                     if (!await new Games().AddGame(MainGame))
                         return;
-                }
             }
             catch (Exception ex)
             {
                 //TODO: SOMETHING HAPPEND
             }
+
             try
             {
                 try
                 {
                     review.date = DateTime.UtcNow;
-                    if (review.Id != 0) { 
-                        if(!await new Reviews().UpdateReview(review))
+                    if (review.Id != 0)
+                    {
+                        if (!await new Reviews().UpdateReview(review))
                             return;
                     }
-                    else { 
+                    else
+                    {
                         if (!await new Reviews().AddReview(review))
                             return;
                     }
@@ -145,7 +148,9 @@ namespace GamerRater.Application.ViewModels
                 Console.WriteLine(e);
                 throw;
             }
+
             ShowReviewEditor = Visibility.Collapsed;
+            await UserAuthenticator.SessionUserAuthenticator.UpdateUser();
             UpdateRatings(review);
             Page.BringViewToReviews();
             Page.ClearReviewBox(null, null);
@@ -159,14 +164,21 @@ namespace GamerRater.Application.ViewModels
             var conn = new Games();
 
             var gameFromDb = await conn.GetGame(MainGame);
-            if (gameFromDb == null) return;
-            foreach (var review in gameFromDb.Reviews)
+            if (gameFromDb != null)
             {
-                var usersConn = new Users();
-                review.User = await usersConn.GetUser(review.UserId);
-                if (Reviews.All(x => x.Id != review.Id))
-                    Reviews.Insert(0,review);
+                foreach (var review in gameFromDb.Reviews)
+                {
+                    var usersConn = new Users();
+                    review.User = await usersConn.GetUser(review.UserId);
+                    if (Reviews.All(x => x.Id != review.Id))
+                        Reviews.Insert(0, review);
+                }
+
+                SetAverageScore();
+                Page.EnableReviewSubmitButton(true);
             }
+
+            //TODO: NO INTERNET
         }
 
         private void SetAverageScore()
@@ -174,20 +186,19 @@ namespace GamerRater.Application.ViewModels
             if (Reviews.Count == 0)
                 return;
             var avg = 0.00;
-            foreach (var review in Reviews)
-            {
-                avg += review.Stars;
-            }
+            foreach (var review in Reviews) avg += review.Stars;
             AverageScore = Convert.ToInt32(avg / Reviews.Count);
         }
 
         public async void DeleteReview(Review review)
         {
             if (await new Reviews().DeleteReview(review.Id))
-            {
                 if (await UserAuthenticator.SessionUserAuthenticator.UpdateUser())
+                {
                     Reviews.Remove(review);
-            }
+                    SetAverageScore();
+                }
+
             //TODO: NO INTERNET
         }
     }

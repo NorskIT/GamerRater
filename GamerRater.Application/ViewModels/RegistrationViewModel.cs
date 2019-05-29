@@ -12,10 +12,20 @@ using GamerRater.Model;
 
 namespace GamerRater.Application.ViewModels
 {
-    internal class RegistrationViewModel : Observable
+    public class RegistrationViewModel : Observable
     {
+        public enum RegistrationError
+        {
+            UsernameAlreadyInUse,
+            NetworkError,
+            IllegalValues,
+            None
+        }
         private Button button;
         private User newUser;
+        public RegistrationPage Page { get; set; }
+        public ICommand RegisterUserCommand { get; set; }
+        public ICommand CancelCommand => new RelayCommand(() => NavigationService.GoBack());
         private Visibility _faultyData = Visibility.Collapsed;
         public Visibility FaultyData
         {
@@ -36,21 +46,22 @@ namespace GamerRater.Application.ViewModels
                 {
                     button.IsEnabled = false;
                     if(Users.UserDataValidator(user)) {
-                        if(await new Users().GetUser(user.Username) == null) { 
+                        if(await new Users().GetUser(user.Username) == null)
+                        {
                             if (await new Users().AddUser(user)) {
                                 NavigationService.Navigate<LoginPage>(user);
+                                return;
                             }
-                            //TODO: NO INTERNET
+                            Page.ErrorInfo(RegistrationError.NetworkError);
+                            return;
                         }
-                        UserAlreadyRegistered = Visibility.Visible;
-                    } else
-                        FaultyData = Visibility.Visible;
-                    button.IsEnabled = true;
+                        Page.ErrorInfo(RegistrationError.UsernameAlreadyInUse);
+                        return;
+                    }
+                    Page.ErrorInfo(RegistrationError.IllegalValues);
                 }, SetUser);
         }
         
-        public ICommand RegisterUserCommand { get; set; }
-        public ICommand CancelCommand => new RelayCommand(() => NavigationService.GoBack());
 
         public void SetButton(Button button)
         {
@@ -71,8 +82,13 @@ namespace GamerRater.Application.ViewModels
             button.IsEnabled = !string.IsNullOrWhiteSpace(newUser.Email) &&
                                !string.IsNullOrWhiteSpace(newUser.Password) &&
                                !string.IsNullOrWhiteSpace(newUser.LastName) &&
+                               !string.IsNullOrWhiteSpace(newUser.FirstName) &&
                                !string.IsNullOrWhiteSpace(newUser.Username) &&
-                               !string.IsNullOrWhiteSpace(newUser.Username);
+                               (newUser.Email.Length > 2 && newUser.Email.Length < 16) &&
+                               (newUser.Password.Length > 2 && newUser.Password.Length < 16) &&
+                               (newUser.LastName.Length > 2 && newUser.LastName.Length < 16) &&
+                               (newUser.FirstName.Length > 2 && newUser.FirstName.Length < 16) &&
+                               (newUser.Username.Length > 2 && newUser.Username.Length < 16);
         }
     }
 }

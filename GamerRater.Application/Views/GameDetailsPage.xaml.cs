@@ -32,7 +32,7 @@ namespace GamerRater.Application.Views
             ViewModel.Initialize();
         }
 
-        private async void DeleteReview(object sender, RoutedEventArgs e)
+        private void DeleteReview(object sender, RoutedEventArgs e)
         {
 
             try
@@ -49,7 +49,12 @@ namespace GamerRater.Application.Views
 
         public void RatingGridBorderColor(bool x)
         {
-            RatingStarsGrid.BorderBrush = x ? new SolidColorBrush(Colors.Red) : new SolidColorBrush(Colors.Gray);
+            RatingStarsGrid.BorderBrush = x ? new SolidColorBrush(Colors.Red) : new SolidColorBrush(Colors.White);
+        }
+
+        public void EnableReviewSubmitButton(bool enabled)
+        {
+            SubmitReviewButton.IsEnabled = enabled;
         }
 
         private void SetReviewBox(object sender, RoutedEventArgs e)
@@ -60,6 +65,8 @@ namespace GamerRater.Application.Views
             ReviewId.Text = review.Id.ToString();
             RatingStars.Value = review.Stars;
             ViewModel.ShowReviewEditor = Visibility.Visible;
+            EditReviewBoxText.Visibility = Visibility.Visible;
+            WriteReviewBoxText.Visibility = Visibility.Collapsed;
             BringViewToReviewEditBox();
         }
 
@@ -68,10 +75,13 @@ namespace GamerRater.Application.Views
             ReviewText.Text = "";
             ReviewId.Text = "";
             RatingStars.Value = -1;
+            EditReviewBoxText.Visibility = Visibility.Collapsed;
+            WriteReviewBoxText.Visibility = Visibility.Visible;
         }
 
         public void BringViewToReviews()
         {
+            ReviewGridView.StartBringIntoView();
             ReviewGridView.StartBringIntoView();
         }
 

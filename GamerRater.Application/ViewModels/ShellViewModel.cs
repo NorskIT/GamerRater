@@ -22,7 +22,7 @@ namespace GamerRater.Application.ViewModels
         private UserAuthenticator _session;
         public UserAuthenticator Session
         {
-            get => _session;
+            get => UserAuthenticator.SessionUserAuthenticator;
             set
             {
                 _session = value;

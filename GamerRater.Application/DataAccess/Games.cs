@@ -27,18 +27,29 @@ namespace GamerRater.Application.DataAccess
                 }
                 catch (Exception ex)
                 {
+                    //TODO: NO INTERNET
                     return null;
                 }
             }
-            
         }
 
         public async Task<bool> AddGame(GameRoot mainGame)
         {
-            var payload = JsonConvert.SerializeObject(mainGame);
-            HttpContent cont = new StringContent(payload, Encoding.UTF8, "application/json");
-            var result = await _httpClient.PostAsync(new Uri(BaseUri.Games), cont);
-            return result.StatusCode == HttpStatusCode.Created;
+            using (_httpClient)
+            {
+                try
+                {
+                    var payload = JsonConvert.SerializeObject(mainGame);
+                    HttpContent cont = new StringContent(payload, Encoding.UTF8, "application/json");
+                    var result = await _httpClient.PostAsync(new Uri(BaseUri.Games), cont);
+                    return result.StatusCode == HttpStatusCode.Created;
+                }
+                catch (Exception ex)
+                {
+                    //TODO: NO INTERNET
+                    return false;
+                }
+            }
         }
 
         public async Task<GameRoot> GetGameById(int Id)
@@ -54,6 +65,7 @@ namespace GamerRater.Application.DataAccess
                 }
                 catch (Exception ex)
                 {
+                    //TODO: NO INTERNET
                     return null;
                 }
             }

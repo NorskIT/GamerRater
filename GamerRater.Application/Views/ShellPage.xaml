@@ -44,7 +44,7 @@
                                       IsEnabled="{x:Bind ViewModel.LoggedInUser, Mode=OneWay, Converter={StaticResource NotNullToBoolConverter}}"
                                       x:Uid="Shell_UserReviews" helpers:NavHelper.NavigateTo="views:UserReviews">
                 <winui:NavigationViewItem.Icon>
-                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE77B;" />
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8F1;" />
                 </winui:NavigationViewItem.Icon>
             </winui:NavigationViewItem>
         </winui:NavigationView.MenuItems>

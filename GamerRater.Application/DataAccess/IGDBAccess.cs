@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.Storage.Streams;
 using Windows.Web.Http;
 using GamerRater.Model;
+using Microsoft.Win32.SafeHandles;
 using Newtonsoft.Json;
 
 namespace GamerRater.Application.DataAccess
@@ -41,16 +43,25 @@ namespace GamerRater.Application.DataAccess
 
         public async Task<GameRoot[]> GetGamesAsync(string gameNames)
         {
-            var results = await _httpClient.PostAsync(new Uri(BaseUri.IGDBGames), new HttpStringContent(
-                "fields *;" +
-                "search \"" + gameNames + "\"*;" +
-                "where cover != 0;" +
-                "limit 50;" ,
-                UnicodeEncoding.Utf8,
-                "application/json"));
-            var jsonGame = await results.Content.ReadAsStringAsync();
-            var gamesArr = JsonConvert.DeserializeObject<GameRoot[]>(jsonGame);
-            return gamesArr;
+            try
+            {
+                var results = await _httpClient.PostAsync(new Uri(BaseUri.IGDBGames), new HttpStringContent(
+                    "fields *;" +
+                    "search \"" + gameNames + "\"*;" +
+                    "where cover != 0;" +
+                    "limit 50;",
+                    UnicodeEncoding.Utf8,
+                    "application/json"));
+                var jsonGame = await results.Content.ReadAsStringAsync();
+                if (!results.IsSuccessStatusCode) return null;
+                var gamesArr = JsonConvert.DeserializeObject<GameRoot[]>(jsonGame);
+                return gamesArr;
+            }
+            catch (Exception ex)
+            {
+                //TODO: INTERNET
+            }
+            return null;
         }
 
         //Builds a Cover ID string compatible with the api query. Etc : (123, 432, 12994, 392)
@@ -67,7 +78,6 @@ namespace GamerRater.Application.DataAccess
                 firstIterate = false;
 
             }
-
             return ids;
         }
         //Builds a Platform ID string compatible with the api query. Etc : (123, 432, 12994, 392)
@@ -86,12 +96,7 @@ namespace GamerRater.Application.DataAccess
             }
             return ids;
         }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
-
+        
         public async Task<Platform[]> GetPlatformsAsync(GameRoot game)
         {
             var results = await _httpClient.PostAsync(new Uri(BaseUri.IGDBPlatforms), new HttpStringContent(
@@ -102,6 +107,12 @@ namespace GamerRater.Application.DataAccess
             var jsonGame = await results.Content.ReadAsStringAsync();
             var platforms = JsonConvert.DeserializeObject<Platform[]>(jsonGame);
             return platforms;
+        }
+
+        public void Dispose()
+        {
+            SafeHandle handle = new SafeFileHandle(IntPtr.Zero, true);
+            handle.Dispose();
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using Windows.UI.Xaml.Controls;
+﻿using System;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using GamerRater.Application.ViewModels;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
@@ -16,7 +18,31 @@ namespace GamerRater.Application.Views
         public RegistrationPage()
         {
             InitializeComponent();
+            ViewModel.Page = this;
             ViewModel.SetButton(RegisterButton);
+        }
+
+        public void ErrorInfo(RegistrationViewModel.RegistrationError error)
+        {
+            ErrorInfoTextBlock.Visibility = Visibility.Visible;
+            switch (error)
+            {
+                case RegistrationViewModel.RegistrationError.IllegalValues:
+                    ErrorInfoTextBlock.Text = "* Fields cannot contain symbols or spaces!";
+                    break;
+                case RegistrationViewModel.RegistrationError.NetworkError:
+                    ErrorInfoTextBlock.Text = "* Could not connect to server. Check your network connection and try again";
+                    break;
+                case RegistrationViewModel.RegistrationError.UsernameAlreadyInUse:
+                    ErrorInfoTextBlock.Text = "* Username already in use..";
+                    break;
+                case RegistrationViewModel.RegistrationError.None:
+                    ErrorInfoTextBlock.Text = "";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(error), error, null);
+            }
+            RegisterButton.IsEnabled = true;
         }
     }
 }

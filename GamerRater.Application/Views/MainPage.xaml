@@ -14,7 +14,7 @@
     mc:Ignorable="d">
     <Page.Resources>
         <ResourceDictionary>
-            <converters:ShowLoginButtonConverter x:Key="RevertBool" />
+            <converters:NullToDefaultImageConverter x:Key="NullToDefaultImageConverter" />
         </ResourceDictionary>
     </Page.Resources>
     <Grid x:Name="ContentArea">
@@ -48,7 +48,7 @@
                         Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}">
                         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                             <Image Height="200" Width="130"
-                                   Source="{Binding GameCover.url, Mode=OneWay, FallbackValue='https://dummyimage.com/400x600/dbdbdb/000000&amp;text=No+image' }" />
+                                   Source="{Binding GameCover, Mode=OneWay, Converter={StaticResource NullToDefaultImageConverter} }" />
                             <TextBlock
                                 Margin="{StaticResource XXSmallTopMargin}"
                                 HorizontalAlignment="Center"

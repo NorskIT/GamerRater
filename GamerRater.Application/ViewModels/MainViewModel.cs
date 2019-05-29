@@ -1,5 +1,8 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Net.NetworkInformation;
 using System.Timers;
 using System.Windows.Input;
 using Windows.System;
@@ -50,39 +53,70 @@ namespace GamerRater.Application.ViewModels
             Page.WaitVisual(false);
             Games.Clear();
             var context = new IgdbAccess();
-            var games = await context.GetGamesAsync(gameName);
-            var toFindCoverList = new GameRoot[5];
-            var x = 0;
-            if (games.Length > 4)
-            {
-                foreach (var t in games)
+            GameRoot[] games = null;
+            using(context) { 
+                try
                 {
-                    if (toFindCoverList[4] != null)
+                    games = await context.GetGamesAsync(gameName);
+                }
+                catch (Exception ex)
+                {
+                    return;
+                    //TODO: NO INTERNET. Could not retireve games.
+                }
+                try
+                {
+                    
+                    const int searchLimit = 5;
+                    var toFindCoverList = new GameRoot[searchLimit];
+                    var x = 0;
+                    if (games.Length > 4)
                     {
+                        foreach (var t in games)
+                        {
+                            if (toFindCoverList[searchLimit - 1] != null)
+                            {
+                                await context.GetCoversToGamesAsync(toFindCoverList);
+                                foreach (var gamesRoot in toFindCoverList) Games.Add(gamesRoot);
+                                toFindCoverList = new GameRoot[searchLimit];
+                                x = 0;
+                                Page.WaitVisual(true);
+                            }
+
+                            toFindCoverList[x] = t;
+                            x++;
+                        }
+                    }
+                    else
+                    {
+                        toFindCoverList = new GameRoot[games.Length];
+                        foreach (var t in games)
+                        {
+                            toFindCoverList[x] = t;
+                            x++;
+                        }
+
+                        Page.WaitVisual(true);
                         await context.GetCoversToGamesAsync(toFindCoverList);
                         foreach (var gamesRoot in toFindCoverList) Games.Add(gamesRoot);
-                        toFindCoverList = new GameRoot[5];
-                        x = 0;
-                        Page.WaitVisual(true);
                     }
-
-                    toFindCoverList[x] = t;
-                    x++;
                 }
-            }
-            else
-            {
-                toFindCoverList = new GameRoot[games.Length];
-                foreach (var t in games)
+                catch (Exception ex)
                 {
-                    toFindCoverList[x] = t;
-                    x++;
+                    //TODO: Could not fetch covers. Check you internet
+                    //Page.WaitVisual(true);
+                    //foreach (var game in games) Games.Add(game);
                 }
-
-                Page.WaitVisual(true);
-                await context.GetCoversToGamesAsync(toFindCoverList);
-                foreach (var gamesRoot in toFindCoverList) Games.Add(gamesRoot);
             }
+            Page.WaitVisual(true);
+            if(Games.Count == 0) { 
+                if (!NetworkInterface.GetIsNetworkAvailable())
+                {
+                    //TODO:NO INTERNET
+                }
+                //TODO:NO RESULT
+            }
+            //foreach (var game in games) Games.Add(game); //DEBUG REMOVE!!!
             PreviousGamesObservableCollection = Games;
         }
 

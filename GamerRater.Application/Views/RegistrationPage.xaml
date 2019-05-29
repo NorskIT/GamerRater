@@ -6,9 +6,16 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:model="using:GamerRater.Model"
+    xmlns:converters="using:GamerRater.Application.Helpers.Converters"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
+    
+    <Page.Resources>
+        <ResourceDictionary>
+            <converters:ValueLengthToColorConverter x:Key="ValueLengthToColorConverter" />
+        </ResourceDictionary>
+    </Page.Resources>
     <Grid>
         <StackPanel Width="230" HorizontalAlignment="Center" VerticalAlignment="Top" Padding="15,15,15,15" Orientation="Vertical">
             <StackPanel Padding="0,0,0,15">
@@ -16,23 +23,23 @@
             </StackPanel>
             <StackPanel Padding="0,0,0,15">
                 <TextBlock Text="Username"/>
-                <TextBox TextChanged="{x:Bind ViewModel.CanRegister}" Width="200" Name="Username"></TextBox>
+                <TextBox TextChanged="{x:Bind ViewModel.CanRegister}" BorderBrush="{x:Bind Username.Text, Mode=OneWay, Converter={StaticResource ValueLengthToColorConverter}}" Width="200" Name="Username"></TextBox>
             </StackPanel>
             <StackPanel Padding="0,0,0,15">
                 <TextBlock Text="Firstname"/>
-                <TextBox TextChanged="{x:Bind ViewModel.CanRegister}" Width="200" Name="Firstname"></TextBox>
+                <TextBox TextChanged="{x:Bind ViewModel.CanRegister}" BorderBrush="{x:Bind Firstname.Text, Mode=OneWay, Converter={StaticResource ValueLengthToColorConverter}}"  Width="200" Name="Firstname"></TextBox>
             </StackPanel>
             <StackPanel Padding="0,0,0,15">
                 <TextBlock Text="Lastname"/>
-                <TextBox TextChanged="{x:Bind ViewModel.CanRegister}" Width="200" Name="Lastname"></TextBox>
+                <TextBox TextChanged="{x:Bind ViewModel.CanRegister}" BorderBrush="{x:Bind Lastname.Text, Mode=OneWay, Converter={StaticResource ValueLengthToColorConverter}}"  Width="200" Name="Lastname"></TextBox>
             </StackPanel>
             <StackPanel Padding="0,0,0,15">
                 <TextBlock Text="Mail"/>
-                <TextBox TextChanged="{x:Bind ViewModel.CanRegister}" Width="200" Name="Mail"></TextBox>
+                <TextBox TextChanged="{x:Bind ViewModel.CanRegister}" BorderBrush="{x:Bind Mail.Text, Mode=OneWay, Converter={StaticResource ValueLengthToColorConverter}}"  Width="200" Name="Mail"></TextBox>
             </StackPanel>
             <StackPanel Padding="0,0,0,15">
                 <TextBlock Text="Password"/>
-                <PasswordBox PasswordChanged="{x:Bind ViewModel.CanRegister}" Width="200" Name="Password"></PasswordBox>
+                <PasswordBox PasswordChanged="{x:Bind ViewModel.CanRegister}" BorderBrush="{x:Bind Password.Password, Mode=OneWay, Converter={StaticResource ValueLengthToColorConverter}}"  Width="200" Name="Password"></PasswordBox>
             </StackPanel>
             <Grid>
                 <Button x:Name="RegisterButton" Content="Register"
@@ -49,8 +56,8 @@
                 </Button>
                 <Button Command="{x:Bind ViewModel.CancelCommand}" HorizontalAlignment="Right">Cancel</Button>
             </Grid>
-            <TextBlock Foreground="Red" TextWrapping="Wrap" Visibility="{x:Bind ViewModel.FaultyData, Mode=OneWay}" Text="* Fields cannot contain symbols or spaces!" />
-            <TextBlock Foreground="Red" TextWrapping="Wrap" Visibility="{x:Bind ViewModel.UserAlreadyRegistered, Mode=OneWay}" Text="* Username already in use" />
+            <TextBlock Name="ErrorInfoTextBlock" Foreground="Red" TextWrapping="Wrap" Visibility="{x:Bind ViewModel.FaultyData, Mode=OneWay}" Text="" />
+            <TextBlock Foreground="Red" TextWrapping="Wrap" Visibility="{x:Bind ViewModel.UserAlreadyRegistered, Mode=OneWay}" Text="" />
         </StackPanel>
     </Grid>
 </Page>

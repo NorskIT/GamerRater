@@ -22,6 +22,7 @@
             <converters:DoubleToIntConverter x:Key="DoubleToIntConverter" />
             <converters:ColorIfOwnerConverter x:Key="ColorIfOwnerConverter" />
             <converters:NotNullToBoolConverter x:Key="NotNullToBoolConverter" />
+            <converters:IgdbGameUrlToHDImageUrlConverter x:Key="IgdbGameUrlToHDImageUrlConverter" />
         </ResourceDictionary>
     </Page.Resources>
     <ScrollViewer Name="ScrollViewer">
@@ -57,7 +58,7 @@
                       HorizontalAlignment="Center" VerticalAlignment="Center"
                       Margin="0,0,0,25">
                     <Image HorizontalAlignment="Center" VerticalAlignment="Center"
-                           Source="{x:Bind ViewModel.MainGame.GameCover.url}" Height="360"
+                           Source="{x:Bind ViewModel.MainGame.GameCover, Converter={StaticResource IgdbGameUrlToHDImageUrlConverter}}" Height="360"
                            Width="262" />
                 </Grid>
                 <Grid Grid.Row="2" Name="InfoBox" >
@@ -74,12 +75,12 @@
                         <StackPanel Width="150" Orientation="Vertical" Margin="0,0,10,0" BorderBrush="DarkGray"
                                     BorderThickness="2" Padding="5">
                             <TextBlock FontWeight="Bold" Text="GR Score: " />
-                            <RatingControl Grid.Row="2" Value="{x:Bind ViewModel.AverageScore, Mode=OneWay}" IsEnabled="False" />
+                            <RatingControl Grid.Row="2" Value="{x:Bind ViewModel.AverageScore, Mode=OneWay, FallbackValue=-1}" IsEnabled="False" />
                         </StackPanel>
                     </StackPanel>
                     <Button Grid.Row="1" Height="50" HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                            Name="AddReviewToGameRoot" Click="WriteReviewButtonClicked" IsEnabled="{x:Bind ViewModel.Session.User, Converter={StaticResource NotNullToBoolConverter}}"
-                            Visibility="{x:Bind ViewModel.Reviews, Mode=TwoWay, Converter={StaticResource CanWriteReviewConverter}}"
+                            Name="OpenReviewEditBoxButton" Click="WriteReviewButtonClicked" IsEnabled="{x:Bind ViewModel.Session.User, Converter={StaticResource NotNullToBoolConverter}}"
+                            Visibility="{x:Bind ViewModel.Reviews.Count, Mode=OneWay, Converter={StaticResource CanWriteReviewConverter}}"
                             Command="{x:Bind ViewModel.OpenReviewWriter}" Content="Write Review" />
                     <StackPanel Grid.Row="1" Orientation="Vertical" Margin="0,0,10,0"
                                 BorderBrush="DarkGray"
@@ -125,7 +126,8 @@
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Margin="0,0,0,20">
-                    <TextBlock Text="Write review for " Margin="0,0,5,0" />
+                    <TextBlock Name="WriteReviewBoxText" Text="Write review for " Margin="0,0,5,0" />
+                    <TextBlock Name="EditReviewBoxText" Visibility="Collapsed" Text="Edit your review for " Margin="0,0,5,0" />
                     <TextBlock FontWeight="Black" Text="{x:Bind ViewModel.MainGame.Name}" />
                 </StackPanel>
 
@@ -143,7 +145,7 @@
                          HorizontalAlignment="Stretch"
                          VerticalAlignment="Stretch" Text="Hello" />
                 <TextBlock HorizontalAlignment="Center" Grid.Row="1"  Name="ReviewId" Visibility="Visible" Text=""></TextBlock>
-                <Button Margin="10" HorizontalAlignment="Right" Grid.Row="3" Content="Submit"
+                <Button Name="SubmitReviewButton" Margin="10" HorizontalAlignment="Right" Grid.Row="3" Content="Submit"
                         Command="{x:Bind ViewModel.AddReviewCommand}">
                     <Button.CommandParameter>
                         <model:Review ReviewText="{x:Bind ReviewText.Text, Mode=OneWay}"
