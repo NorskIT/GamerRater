@@ -7,7 +7,7 @@ using GamerRater.Model;
 
 namespace GamerRater.Application.Helpers.Converters
 {
-    public class ReviewListIsNotEmptyConverter : ResourceDictionary, IValueConverter
+    public class ReviewListIsNotEmptyConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {

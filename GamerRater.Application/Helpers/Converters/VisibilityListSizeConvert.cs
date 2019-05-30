@@ -4,7 +4,7 @@ using Windows.UI.Xaml.Data;
 
 namespace GamerRater.Application.Helpers.Converters
 {
-    public class VisibilityListSizeConvert : ResourceDictionary, IValueConverter
+    public class VisibilityListSizeConvert : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {

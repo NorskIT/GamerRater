@@ -4,7 +4,7 @@ using Windows.UI.Xaml.Data;
 
 namespace GamerRater.Application.Helpers.Converters
 {
-    internal class RoundDoubleToTwoDecimalsConverter : ResourceDictionary, IValueConverter
+    internal class RoundDoubleToTwoDecimalsConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {

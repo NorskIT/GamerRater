@@ -15,7 +15,7 @@ namespace GamerRater.Application.DataAccess
     internal class IgdbAccess : IDisposable
     {
         private readonly HttpClient _httpClient = new HttpClient();
-
+        //TODO: DO MORE ERROR CHECKS
         public IgdbAccess()
         {
             _httpClient.DefaultRequestHeaders.Add("user-key", "d1f0748dd028fe160ba161dfd05fe3b1");
@@ -41,6 +41,9 @@ namespace GamerRater.Application.DataAccess
                 return games;
         }
 
+        /// <summary>Gets the games asynchronous.</summary>
+        /// <param name="gameNames">The game names.</param>
+        /// <returns></returns>
         public async Task<GameRoot[]> GetGamesAsync(string gameNames)
         {
             try
@@ -59,11 +62,10 @@ namespace GamerRater.Application.DataAccess
             }
             catch (Exception ex)
             {
-                //TODO: INTERNET
+                return null;
             }
-            return null;
         }
-
+        //TODO: Egen helper klasse?
         //Builds a Cover ID string compatible with the api query. Etc : (123, 432, 12994, 392)
         private static string BuildGameCoverIdString(GameRoot[] games)
         {
@@ -80,8 +82,9 @@ namespace GamerRater.Application.DataAccess
             }
             return ids;
         }
+
         //Builds a Platform ID string compatible with the api query. Etc : (123, 432, 12994, 392)
-        private static string BuildGamePlatformIdString(GameRoot game)
+        private static string BuildPlatformIdString(GameRoot game)
         {
             var ids = "";
             var firstIterate = true;
@@ -101,7 +104,7 @@ namespace GamerRater.Application.DataAccess
         {
             var results = await _httpClient.PostAsync(new Uri(BaseUri.IGDBPlatforms), new HttpStringContent(
                 "fields *;" +
-                "where id = (" + BuildGamePlatformIdString(game) + ");",
+                "where id = (" + BuildPlatformIdString(game) + ");",
                 UnicodeEncoding.Utf8,
                 "application/json"));
             var jsonGame = await results.Content.ReadAsStringAsync();
@@ -111,8 +114,7 @@ namespace GamerRater.Application.DataAccess
 
         public void Dispose()
         {
-            SafeHandle handle = new SafeFileHandle(IntPtr.Zero, true);
-            handle.Dispose();
+            _httpClient?.Dispose();
         }
     }
 }

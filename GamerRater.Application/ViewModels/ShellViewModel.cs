@@ -37,7 +37,7 @@ namespace GamerRater.Application.ViewModels
         {
             UserAuthenticator.SessionUserAuthenticator.LogOut();
             NavigationService.Navigate<LoginPage>();
-            SendLogoutToast();
+            GrToast.SmallToast("Logged out");
         });
 
         public ShellPage Page { get; set; }
@@ -49,26 +49,6 @@ namespace GamerRater.Application.ViewModels
         private WinUI.NavigationViewItem _selected;
         private ICommand _loadedCommand;
         private ICommand _itemInvokedCommand;
-
-        public void SendLogoutToast()
-        {
-            var visual = new ToastVisual()
-            {
-                BindingGeneric = new ToastBindingGeneric()
-                {
-                    Children =
-                    {
-                        new AdaptiveText()
-                        {
-                            Text = "Logged out"
-                        },
-                    },
-                }
-            };
-            var toastContent = new ToastContent(){ Visual = visual};
-            var toast = new ToastNotification(toastContent.GetXml()) {ExpirationTime = DateTime.Now.AddSeconds(2)};
-            ToastNotificationManager.CreateToastNotifier().Show(toast);
-        }
 
         public bool IsBackEnabled
         {

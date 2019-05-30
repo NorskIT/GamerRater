@@ -9,7 +9,7 @@ using GamerRater.Model;
 
 namespace GamerRater.Application.Helpers.Converters
 {
-    public class CanWriteReviewConverter : ResourceDictionary, IValueConverter
+    public class CanWriteReviewConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {

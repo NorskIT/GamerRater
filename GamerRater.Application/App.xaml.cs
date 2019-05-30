@@ -1,11 +1,14 @@
 ﻿using System;
-
+using System.Linq.Expressions;
+using System.Net;
 using GamerRater.Application.Services;
 
 using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.Core;
 using Windows.UI.Xaml;
 using GamerRater.Application.DataAccess;
 using GamerRater.Model;
+using Newtonsoft.Json;
 
 namespace GamerRater.Application
 {
@@ -13,10 +16,7 @@ namespace GamerRater.Application
     {
         private Lazy<ActivationService> _activationService;
 
-        private ActivationService ActivationService
-        {
-            get { return _activationService.Value; }
-        }
+        private ActivationService ActivationService => _activationService.Value;
 
         public App()
         {
@@ -28,19 +28,35 @@ namespace GamerRater.Application
             _activationService = new Lazy<ActivationService>(CreateActivationService);
         }
 
-        private async void InitializeAppRequirements()
+        private static async void InitializeAppRequirements()
         {
-            var userGroup = await new UserGroups().GetUserGroup(1);
-            if (userGroup == null)
+            try
             {
-                try
+                using (var userGroups = new UserGroups())
                 {
-                    await new UserGroups().AddUserGroup(new UserGroup() {Group = "User"});
-                    await new UserGroups().AddUserGroup(new UserGroup() {Group = "Admin"});
+                    var userGroup = await userGroups.GetUserGroup("User").ConfigureAwait(false);
+                    if (userGroup != null) return;
+                    if (await userGroups.AddUserGroup(new UserGroup() {Group = "User"}).ConfigureAwait(false) !=
+                        HttpStatusCode.Created)
+                    {
+                        GrToast.SmallToast(
+                            "Failed connecting to the database, please check your network connection and try restart application.");
+                        return;
+                    }
+
+                    if (await userGroups.AddUserGroup(new UserGroup() {Group = "Admin"}).ConfigureAwait(false) !=
+                        HttpStatusCode.Created)
+                    {
+                        GrToast.SmallToast(
+                            "Failed connecting to the database, please check your network connection and try restart application.");
+                    }
                 }
-                catch (Exception ex)
+            }
+            catch (Exception)
+            {
+                if(!await new PingApi().CheckConnection().ConfigureAwait(true))
                 {
-                    //TODO: NO INTERNET
+                    
                 }
             }
         }

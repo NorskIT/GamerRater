@@ -5,70 +5,48 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Windows.Foundation.Diagnostics;
+using GamerRater.Application.Services;
 using GamerRater.Model;
 using Newtonsoft.Json;
 
 namespace GamerRater.Application.DataAccess
 {
-    class Games
+    internal class Games : IDisposable
     {
         private readonly HttpClient _httpClient = new HttpClient();
+        public GameRoot ResultGame;
+
+        //TODO: JsonException local?
 
         public async Task<GameRoot> GetGame(GameRoot game)
         {
-            using (_httpClient)
-            {
-                try
-                {
-                    var httpResponse = await _httpClient.GetAsync(new Uri(BaseUri.Games + game.Id));
-                    var jsonGame = await httpResponse.Content.ReadAsStringAsync();
-                    var resultGame = JsonConvert.DeserializeObject<GameRoot>(jsonGame);
-                    return resultGame.Id != 0 ? resultGame : null;
-                }
-                catch (Exception ex)
-                {
-                    //TODO: NO INTERNET
-                    return null;
-                }
-            }
+            var httpResponse = await _httpClient.GetAsync(new Uri(BaseUri.Games + game.Id)).ConfigureAwait(true);
+            var jsonGame = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(true);
+            ResultGame = JsonConvert.DeserializeObject<GameRoot>(jsonGame);
+            return ResultGame.Id != 0 ? ResultGame : null;
         }
 
-        public async Task<bool> AddGame(GameRoot mainGame)
+
+        public async Task<HttpResponseMessage> AddGame(GameRoot mainGame)
         {
-            using (_httpClient)
-            {
-                try
-                {
-                    var payload = JsonConvert.SerializeObject(mainGame);
-                    HttpContent cont = new StringContent(payload, Encoding.UTF8, "application/json");
-                    var result = await _httpClient.PostAsync(new Uri(BaseUri.Games), cont);
-                    return result.StatusCode == HttpStatusCode.Created;
-                }
-                catch (Exception ex)
-                {
-                    //TODO: NO INTERNET
-                    return false;
-                }
-            }
+            var payload = JsonConvert.SerializeObject(mainGame);
+            HttpContent cont = new StringContent(payload, Encoding.UTF8, "application/json");
+            var result = await _httpClient.PostAsync(new Uri(BaseUri.Games), cont).ConfigureAwait(true);
+            return result;
         }
 
-        public async Task<GameRoot> GetGameById(int Id)
+        public async Task<GameRoot> GetGameById(int id)
         {
-            using (_httpClient)
-            {
-                try
-                {
-                    var httpResponse = await _httpClient.GetAsync(new Uri(BaseUri.Games + Id));
-                    var jsonGame = await httpResponse.Content.ReadAsStringAsync();
-                    var resultGame = JsonConvert.DeserializeObject<GameRoot>(jsonGame);
-                    return resultGame.Id != 0 ? resultGame : null;
-                }
-                catch (Exception ex)
-                {
-                    //TODO: NO INTERNET
-                    return null;
-                }
-            }
+            var httpResponse = await _httpClient.GetAsync(new Uri(BaseUri.Games + id)).ConfigureAwait(true);
+            var jsonGame = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(true);
+            ResultGame = JsonConvert.DeserializeObject<GameRoot>(jsonGame);
+            return ResultGame.Id != 0 ? ResultGame : null;
+        }
+
+        public void Dispose()
+        {
+            _httpClient?.Dispose();
         }
     }
 }

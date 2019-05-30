@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace GamerRater.Application.DataAccess
 {
-    internal class Reviews
+    internal class Reviews : IDisposable
     {
         private readonly HttpClient _httpClient = new HttpClient();
 
@@ -17,14 +17,14 @@ namespace GamerRater.Application.DataAccess
         {
             var payload = JsonConvert.SerializeObject(review);
             HttpContent cont = new StringContent(payload, Encoding.UTF8, "application/json");
-            var result = await _httpClient.PostAsync(new Uri(BaseUri.Reviews), cont);
+            var result = await _httpClient.PostAsync(new Uri(BaseUri.Reviews), cont).ConfigureAwait(true);
             return result.StatusCode == HttpStatusCode.Created;
         }
 
         public async Task<bool> DeleteReview(int id)
         {
             var result =
-                await _httpClient.DeleteAsync(new Uri(string.Concat(BaseUri.Reviews, id)));
+                await _httpClient.DeleteAsync(new Uri(string.Concat(BaseUri.Reviews, id))).ConfigureAwait(true);
             return result.IsSuccessStatusCode;
         }
 
@@ -33,8 +33,14 @@ namespace GamerRater.Application.DataAccess
             var payload = JsonConvert.SerializeObject(review);
             HttpContent cont = new StringContent(payload, Encoding.UTF8, "application/json");
             var result =
-                await _httpClient.PutAsync(new Uri(string.Concat(BaseUri.Reviews, review.Id)), cont);
+                await _httpClient.PutAsync(new Uri(string.Concat(BaseUri.Reviews, review.Id)), cont).ConfigureAwait(true);
             return result.IsSuccessStatusCode;
+        }
+
+
+        public void Dispose()
+        {
+            _httpClient?.Dispose();
         }
     }
 }

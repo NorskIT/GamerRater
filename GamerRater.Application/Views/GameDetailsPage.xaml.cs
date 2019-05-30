@@ -22,6 +22,8 @@ namespace GamerRater.Application.Views
         {
             InitializeComponent();
             ViewModel.Page = this;
+            ReviewEditBox.Visibility = Visibility.Visible;
+            ReviewEditBox.Visibility = Visibility.Collapsed;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -34,17 +36,9 @@ namespace GamerRater.Application.Views
 
         private void DeleteReview(object sender, RoutedEventArgs e)
         {
-
-            try
-            {
-                if (!(sender is Button button)) return;
-                if (button.DataContext is Review review)
-                    ViewModel.DeleteReview(review);
-            }
-            catch (NullReferenceException ex)
-            {
-                //Tried connecting to db without internet
-            }
+            if (!(sender is Button button)) return;
+            if (button.DataContext is Review review)
+                ViewModel.DeleteReview(review);
         }
 
         public void RatingGridBorderColor(bool x)
@@ -54,7 +48,16 @@ namespace GamerRater.Application.Views
 
         public void EnableReviewSubmitButton(bool enabled)
         {
-            SubmitReviewButton.IsEnabled = enabled;
+            if(enabled)
+            { 
+                SubmitReviewButton.IsEnabled = enabled;
+                Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 0);
+            }
+            else
+            {
+                SubmitReviewButton.IsEnabled = enabled;
+                Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Wait, 0);
+            }
         }
 
         private void SetReviewBox(object sender, RoutedEventArgs e)
@@ -62,7 +65,8 @@ namespace GamerRater.Application.Views
             var button = (Button) sender;
             var review = (Review)button.DataContext;
             ReviewText.Text = review.ReviewText;
-            ReviewId.Text = review.Id.ToString();
+            //TODO: FIX
+            ReviewId.Text = review.Id + "";
             RatingStars.Value = review.Stars;
             ViewModel.ShowReviewEditor = Visibility.Visible;
             EditReviewBoxText.Visibility = Visibility.Visible;
@@ -81,18 +85,17 @@ namespace GamerRater.Application.Views
 
         public void BringViewToReviews()
         {
-            ReviewGridView.StartBringIntoView();
-            ReviewGridView.StartBringIntoView();
+            BottomPage.StartBringIntoView();
         }
 
         public void BringViewToReviewEditBox()
         {
-            ReviewEditBox.StartBringIntoView();
+            BelowReviewEditBox.StartBringIntoView();
         }
 
-        private void WriteReviewButtonClicked(object sender, RoutedEventArgs e)
+        public void ShowReviewBox(bool b)
         {
-            BringViewToReviewEditBox();
+            ReviewGridView.Visibility = Visibility.Visible;
         }
     }
 }

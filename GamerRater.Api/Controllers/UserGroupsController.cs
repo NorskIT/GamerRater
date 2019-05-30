@@ -53,7 +53,7 @@ namespace GamerRater.Api.Controllers
             catch (InvalidOperationException e)
             {
                 //UserGroup was not found.
-                return NotFound();
+                return NoContent();
             }
 
             return userGroup;

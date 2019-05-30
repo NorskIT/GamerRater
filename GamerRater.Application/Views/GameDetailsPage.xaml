@@ -32,6 +32,7 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
@@ -79,7 +80,7 @@
                         </StackPanel>
                     </StackPanel>
                     <Button Grid.Row="1" Height="50" HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                            Name="OpenReviewEditBoxButton" Click="WriteReviewButtonClicked" IsEnabled="{x:Bind ViewModel.Session.User, Converter={StaticResource NotNullToBoolConverter}}"
+                            Name="OpenReviewEditBoxButton" IsEnabled="{x:Bind ViewModel.Session.User, Converter={StaticResource NotNullToBoolConverter}}"
                             Visibility="{x:Bind ViewModel.Reviews.Count, Mode=OneWay, Converter={StaticResource CanWriteReviewConverter}}"
                             Command="{x:Bind ViewModel.OpenReviewWriter}" Content="Write Review" />
                     <StackPanel Grid.Row="1" Orientation="Vertical" Margin="0,0,10,0"
@@ -92,7 +93,7 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <controls:AdaptiveGridView
-                                ItemsSource="{x:Bind ViewModel.Platforms, Mode=OneWay}"
+                                ItemsSource="{x:Bind ViewModel.Platforms, Mode=OneWay, TargetNullValue='N/A'}"
                                 SelectionMode="None"
                                 IsItemClickEnabled="False">
                                 <controls:AdaptiveGridView.ItemTemplate>
@@ -107,7 +108,7 @@
                 <StackPanel Grid.Row="3" Name="DescriptionBox" Margin="0,10,0,0" Orientation="Vertical"
                             BorderBrush="DarkGray" BorderThickness="2" Padding="5">
                     <TextBlock FontWeight="Bold" Text="Description: " />
-                    <TextBlock Name="GameRootSummary" Text="{x:Bind ViewModel.MainGame.Summary}" Margin="10,25,0,20"
+                    <TextBlock Name="GameRootSummary" Text="{x:Bind ViewModel.MainGame.Summary, TargetNullValue='No summary available for this game'}" Margin="10,25,0,20"
                                TextWrapping="Wrap" LineHeight="25" MaxWidth="500" />
                 </StackPanel>
             </Grid>
@@ -131,8 +132,6 @@
                     <TextBlock FontWeight="Black" Text="{x:Bind ViewModel.MainGame.Name}" />
                 </StackPanel>
 
-                <!--<ComboBox Name="StarsBox" Margin="0,0,0,5" Grid.Row="1" Header="Stars" PlaceholderText="Star rating"
-                          SelectionChanged="{x:Bind ViewModel.StarsUpdate}" ItemsSource="{x:Bind ViewModel.Stars}" />-->
                 <Grid Grid.Row="1" HorizontalAlignment="Left"  Name="RatingStarsGrid" BorderBrush="white" BorderThickness="1" Margin="0,0,0,5">
                     <RatingControl Name="RatingStars" />
                 </Grid>
@@ -144,7 +143,7 @@
                 <TextBox Name="ReviewText" Grid.Row="2" MinHeight="100" TextWrapping="Wrap"
                          HorizontalAlignment="Stretch"
                          VerticalAlignment="Stretch" Text="Hello" />
-                <TextBlock HorizontalAlignment="Center" Grid.Row="1"  Name="ReviewId" Visibility="Visible" Text=""></TextBlock>
+                <TextBlock HorizontalAlignment="Center" Grid.Row="1"  Name="ReviewId" Visibility="Collapsed" Text=""></TextBlock>
                 <Button Name="SubmitReviewButton" Margin="10" HorizontalAlignment="Right" Grid.Row="3" Content="Submit"
                         Command="{x:Bind ViewModel.AddReviewCommand}">
                     <Button.CommandParameter>
@@ -157,7 +156,7 @@
                     </Button.CommandParameter>
                 </Button>
             </Grid>
-
+            <Grid Grid.Row="3" Name="BelowReviewEditBox"></Grid>
             <Grid HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,12,0,30"
                   x:Name="ReviewGridView"
                   MinHeight="200"
@@ -220,6 +219,7 @@
                         </DataTemplate>
                     </controls:AdaptiveGridView.ItemTemplate>
                 </controls:AdaptiveGridView>
+                <Grid Grid.Row="5" Name="BottomPage"></Grid>
             </Grid>
         </Grid>
     </ScrollViewer>

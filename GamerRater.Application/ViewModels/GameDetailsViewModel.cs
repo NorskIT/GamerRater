@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Windows.UI.Xaml;
@@ -9,12 +12,12 @@ using GamerRater.Application.Helpers;
 using GamerRater.Application.Services;
 using GamerRater.Application.Views;
 using GamerRater.Model;
+using Newtonsoft.Json;
 
 namespace GamerRater.Application.ViewModels
 {
     public class GameDetailsViewModel : Observable
     {
-        //TODO: Fix this focking shiet?!?!? Why the hell wont you call notifyChange when items are added :((((((((((((((((
         public static ObservableCollection<Review> _reviews = new ObservableCollection<Review>();
         private int _averageScore = -1;
 
@@ -55,102 +58,122 @@ namespace GamerRater.Application.ViewModels
 
         public async void Initialize()
         {
-            // Do no want to wait for it to fetch reviews.
-            await InitializeReviews(MainGame);
-            await InitializePlatforms(MainGame);
+            if (MainGame == null) return;
             AddReviewCommand = new RelayCommand<Review>(AddReview);
+            if (!NetworkInterface.GetIsNetworkAvailable()) return;
+            await InitializeReviews().ConfigureAwait(true);
+            await InitializePlatforms().ConfigureAwait(true);
         }
 
-        public async Task InitializeReviews(GameRoot game)
+        public async Task InitializeReviews()
         {
             Reviews.Clear();
             try
             {
-                var conn = new Games();
-                var gameFromDb = await conn.GetGame(game);
-                if (gameFromDb != null)
-                    foreach (var rating in gameFromDb.Reviews)
-                    {
-                        var usersConn = new Users();
-                        rating.User = await usersConn.GetUser(rating.UserId);
-                        Reviews.Add(rating);
+                try
+                {
+                    var conn = new Games();
+                    var gameFromDb = await conn.GetGame(MainGame).ConfigureAwait(true);
+                    if (gameFromDb != null) { 
+                        foreach (var rating in gameFromDb.Reviews)
+                        {
+                            using (var usersConn = new Users())
+                                rating.User = await usersConn.GetUser(rating.UserId).ConfigureAwait(true);
+                            Reviews.Add(rating);
+                        }
+                        SetAverageScore();
                     }
-
-                SetAverageScore();
+                }
+                catch (JsonReaderException)
+                {
+                    GrToast.SmallToast("Could not fetch reviews.. Please check your network connection and reload page.");
+                }
             }
-            catch (Exception exception)
+            catch (HttpRequestException)
             {
+                GrToast.SmallToast("API request does not respond, please try again later.");
             }
         }
 
-        public async Task InitializePlatforms(GameRoot game)
+        public async Task InitializePlatforms()
         {
-            if (game.PlatformsIds.Length == 0) return;
+            if (MainGame.PlatformsIds == null || MainGame.PlatformsIds.Length == 0) return;
             try
             {
                 using (var igdb = new IgdbAccess())
                 {
-                    game.PlatformList = await igdb.GetPlatformsAsync(game);
-                    foreach (var platform in game.PlatformList) Platforms.Add(platform);
+                    MainGame.PlatformList = await igdb.GetPlatformsAsync(MainGame).ConfigureAwait(true);
+                    foreach (var platform in MainGame.PlatformList) Platforms.Add(platform);
                 }
-            }
-            catch (Exception ex)
+            } //TODO: Different excpetion
+            catch (HttpRequestException)
             {
-                //TODO: NO internet?
+                GrToast.SmallToast("Could not reach IGDB Servers. Please check your network connection and try again.");
             }
+        }
+
+        public static void NoConnection()
+        {
+            if (NetworkInterface.GetIsNetworkAvailable())
+            {
+                GrToast.SmallToast("Could not reach database... Our server might be down, please try again later.");
+                return;
+            }
+            GrToast.SmallToast("Could not connect to server... Please check your network connection.");
         }
 
         public async void AddReview(Review review)
         {
             Page.EnableReviewSubmitButton(false);
+            if (!await new PingApi().CheckConnection().ConfigureAwait(true))
+            {
+                NoConnection();
+                Page.EnableReviewSubmitButton(true);
+                return;
+            }
             if (review.Stars == -1)
             {
                 Page.RatingGridBorderColor(true);
                 return;
             }
-
             Page.RatingGridBorderColor(false);
             try
             {
-                var gameFromDb = await new Games().GetGame(MainGame);
-                if (gameFromDb == null)
-                    if (!await new Games().AddGame(MainGame))
-                        return;
-            }
-            catch (Exception ex)
-            {
-                //TODO: SOMETHING HAPPEND
-            }
-
-            try
-            {
-                try
+                using (var game = new Games())
                 {
-                    review.date = DateTime.UtcNow;
-                    if (review.Id != 0)
-                    {
-                        if (!await new Reviews().UpdateReview(review))
-                            return;
-                    }
-                    else
-                    {
-                        if (!await new Reviews().AddReview(review))
-                            return;
+                    var gameFromDb = await game.GetGame(MainGame).ConfigureAwait(true);
+                    if (gameFromDb == null) { 
+                        var result = await game.AddGame(MainGame).ConfigureAwait(true);
+                        if (result.StatusCode != HttpStatusCode.Created) {
+                            //TODO: FIX, not throw here
+                            throw new HttpRequestException();
+                        }
                     }
                 }
-                catch (Exception ex)
-                {
-                    //TODO:Toast: You have internet?
-                }
             }
-            catch (Exception e)
+            catch (HttpRequestException)
             {
-                Console.WriteLine(e);
-                throw;
+                GrToast.SmallToast("Could not connect to server. Please try again.");
+                Page.RatingGridBorderColor(true);
+                return;
             }
 
+            review.date = DateTime.UtcNow;
+            if (review.Id != 0)
+            {
+                if (!await new Reviews().UpdateReview(review).ConfigureAwait(true))
+                    return;
+            }
+            else
+            {
+                if (!await new Reviews().AddReview(review).ConfigureAwait(true))
+                    return;
+            }
+            
             ShowReviewEditor = Visibility.Collapsed;
-            await UserAuthenticator.SessionUserAuthenticator.UpdateUser();
+            Page.ShowReviewBox(true);
+            //TODO: Exception, could not update user
+            await UserAuthenticator.SessionUserAuthenticator.UpdateUser().ConfigureAwait(true);
             UpdateRatings(review);
             Page.BringViewToReviews();
             Page.ClearReviewBox(null, null);
@@ -168,8 +191,8 @@ namespace GamerRater.Application.ViewModels
             {
                 foreach (var review in gameFromDb.Reviews)
                 {
-                    var usersConn = new Users();
-                    review.User = await usersConn.GetUser(review.UserId);
+                    using (var usersConn = new Users())
+                        review.User = await usersConn.GetUser(review.UserId).ConfigureAwait(true);
                     if (Reviews.All(x => x.Id != review.Id))
                         Reviews.Insert(0, review);
                 }
@@ -192,8 +215,8 @@ namespace GamerRater.Application.ViewModels
 
         public async void DeleteReview(Review review)
         {
-            if (await new Reviews().DeleteReview(review.Id))
-                if (await UserAuthenticator.SessionUserAuthenticator.UpdateUser())
+            if (await new Reviews().DeleteReview(review.Id).ConfigureAwait(true))
+                if (await UserAuthenticator.SessionUserAuthenticator.UpdateUser().ConfigureAwait(true))
                 {
                     Reviews.Remove(review);
                     SetAverageScore();

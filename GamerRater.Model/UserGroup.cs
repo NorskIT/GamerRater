@@ -6,6 +6,6 @@ namespace GamerRater.Model
     {
         public int Id { get; set; }
         public string Group { get; set; }
-        public List<User> Users { get; set; }
+        public ICollection<UserHasUserGroup> Users { get; set; }
     }
 }

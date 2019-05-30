@@ -91,7 +91,7 @@ namespace GamerRater.Api.Controllers
                 _context.Games.Add(gameRoot);
                 await _context.SaveChangesAsync();
             }
-            catch (Exception ex)
+            catch (DbUpdateException ex)
             {
                 return BadRequest();
             }

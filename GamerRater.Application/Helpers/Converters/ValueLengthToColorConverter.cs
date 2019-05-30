@@ -14,6 +14,7 @@ namespace GamerRater.Application.Helpers.Converters
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
+            if (value == null) return new SolidColorBrush(Windows.UI.Colors.DarkGray);
             var s = (string) value;
             return ((s.Length > 2 && s.Length < 16) || s.Length == 0)
                 ? new SolidColorBrush(Windows.UI.Colors.DarkGray) : new SolidColorBrush(Windows.UI.Colors.Red);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.NetworkInformation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using GamerRater.Application.ViewModels;
@@ -22,7 +23,7 @@ namespace GamerRater.Application.Views
             ViewModel.SetButton(RegisterButton);
         }
 
-        public void ErrorInfo(RegistrationViewModel.RegistrationError error)
+        public void ErrorMessage(RegistrationViewModel.RegistrationError error)
         {
             ErrorInfoTextBlock.Visibility = Visibility.Visible;
             switch (error)
@@ -31,7 +32,7 @@ namespace GamerRater.Application.Views
                     ErrorInfoTextBlock.Text = "* Fields cannot contain symbols or spaces!";
                     break;
                 case RegistrationViewModel.RegistrationError.NetworkError:
-                    ErrorInfoTextBlock.Text = "* Could not connect to server. Check your network connection and try again";
+                    ErrorInfoTextBlock.Text = !NetworkInterface.GetIsNetworkAvailable() ? "* Could not connect to server. Check your network connection and try again" : "* API not responding. Please try again later.";
                     break;
                 case RegistrationViewModel.RegistrationError.UsernameAlreadyInUse:
                     ErrorInfoTextBlock.Text = "* Username already in use..";

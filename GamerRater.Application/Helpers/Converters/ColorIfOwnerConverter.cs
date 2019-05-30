@@ -6,7 +6,7 @@ using GamerRater.Application.Services;
 
 namespace GamerRater.Application.Helpers.Converters
 {
-    public class ColorIfOwnerConverter : ResourceDictionary, IValueConverter
+    public class ColorIfOwnerConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {

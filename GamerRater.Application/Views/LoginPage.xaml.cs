@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -36,16 +37,45 @@ namespace GamerRater.Application.Views
         {
             base.OnNavigatedTo(e);
             if (!(e.Parameter is User user)) return;
-            _viewModel.registeredUser = user;
+            _viewModel.RegisteredUser = user;
             Username.Text = user.Username;
             Password.Password = user.Password;
             RegistrationComplete.Text = Username.Text + " successfully registered.";
             RegistrationComplete.Visibility = Visibility.Visible;
         }
 
-        public void VisualWait(bool enabled)
+        public void AwaitLogin(bool enabled)
         {
-            LoginButton.IsEnabled = enabled;
+            if (enabled)
+            {
+                LoginButton.IsEnabled = false;
+                Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Wait, 0);
+            }
+            else
+            {
+                LoginButton.IsEnabled = true;
+                Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 0);
+            }
+        }
+
+        public void ErrorMessage(LoginViewModel.LoginError error)
+        {
+            ErrorInfoTextBlock.Visibility = Visibility.Visible;
+            RegistrationComplete.Visibility = Visibility.Collapsed;
+            switch (error)
+            {
+                case LoginViewModel.LoginError.NetworkError:
+                    ErrorInfoTextBlock.Text = !NetworkInterface.GetIsNetworkAvailable() ? "* Could not connect to server. Check your network connection and try again" : "* API not responding. Please try again later.";
+                    break;
+                case LoginViewModel.LoginError.WrongUsernameOrPassword:
+                    ErrorInfoTextBlock.Text = "* Wrong username/password or user does not exist.";
+                    break;
+                case LoginViewModel.LoginError.None:
+                    ErrorInfoTextBlock.Text = "";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(error), error, null);
+            }
         }
     }
 }

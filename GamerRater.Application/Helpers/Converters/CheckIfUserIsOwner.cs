@@ -5,7 +5,7 @@ using GamerRater.Application.Services;
 
 namespace GamerRater.Application.Helpers.Converters
 {
-    public class CheckIfUserIsOwner : ResourceDictionary, IValueConverter
+    public class CheckIfUserIsOwner : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {

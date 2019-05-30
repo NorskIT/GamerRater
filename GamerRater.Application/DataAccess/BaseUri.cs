@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace GamerRater.Application.DataAccess
 {
+    //TODO: WHat is this?
     static class BaseUri
     {
         private static readonly string RootUrl = "http://localhost:61971/api/";
@@ -16,6 +17,7 @@ namespace GamerRater.Application.DataAccess
         public static readonly string Username = RootUrl + "Users/Username/";
         public static readonly string Reviews = RootUrl + "Reviews/";
         public static readonly string UserGroups = RootUrl + "UserGroups/";
+        public static readonly string UserGroupName = RootUrl + "UserGroups/Group/";
         public static readonly string IGDBGames = IGDBUrl + "Games/";
         public static readonly string IGDBRatings = IGDBUrl + "Ratings/";
         public static readonly string IGDBPlatforms = IGDBUrl + "Platforms/";

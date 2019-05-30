@@ -9,7 +9,7 @@ using GamerRater.Application.Services;
 
 namespace GamerRater.Application.Helpers.Converters
 {
-    class NotNullToBoolConverter : ResourceDictionary, IValueConverter
+    class NotNullToBoolConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {

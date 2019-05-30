@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GamerRater.Api.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20190527164302_InitialCatalog")]
+    [Migration("20190530082954_InitialCatalog")]
     partial class InitialCatalog
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -143,13 +143,9 @@ namespace GamerRater.Api.Migrations
 
                     b.Property<string>("Password");
 
-                    b.Property<int>("UserGroupId");
-
                     b.Property<string>("Username");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UserGroupId");
 
                     b.ToTable("Users");
                 });
@@ -165,6 +161,19 @@ namespace GamerRater.Api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("UserGroups");
+                });
+
+            modelBuilder.Entity("GamerRater.Model.UserHasUserGroup", b =>
+                {
+                    b.Property<int>("UserId");
+
+                    b.Property<int>("UserGroupId");
+
+                    b.HasKey("UserId", "UserGroupId");
+
+                    b.HasIndex("UserGroupId");
+
+                    b.ToTable("UserHasUserGroups");
                 });
 
             modelBuilder.Entity("GamerRater.Model.GameRoot", b =>
@@ -195,11 +204,16 @@ namespace GamerRater.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("GamerRater.Model.User", b =>
+            modelBuilder.Entity("GamerRater.Model.UserHasUserGroup", b =>
                 {
                     b.HasOne("GamerRater.Model.UserGroup", "UserGroup")
                         .WithMany("Users")
                         .HasForeignKey("UserGroupId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("GamerRater.Model.User", "User")
+                        .WithMany("UserGroups")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

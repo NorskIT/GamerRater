@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +23,7 @@ namespace GamerRater.Api.Controllers
 
         // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUser()
+        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
             return await _context.Users.ToListAsync();
         }
@@ -33,21 +32,39 @@ namespace GamerRater.Api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
-            var user = await _context.Users.Where(x => x.Id == id).Include(x => x.Reviews).FirstAsync();
-            
+            //var user = await _context.Users.Where(x => x.Id == id).Include(x => x.Reviews).FirstAsync();
+            var user = await _context.Users.FindAsync(id);
+            //Fetch reviews and userGroups
+            try
+            {
+                _context.Users
+                    .Where(x => x.Id == id)
+                    .Include(x => x.Reviews)
+                    .Load();
+
+                _context.Users
+                    .Where(x => x.Id == id)
+                    .Include(x => x.UserGroups)
+                    .Load();
+
+            }
+            catch (Exception ex)
+            {
+                // TODO: fdsf
+            }
+
             if (user == null)
             {
                 return NotFound();
             }
-            foreach (var review in user.Reviews)
-                review.User = null;
             return user;
         }
+
         // GET: api/Users/username
         [HttpGet("Username/{username}")]
         public async Task<ActionResult<User>> GetUserWithUsername(string username)
         {
-            User user = null;
+            User user;
             try
             {
                 user = await _context.Users.Where(x => x.Username == username).FirstAsync();
@@ -59,6 +76,30 @@ namespace GamerRater.Api.Controllers
             }
 
             return user;
+        }
+
+        // GET: api/Users/42/UserGroup/24
+        [HttpGet("{userId}/UserGroup/{userGroupId}")]
+        public async Task<IActionResult> GetUserHasUserGroup([FromRoute] int userId, [FromRoute] int userGroupId)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (UserHasUserGroupExists(userId, userGroupId))
+            {
+                return NoContent();
+            }
+
+            var userGroup = await _context.UserGroups.FindAsync(userGroupId);
+
+            if (userGroup == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(userGroup);
         }
 
         // PUT: api/Users/5
@@ -91,16 +132,68 @@ namespace GamerRater.Api.Controllers
             return NoContent();
         }
 
+        //Place user in group
+        // PUT: api/Users/1/UserGroups/2
+        [HttpPut("{userId}/UserGroups/{userGroupId}")]
+        public async Task<IActionResult> AddUserGroupToUser([FromRoute] int userId, [FromRoute] int userGroupId)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (!UserExists(userId))
+            {
+                return NoContent();
+            }
+
+            if (UserHasUserGroupExists(userId, userGroupId))
+            {
+                return NoContent();
+            }
+
+            var userHasUserGroup = new UserHasUserGroup() { UserId = userId, UserGroupId = userGroupId };
+            _context.UserHasUserGroups.Add(userHasUserGroup);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetUserHasUserGroup", new { userId, userGroupId }, userHasUserGroup);
+        }
+
         // POST: api/Users
         [HttpPost]
         public async Task<ActionResult<User>> PostUser(User user)
         {
-            if(user.UserGroup != null)
-                _context.Entry(user.UserGroup).State = EntityState.Unchanged;
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            return CreatedAtAction("GetUser", new { id = user.Id }, user);
+            try
+            {
+                //TODO: Comments
+                UserGroup userGroup;
+                try
+                {
+                    userGroup = _context.UserGroups.Single(x => x.Group.Equals("User"));
+                }
+                catch (InvalidOperationException)
+                {
+                    //More than one User-group. Do not continue before duplicate is removed.
+                    throw;
+                }
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
+
+                var userHasUserGroup = new UserHasUserGroup() { UserId = user.Id, UserGroupId =userGroup.Id };
+                _context.UserHasUserGroups.Add(userHasUserGroup);
+                await _context.SaveChangesAsync();
+                return CreatedAtAction("GetUser", new { id = user.Id }, user);
+            }
+            catch (InvalidOperationException)
+            {
+                //TODO: this
+                return NoContent();
+            }
         }
 
         // DELETE: api/Users/5
@@ -122,6 +215,11 @@ namespace GamerRater.Api.Controllers
         private bool UserExists(int id)
         {
             return _context.Users.Any(e => e.Id == id);
+        }
+
+        private bool UserHasUserGroupExists(int userId, int userGroupId)
+        {
+            return _context.UserHasUserGroups.Any(uug => uug.UserId == userId && uug.UserGroupId == userGroupId);
         }
     }
 }

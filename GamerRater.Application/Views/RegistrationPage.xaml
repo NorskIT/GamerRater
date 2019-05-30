@@ -51,7 +51,7 @@
                                     Email="{x:Bind Mail.Text, Mode=OneWay}"
                                     Username="{x:Bind Username.Text, Mode=OneWay}"
                                     Password="{x:Bind Password.Password, Mode=OneWay}"
-                                    UserGroupId="1"/>
+                                    />
                     </Button.CommandParameter>
                 </Button>
                 <Button Command="{x:Bind ViewModel.CancelCommand}" HorizontalAlignment="Right">Cancel</Button>

@@ -35,12 +35,10 @@
                 <Button Command="{x:Bind _viewModel.CancelCommand}" HorizontalAlignment="Right">Cancel</Button>
             </Grid>
             <Grid Padding="0,25,0,0">
-                <TextBlock Visibility="{x:Bind _viewModel.ErrorLogin, Mode=OneWay}" Foreground="Red"
-                           HorizontalAlignment="Left" Width="100" TextWrapping="Wrap">
-                    User not found, or password/username was incorrect
-                </TextBlock>
+                <TextBlock Name="ErrorInfoTextBlock" Foreground="Red"
+                           HorizontalAlignment="Left" Width="100" TextWrapping="Wrap"/>
                 <TextBlock Visibility="Collapsed" x:Name="RegistrationComplete" Foreground="LimeGreen" HorizontalAlignment="Left" Width="100" TextWrapping="Wrap" > Hello world</TextBlock>
-                <Button Command="{x:Bind _viewModel.RegisterUserCommand}" HorizontalAlignment="Right">Register</Button>
+                <HyperlinkButton FontSize="12" Command="{x:Bind _viewModel.RegisterUserCommand}" HorizontalAlignment="Right">New user? Click here to register!</HyperlinkButton>
             </Grid>
         </StackPanel>
     </Grid>

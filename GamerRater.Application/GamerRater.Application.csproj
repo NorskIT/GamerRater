@@ -127,6 +127,7 @@
     <Compile Include="DataAccess\BaseUri.cs" />
     <Compile Include="DataAccess\Games.cs" />
     <Compile Include="DataAccess\IGDBAccess.cs" />
+    <Compile Include="DataAccess\PingApi.cs" />
     <Compile Include="DataAccess\Reviews.cs" />
     <Compile Include="DataAccess\UserGroups.cs" />
     <Compile Include="DataAccess\Users.cs" />
@@ -151,6 +152,7 @@
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Services\ActivationService.cs" />
     <Compile Include="Activation\DefaultLaunchActivationHandler.cs" />
+    <Compile Include="Services\GrToast.cs" />
     <Compile Include="Services\NavigationService.cs" />
     <Compile Include="Services\UserAuthenticator.cs" />
     <Compile Include="ViewModels\GameDetailsViewModel.cs" />

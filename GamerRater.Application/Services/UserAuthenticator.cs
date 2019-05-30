@@ -9,7 +9,7 @@ namespace GamerRater.Application.Services
 {
     public class UserAuthenticator : Observable
     {
-        public static UserAuthenticator SessionUserAuthenticator = new UserAuthenticator();
+        public static UserAuthenticator SessionUserAuthenticator { get; set; }
         
 
         private User _user;
@@ -21,6 +21,13 @@ namespace GamerRater.Application.Services
         }
         
         private static bool _userLoggedInBool;
+
+        //TODO: Changed, doyble check
+        static UserAuthenticator()
+        {
+            SessionUserAuthenticator = new UserAuthenticator();
+        }
+
         public bool UserLoggedInBool
         {
             get => _userLoggedInBool;
@@ -29,29 +36,26 @@ namespace GamerRater.Application.Services
 
         public async Task<User> LogInUser(User user)
         {
-            var existingUser = await new Users().GetUser(user.Username);
-            if (existingUser == null) return null;
-            if (!existingUser.Password.Equals(user.Password)) return null;
-            var completeUser = await new Users().GetUser(existingUser.Id);
-            User = completeUser;
-            UserLoggedInBool = true;
-            SessionUserAuthenticator = this;
-            await UpdateUser();
-            return existingUser;
+            using(var users = new Users()) { 
+                var existingUser = await users.GetUser(user.Username).ConfigureAwait(true);
+                if (existingUser == null) return null;
+                if (!existingUser.Password.Equals(user.Password, StringComparison.CurrentCulture)) return null;
+                var completeUser = await users.GetUser(existingUser.Id).ConfigureAwait(true);
+                User = completeUser;
+                UserLoggedInBool = true;
+                SessionUserAuthenticator = this;
+                await UpdateUser().ConfigureAwait(true);
+                return existingUser;
+            }
         }
 
         public async Task<bool> UpdateUser()
         {
-            try
+            using (var users = new Users())
             {
-                var completeUser = await new Users().GetUser(User.Id);
+                var completeUser = await users.GetUser(User.Id).ConfigureAwait(true);
                 User.Reviews = completeUser.Reviews;
                 return true;
-            }
-            catch (Exception ex)
-            {
-                //TODO:HANDLE UPDATE ERROR
-                return false;
             }
         }
 

@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Net.Http;
 using System.Net.NetworkInformation;
+using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Input;
 using Windows.System;
@@ -28,6 +30,7 @@ namespace GamerRater.Application.ViewModels
         public ICommand ItemClickCommand =>
             _ItemClickCommand ?? (_ItemClickCommand = new RelayCommand<GameRoot>(OnItemClick));
 
+        //TODO: COmmand?
         public void SubmitSearch(SearchBox sender, SearchBoxQuerySubmittedEventArgs args)
         {
             sender.IsFocusEngaged = false;
@@ -48,67 +51,28 @@ namespace GamerRater.Application.ViewModels
             We receive an array with games which we then need to locate their covers(Images).
             After covers are found, we bind them togheter and then show them in the list.
          */
+        //TODO: IntializeGameSearch?
         public async void GetGamesAsync(string gameName)
         {
-            Page.WaitVisual(false);
+            Page.WaitVisual(true);
             Games.Clear();
             var context = new IgdbAccess();
-            GameRoot[] games = null;
-            using(context) { 
+            using(context) {
+                GameRoot[] games;
                 try
                 {
-                    games = await context.GetGamesAsync(gameName);
+                    games = await context.GetGamesAsync(gameName).ConfigureAwait(true);
                 }
-                catch (Exception ex)
+                catch (HttpRequestException)
                 {
+                    GrToast.SmallToast("Connection to database failed.. Please check your network connection and try again.");
+                    Page.WaitVisual(false);
                     return;
-                    //TODO: NO INTERNET. Could not retireve games.
                 }
-                try
-                {
-                    
-                    const int searchLimit = 5;
-                    var toFindCoverList = new GameRoot[searchLimit];
-                    var x = 0;
-                    if (games.Length > 4)
-                    {
-                        foreach (var t in games)
-                        {
-                            if (toFindCoverList[searchLimit - 1] != null)
-                            {
-                                await context.GetCoversToGamesAsync(toFindCoverList);
-                                foreach (var gamesRoot in toFindCoverList) Games.Add(gamesRoot);
-                                toFindCoverList = new GameRoot[searchLimit];
-                                x = 0;
-                                Page.WaitVisual(true);
-                            }
-
-                            toFindCoverList[x] = t;
-                            x++;
-                        }
-                    }
-                    else
-                    {
-                        toFindCoverList = new GameRoot[games.Length];
-                        foreach (var t in games)
-                        {
-                            toFindCoverList[x] = t;
-                            x++;
-                        }
-
-                        Page.WaitVisual(true);
-                        await context.GetCoversToGamesAsync(toFindCoverList);
-                        foreach (var gamesRoot in toFindCoverList) Games.Add(gamesRoot);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    //TODO: Could not fetch covers. Check you internet
-                    //Page.WaitVisual(true);
-                    //foreach (var game in games) Games.Add(game);
-                }
+                //TODO: NAMES
+                await NewMethod(games, context).ConfigureAwait(true);
             }
-            Page.WaitVisual(true);
+            Page.WaitVisual(false);
             if(Games.Count == 0) { 
                 if (!NetworkInterface.GetIsNetworkAvailable())
                 {
@@ -118,6 +82,63 @@ namespace GamerRater.Application.ViewModels
             }
             //foreach (var game in games) Games.Add(game); //DEBUG REMOVE!!!
             PreviousGamesObservableCollection = Games;
+        }
+        //TODO: NAMES!!
+        private async Task NewMethod(GameRoot[] games, IgdbAccess context)
+        {
+            try
+            {
+                const int searchLimit = 5;
+                var asd = new GameRoot[searchLimit];
+                var x = 0;
+                if (games.Length > 4)
+                {
+                    await NewMethod1(games, context, asd, searchLimit, x);
+                }
+                else
+                {
+                    await NewMethod2(games, context, x);
+                }
+            }
+            catch (HttpRequestException)
+            {
+                //TODO: Could not fetch covers. Check you internet
+                //Page.WaitVisual(true);
+                //foreach (var game in games) Games.Add(game);
+            }
+        }
+
+        private async Task NewMethod2(GameRoot[] games, IgdbAccess context, int x)
+        {
+            GameRoot[] toFindCoverList;
+            toFindCoverList = new GameRoot[games.Length];
+            foreach (var t in games)
+            {
+                toFindCoverList[x] = t;
+                x++;
+            }
+
+            Page.WaitVisual(false);
+            await context.GetCoversToGamesAsync(toFindCoverList);
+            foreach (var gamesRoot in toFindCoverList) Games.Add(gamesRoot);
+        }
+
+        private async Task NewMethod1(GameRoot[] games, IgdbAccess context, GameRoot[] toFindCoverList, int searchLimit, int x)
+        {
+            foreach (var t in games)
+            {
+                if (toFindCoverList[searchLimit - 1] != null)
+                {
+                    await context.GetCoversToGamesAsync(toFindCoverList).ConfigureAwait(true);
+                    foreach (var gamesRoot in toFindCoverList) Games.Add(gamesRoot);
+                    toFindCoverList = new GameRoot[searchLimit];
+                    x = 0;
+                    Page.WaitVisual(false);
+                }
+
+                toFindCoverList[x] = t;
+                x++;
+            }
         }
 
         public void CheckCache()

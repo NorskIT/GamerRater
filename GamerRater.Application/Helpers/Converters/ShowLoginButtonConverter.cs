@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.NetworkInformation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
@@ -7,7 +8,7 @@ using GamerRater.Application.Views;
 
 namespace GamerRater.Application.Helpers.Converters
 {
-    public class ShowLoginButtonConverter : ResourceDictionary, IValueConverter
+    public class ShowLoginButtonConverter : IValueConverter
     {
         //Bound to NotOnRegistrationLoginPage bool
         public object Convert(object value, Type targetType, object parameter, string language)

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Net.Http;
 using System.Windows.Input;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
@@ -26,12 +27,14 @@ namespace GamerRater.Application.ViewModels
         public RegistrationPage Page { get; set; }
         public ICommand RegisterUserCommand { get; set; }
         public ICommand CancelCommand => new RelayCommand(() => NavigationService.GoBack());
+        //TODO: REmove?
         private Visibility _faultyData = Visibility.Collapsed;
         public Visibility FaultyData
         {
             get => _faultyData;
             set => Set(ref _faultyData, value);
         }
+        //TODO: Is in use???
         private Visibility _userAlreadyRegistered = Visibility.Collapsed;
         public Visibility UserAlreadyRegistered
         {
@@ -44,24 +47,37 @@ namespace GamerRater.Application.ViewModels
             RegisterUserCommand =
                 new RelayCommand<User>(async user =>
                 {
+                    Page.ErrorMessage(RegistrationError.None);
                     button.IsEnabled = false;
                     if(Users.UserDataValidator(user)) {
-                        if(await new Users().GetUser(user.Username) == null)
-                        {
-                            if (await new Users().AddUser(user)) {
-                                NavigationService.Navigate<LoginPage>(user);
+                        using(var users = new Users()) {
+                            try
+                            {
+                                if (await users.GetUser(user.Username) == null)
+                                {
+                                    if (await users.AddUser(user))
+                                    {
+                                        NavigationService.Navigate<LoginPage>(user);
+                                        return;
+                                    }
+
+                                    Page.ErrorMessage(RegistrationError.NetworkError);
+                                    return;
+                                }
+                            }
+                            catch (HttpRequestException)
+                            {
+                                Page.ErrorMessage(RegistrationError.NetworkError);
                                 return;
                             }
-                            Page.ErrorInfo(RegistrationError.NetworkError);
-                            return;
                         }
-                        Page.ErrorInfo(RegistrationError.UsernameAlreadyInUse);
+                        Page.ErrorMessage(RegistrationError.UsernameAlreadyInUse);
                         return;
                     }
-                    Page.ErrorInfo(RegistrationError.IllegalValues);
+                    Page.ErrorMessage(RegistrationError.IllegalValues);
                 }, SetUser);
         }
-        
+
 
         public void SetButton(Button button)
         {
@@ -76,6 +92,7 @@ namespace GamerRater.Application.ViewModels
             return true;
         }
 
+        //TODO: LEss than 16 XAML.
         //Check if all fields are OK
         public void CanRegister()
         {
