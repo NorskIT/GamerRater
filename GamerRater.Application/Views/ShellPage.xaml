@@ -73,7 +73,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <Grid Grid.Row="0" Margin="0,0,35,0">
+            <Grid Grid.Row="0" Margin="0,0,35,0" BorderBrush="DarkGray" BorderThickness="0,0,0,2">
                 <StackPanel Grid.Row="0" Margin="25,0,0,0" Orientation="Horizontal"
                             Visibility="{x:Bind ViewModel.LoggedInUser, Mode=OneWay, Converter={StaticResource NotNullToVisibilityConverter}}">
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE77B;" Margin="0,0,10,0" />
@@ -81,7 +81,7 @@
                     <TextBlock VerticalAlignment="Center" FontSize="18"
                                Text="{x:Bind ViewModel.LoggedInUser.Username, Mode=OneWay}" />
                 </StackPanel>
-                <StackPanel Grid.Row="0" HorizontalAlignment="Right" Orientation="Vertical">
+                <StackPanel Margin="0,0,0,4" Grid.Row="0" HorizontalAlignment="Right" Orientation="Vertical">
 
                     <Button
                         Visibility="{x:Bind ViewModel.NotOnRegistrationLoginPage, Mode=OneWay, Converter={StaticResource ShowLoginButtonConverter}}"

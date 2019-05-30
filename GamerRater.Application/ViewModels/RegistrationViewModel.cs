@@ -27,20 +27,6 @@ namespace GamerRater.Application.ViewModels
         public RegistrationPage Page { get; set; }
         public ICommand RegisterUserCommand { get; set; }
         public ICommand CancelCommand => new RelayCommand(() => NavigationService.GoBack());
-        //TODO: REmove?
-        private Visibility _faultyData = Visibility.Collapsed;
-        public Visibility FaultyData
-        {
-            get => _faultyData;
-            set => Set(ref _faultyData, value);
-        }
-        //TODO: Is in use???
-        private Visibility _userAlreadyRegistered = Visibility.Collapsed;
-        public Visibility UserAlreadyRegistered
-        {
-            get => _userAlreadyRegistered;
-            set => Set(ref _userAlreadyRegistered, value);
-        }
 
         public RegistrationViewModel()
         {
@@ -48,7 +34,6 @@ namespace GamerRater.Application.ViewModels
                 new RelayCommand<User>(async user =>
                 {
                     Page.ErrorMessage(RegistrationError.None);
-                    button.IsEnabled = false;
                     if(Users.UserDataValidator(user)) {
                         using(var users = new Users()) {
                             try

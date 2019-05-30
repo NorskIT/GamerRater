@@ -14,6 +14,9 @@ namespace GamerRater.Application.DataAccess
     {
         private readonly HttpClient _httpClient = new HttpClient();
 
+        /// <summary>Gets the user group by identifier.</summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         public async Task<UserGroup> GetUserGroup(int id)
         {
             var httpResponse = await _httpClient.GetAsync(new Uri(BaseUriString.UserGroups + id)).ConfigureAwait(true);
@@ -22,8 +25,11 @@ namespace GamerRater.Application.DataAccess
             var userResult = JsonConvert.DeserializeObject<UserGroup>(jsonCourses);
             return userResult.Id != 0 ? userResult : null;
         }
-        
-        //Get UserGroup by username
+
+
+        /// <summary>Gets the user group by group name</summary>
+        /// <param name="groupName">Name of the group.</param>
+        /// <returns></returns>
         public async Task<UserGroup> GetUserGroup(string groupName)
         {
             var httpResponse = await _httpClient.GetAsync(new Uri(BaseUriString.UserGroupName + groupName)).ConfigureAwait(true);
@@ -33,6 +39,9 @@ namespace GamerRater.Application.DataAccess
             return userResult.Id != 0 ? userResult : null;
         }
 
+        /// <summary>Adds the user group to database</summary>
+        /// <param name="userGroup">The user group.</param>
+        /// <returns></returns>
         public async Task<HttpStatusCode> AddUserGroup(UserGroup userGroup)
         {
             var payload = JsonConvert.SerializeObject(userGroup);

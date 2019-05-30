@@ -44,20 +44,14 @@ namespace GamerRater.Application.Views
             RegistrationComplete.Visibility = Visibility.Visible;
         }
 
-        public void AwaitLogin(bool enabled)
+        public void AwaitLogin(bool wait)
         {
-            if (enabled)
-            {
-                CancelButton.IsEnabled = false;
-                LoginButton.IsEnabled = false;
-                Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Wait, 0);
-            }
-            else
-            {
-                CancelButton.IsEnabled = true;
-                LoginButton.IsEnabled = true;
-                Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 0);
-            }
+            Username.IsEnabled = !wait;
+            Password.IsEnabled = !wait;
+            RegistrationButton.IsEnabled = !wait;
+            CancelButton.IsEnabled = !wait;
+            LoginButton.IsEnabled = !wait;
+            Window.Current.CoreWindow.PointerCursor = wait ? new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Wait, 0) : new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 0);
         }
 
         public void ErrorMessage(LoginViewModel.LoginError error)

@@ -25,6 +25,7 @@ namespace GamerRater.Application.Views
 
         public void ErrorMessage(RegistrationViewModel.RegistrationError error)
         {
+            WaitVisual(true);
             ErrorInfoTextBlock.Visibility = Visibility.Visible;
             switch (error)
             {
@@ -39,11 +40,23 @@ namespace GamerRater.Application.Views
                     break;
                 case RegistrationViewModel.RegistrationError.None:
                     ErrorInfoTextBlock.Text = "";
-                    break;
+                    return;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(error), error, null);
             }
-            RegisterButton.IsEnabled = true;
+            WaitVisual(false);
+        }
+
+        private void WaitVisual(bool wait)
+        {
+            Window.Current.CoreWindow.PointerCursor = wait ? new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Wait, 0) : new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 0);
+            RegisterButton.IsEnabled = !wait;
+            CancelButton.IsEnabled = !wait;
+            Username.IsEnabled = !wait;
+            Password.IsEnabled = !wait;
+            Mail.IsEnabled = !wait;
+            Firstname.IsEnabled = !wait;
+            Lastname.IsEnabled = !wait;
         }
     }
 }

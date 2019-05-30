@@ -19,28 +19,14 @@ namespace GamerRater.Application.ViewModels
     public class GameDetailsViewModel : Observable
     {
         public static ObservableCollection<Review> _reviews = new ObservableCollection<Review>();
-        private int _averageScore = -1; //-1 equals 0 stars.
-
-        private Visibility _showReviewEditor = Visibility.Collapsed;
         public ObservableCollection<Platform> Platforms = new ObservableCollection<Platform>();
-
-        public GameDetailsViewModel()
-        {
-            Session = UserAuthenticator.SessionUserAuthenticator;
-        }
-
         public ICommand CloseReviewWriter => new RelayCommand(() => ShowReviewEditor = Visibility.Collapsed);
+        private Visibility _showReviewEditor = Visibility.Collapsed;
         public ICommand AddReviewCommand { get; set; }
+        private int _averageScore = -1; //-1 equals 0 stars.
         public GameRoot MainGame { get; set; }
         public GameDetailsPage Page { get; set; }
         public UserAuthenticator Session { get; set; }
-
-
-        public ICommand OpenReviewWriter => new RelayCommand(() =>
-        {
-            ShowReviewEditor = Visibility.Visible;
-            Page.BringViewToReviewEditBox();
-        });
 
         public Visibility ShowReviewEditor
         {
@@ -58,6 +44,17 @@ namespace GamerRater.Application.ViewModels
         {
             get => _reviews;
             set => Set(ref _reviews, value);
+        }
+
+        public ICommand OpenReviewWriter => new RelayCommand(() =>
+        {
+            ShowReviewEditor = Visibility.Visible;
+            Page.BringViewToReviewEditBox();
+        });
+        
+        public GameDetailsViewModel()
+        {
+            Session = UserAuthenticator.SessionUserAuthenticator;
         }
 
 
@@ -90,10 +87,13 @@ namespace GamerRater.Application.ViewModels
                         GrToast.SmallToast(GrToast.Errors.NetworkError);
                         return false;
                     }
+
                     rating.User = user;
                 }
+
                 Reviews.Add(rating);
             }
+
             SetAverageScore();
             return true;
         }
@@ -134,7 +134,7 @@ namespace GamerRater.Application.ViewModels
         public async void InitializeAddReview(Review review)
         {
             Page.EnableReviewSubmitButton(false);
-            if (!await new PingApi().CheckConnection().ConfigureAwait(true))
+            if (!NetworkInterface.GetIsNetworkAvailable())
             {
                 NoConnection();
                 Page.EnableReviewSubmitButton(true);

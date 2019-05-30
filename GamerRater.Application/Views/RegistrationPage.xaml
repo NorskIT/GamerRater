@@ -10,7 +10,7 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    
+
     <Page.Resources>
         <ResourceDictionary>
             <converters:ValueLengthToColorConverter x:Key="ValueLengthToColorConverter" />
@@ -57,18 +57,6 @@
                 <Button Name="CancelButton" Command="{x:Bind ViewModel.CancelCommand}" HorizontalAlignment="Right">Cancel</Button>
             </Grid>
             <TextBlock Name="ErrorInfoTextBlock" Foreground="Red" TextWrapping="Wrap" Visibility="Collapsed" />
-            <TextBlock Foreground="Red" TextWrapping="Wrap" Visibility="{x:Bind ViewModel.UserAlreadyRegistered, Mode=OneWay}" Text="" />
         </StackPanel>
     </Grid>
 </Page>
-
-<!--<Button.CommandParameter>
-                        <Binding>
-                        <model:User
-                            FirstName="{x:Bind Firstname.Text, Mode=OneWay}"
-                            LastName="{x:Bind Lastname.Text, Mode=OneWay}"
-                            Email="{x:Bind Mail.Text, Mode=OneWay}"
-                            Username="{x:Bind Username.Text, Mode=OneWay}"
-                            Password="{x:Bind Password.Password, Mode=OneWay}"/>
-                        </Binding>
-                    </Button.CommandParameter>-->

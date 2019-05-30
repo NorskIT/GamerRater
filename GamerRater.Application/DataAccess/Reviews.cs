@@ -13,6 +13,9 @@ namespace GamerRater.Application.DataAccess
         private readonly HttpClient _httpClient = new HttpClient();
 
 
+        /// <summary>Adds the review to database</summary>
+        /// <param name="review">The review.</param>
+        /// <returns></returns>
         public async Task<bool> AddReview(Review review)
         {
             var payload = JsonConvert.SerializeObject(review);
@@ -21,6 +24,9 @@ namespace GamerRater.Application.DataAccess
             return result.StatusCode == HttpStatusCode.Created;
         }
 
+        /// <summary>Deletes the review from database</summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         public async Task<bool> DeleteReview(int id)
         {
             var result =
@@ -28,6 +34,9 @@ namespace GamerRater.Application.DataAccess
             return result.IsSuccessStatusCode;
         }
 
+        /// <summary>Updates the review.</summary>
+        /// <param name="review">The review.</param>
+        /// <returns></returns>
         public async Task<bool> UpdateReview(Review review)
         {
             var payload = JsonConvert.SerializeObject(review);

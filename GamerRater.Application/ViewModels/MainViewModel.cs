@@ -17,18 +17,26 @@ namespace GamerRater.Application.ViewModels
     {
         public ICommand _ItemClickCommand;
         public static ObservableCollection<GameRoot> PreviousGamesObservableCollection = new ObservableCollection<GameRoot>();
-        public ObservableCollection<GameRoot> Games = new ObservableCollection<GameRoot>();
-        public MainPage Page;
-
+        public ObservableCollection<GameRoot> Games { get; set; }
+        public MainPage Page { get; set; }
         public ICommand ItemClickCommand =>
             _ItemClickCommand ?? (_ItemClickCommand = new RelayCommand<GameRoot>(OnItemClick));
 
+        public MainViewModel()
+        {
+            Games = new ObservableCollection<GameRoot>();
+        }
+        /// <summary>Executes initializing of search based on Search bar query text </summary>
+        /// <param name="sender">Search bar</param>
+        /// <param name="args">The <see cref="SearchBoxQuerySubmittedEventArgs"/> instance containing the event data.</param>
         public void SubmitSearch(SearchBox sender, SearchBoxQuerySubmittedEventArgs args)
         {
             sender.IsFocusEngaged = false;
-            GetGamesAsync(args.QueryText);
+            InitializeGameSearchAsync(args.QueryText);
         }
-        
+
+        /// <summary>Called when Game has been clicked. Sends user to GameDetailsPage</summary>
+        /// <param name="clickedItem">The clicked item.</param>
         private static void OnItemClick(GameRoot clickedItem)
         {
             if (clickedItem == null) return;
@@ -36,23 +44,24 @@ namespace GamerRater.Application.ViewModels
             NavigationService.Navigate<GameDetailsPage>(clickedItem);
         }
 
-
-        /**
-            Searches for any games close to @param gameName via IGDB Api.
-            We receive an array with games which we then need to locate their covers(Images).
-            After covers are found, we bind them togheter and then show them in the list.
-         */
-        //TODO: IntializeGameSearch?
-        public async void GetGamesAsync(string gameName)
+        /// <summary>  Initialize a search towards IGDB based on parameter</summary>
+        /// <param name="gameName">Name of the game.</param>
+        public async void InitializeGameSearchAsync(string gameName)
         {
             Page.WaitVisual(true);
             Games.Clear();
             var context = new IgdbAccess();
             using(context) {
-                GameRoot[] games;
                 try
                 {
-                    games = await context.GetGamesAsync(gameName).ConfigureAwait(true);
+                    var games = await context.GetGamesAsync(gameName).ConfigureAwait(true);
+                    if (games.Length != 0)
+                    {
+                        await InitializeCoversToGameAsync(games, context).ConfigureAwait(true);
+                        Page.WaitVisual(false);
+                        PreviousGamesObservableCollection = Games;
+                        return;
+                    }
                 }
                 catch (HttpRequestException)
                 {
@@ -60,49 +69,40 @@ namespace GamerRater.Application.ViewModels
                     Page.WaitVisual(false);
                     return;
                 }
-                //TODO: NAMES
-                await NewMethod(games, context).ConfigureAwait(true);
             }
-            Page.WaitVisual(false);
-            if(Games.Count == 0) { 
-                if (!NetworkInterface.GetIsNetworkAvailable())
-                {
-                    //TODO:NO INTERNET
-                }
-                //TODO:NO RESULT
-            }
-            //foreach (var game in games) Games.Add(game); //DEBUG REMOVE!!!
-            PreviousGamesObservableCollection = Games;
-        }
-        //TODO: NAMES!!
-        private async Task NewMethod(GameRoot[] games, IgdbAccess context)
-        {
-            try
-            {
-                const int searchLimit = 5;
-                var asd = new GameRoot[searchLimit];
-                var x = 0;
-                if (games.Length > 4)
-                {
-                    await NewMethod1(games, context, asd, searchLimit, x);
-                }
-                else
-                {
-                    await NewMethod2(games, context, x);
-                }
-            }
-            catch (HttpRequestException)
-            {
-                //TODO: Could not fetch covers. Check you internet
-                //Page.WaitVisual(true);
-                //foreach (var game in games) Games.Add(game);
-            }
+            GrToast.SmallToast("No game found");
+            
         }
 
-        private async Task NewMethod2(GameRoot[] games, IgdbAccess context, int x)
+        /// <summary>Initializes process of fetching covers related to game asynchronous.</summary>
+        /// <param name="games">The games.</param>
+        /// <param name="context">The context.</param>
+        /// <returns></returns>
+        private async Task InitializeCoversToGameAsync(GameRoot[] games, IgdbAccess context)
         {
-            GameRoot[] toFindCoverList;
-            toFindCoverList = new GameRoot[games.Length];
+           
+            const int searchLimit = 5;
+            var tempArr = new GameRoot[searchLimit];
+            const int x = 0;
+            if (games.Length > 4)
+            {
+                await BindCoversToGameLargeAsync(games, context, tempArr, searchLimit, x).ConfigureAwait(true);
+            }
+            else
+            {
+                await BindCoversToGameSmallAsync(games, context, x).ConfigureAwait(true);
+                }
+        }
+
+        /// <summary>Binds the covers to game asynchronous.
+        /// Used if less than 5 covers</summary>
+        /// <param name="games">The games.</param>
+        /// <param name="context">The context.</param>
+        /// <param name="x">The x.</param>
+        /// <returns></returns>
+        private async Task BindCoversToGameSmallAsync(GameRoot[] games, IgdbAccess context, int x)
+        {
+            var toFindCoverList = new GameRoot[games.Length];
             foreach (var t in games)
             {
                 toFindCoverList[x] = t;
@@ -110,11 +110,17 @@ namespace GamerRater.Application.ViewModels
             }
 
             Page.WaitVisual(false);
-            await context.GetCoversToGamesAsync(toFindCoverList);
+            await context.GetCoversToGamesAsync(toFindCoverList).ConfigureAwait(true);
             foreach (var gamesRoot in toFindCoverList) Games.Add(gamesRoot);
         }
 
-        private async Task NewMethod1(GameRoot[] games, IgdbAccess context, GameRoot[] toFindCoverList, int searchLimit, int x)
+        /// <summary>Binds the covers to game asynchronous.
+        /// Used if more than 4 covers</summary>
+        /// <param name="games">The games.</param>
+        /// <param name="context">The context.</param>
+        /// <param name="x">The x.</param>
+        /// <returns></returns>
+        private async Task BindCoversToGameLargeAsync(GameRoot[] games, IgdbAccess context, GameRoot[] toFindCoverList, int searchLimit, int x)
         {
             foreach (var t in games)
             {
@@ -132,6 +138,7 @@ namespace GamerRater.Application.ViewModels
             }
         }
 
+        /// <summary>Checks if there has been a previews search, if true then Games will be set to cached version</summary>
         public void CheckCache()
         {
             if (PreviousGamesObservableCollection.Count != 0)

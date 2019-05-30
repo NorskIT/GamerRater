@@ -59,7 +59,11 @@ namespace GamerRater.Application.Services
             ToastNotificationManager.CreateToastNotifier().Show(toast);
         }
 
-        public static string CreateString(Errors error)
+        /// <summary>Return string relative to error retrieved</summary>
+        /// <param name="error">The error.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException">error - null</exception>
+        private static string CreateString(Errors error)
         {
             switch (error)
             {

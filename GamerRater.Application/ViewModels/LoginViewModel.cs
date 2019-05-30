@@ -17,13 +17,10 @@ namespace GamerRater.Application.ViewModels
             ApiError
         }
 
-        public ICommand LoginUserCommand;
-
-        public LoginPage Page;
-
         //Flag: Has user just registered?
-        public User RegisteredUser;
-
+        public User RegisteredUser { get; set; }
+        public LoginPage Page { get; set; }
+        public ICommand LoginUserCommand { get; set; }
         public ICommand RegisterUserCommand => new RelayCommand(() => NavigationService.Navigate<RegistrationPage>());
         public ICommand CancelCommand => new RelayCommand(() => NavigationService.GoBack());
 

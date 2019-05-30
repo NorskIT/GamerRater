@@ -15,13 +15,15 @@ namespace GamerRater.Application.DataAccess
     internal class IgdbAccess : IDisposable
     {
         private readonly HttpClient _httpClient = new HttpClient();
-
-        //TODO: DO MORE ERROR CHECKS
+        
         public IgdbAccess()
         {
-            _httpClient.DefaultRequestHeaders.Add("user-key", "d1f0748dd028fe160ba161dfd05fe3b1");
+            _httpClient.DefaultRequestHeaders.Add("user-key", "d1f0748dd028fe160ba161dfd05fe3b1"); //Free key, no worries
         }
 
+        /// <summary>Gets the covers related to games asynchronous.</summary>
+        /// <param name="games">The games.</param>
+        /// <returns></returns>
         public async Task<GameRoot[]> GetCoversToGamesAsync(GameRoot[] games)
         {
             try
@@ -76,7 +78,9 @@ namespace GamerRater.Application.DataAccess
             }
         }
 
-
+        /// <summary>Gets the platforms related to game asynchronous.</summary>
+        /// <param name="game">The game.</param>
+        /// <returns></returns>
         public async Task<Platform[]> GetPlatformsAsync(GameRoot game)
         {
             try

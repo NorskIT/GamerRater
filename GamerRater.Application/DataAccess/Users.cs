@@ -16,12 +16,16 @@ namespace GamerRater.Application.DataAccess
     {
         private readonly HttpClient _httpClient = new HttpClient();
 
+        /// <summary>Initializes a new instance of the <see cref="Users"/> class.</summary>
         public Users()
         {
             _httpClient.Timeout = TimeSpan.FromSeconds(4);
         }
 
-        //Get user by ID
+
+        /// <summary>Gets the user by identifier</summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns>User</returns>
         public async Task<User> GetUser(int id)
         {
             try
@@ -38,7 +42,10 @@ namespace GamerRater.Application.DataAccess
             }
         }
 
-        //Get user by username
+
+        /// <summary>Gets the user username. Flimsy and very unsecure way of doing a login..</summary>
+        /// <param name="username">The username.</param>
+        /// <returns></returns>
         public async Task<User> GetUser(string username)
         {
             try
@@ -56,14 +63,27 @@ namespace GamerRater.Application.DataAccess
             }
         }
 
+        /// <summary>Adds the user to database.</summary>
+        /// <param name="user">The user.</param>
+        /// <returns></returns>
         public async Task<bool> AddUser(User user)
         {
-            var payload = JsonConvert.SerializeObject(user);
-            HttpContent cont = new StringContent(payload, Encoding.UTF8, "application/json");
-            var httpResponse = await _httpClient.PostAsync(new Uri(BaseUriString.Users), cont).ConfigureAwait(true);
-            return httpResponse.StatusCode == HttpStatusCode.Created;
+            try
+            {
+                var payload = JsonConvert.SerializeObject(user);
+                HttpContent cont = new StringContent(payload, Encoding.UTF8, "application/json");
+                var httpResponse = await _httpClient.PostAsync(new Uri(BaseUriString.Users), cont).ConfigureAwait(true);
+                return httpResponse.StatusCode == HttpStatusCode.Created;
+            }
+            catch (TaskCanceledException)
+            {
+                return false;
+            }
         }
 
+        /// <summary>Validates user property values</summary>
+        /// <param name="user">The user.</param>
+        /// <returns>True if validation OK, else false</returns>
         public static bool UserDataValidator(User user)
         {
             var reg = new Regex("^[a-zA-Z0-9]*$");

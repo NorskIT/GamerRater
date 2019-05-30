@@ -14,10 +14,10 @@ namespace GamerRater.Application.Helpers.Converters
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            if (value == null) return new SolidColorBrush(Windows.UI.Colors.DarkGray);
+            if (value == null) return new SolidColorBrush(Windows.UI.Colors.RoyalBlue);
             var s = (string) value;
             return ((s.Length > 2 && s.Length < 16) || s.Length == 0)
-                ? new SolidColorBrush(Windows.UI.Colors.DarkGray) : new SolidColorBrush(Windows.UI.Colors.Red);
+                ? new SolidColorBrush(Windows.UI.Colors.RoyalBlue) : new SolidColorBrush(Windows.UI.Colors.Red);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

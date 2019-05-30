@@ -42,7 +42,7 @@
                 <TextBlock Grid.Row="1" Name="ErrorInfoTextBlock" Foreground="Red"
                            HorizontalAlignment="Left" Width="100" TextWrapping="Wrap"/>
                 <TextBlock Grid.Row="1" Visibility="Collapsed" x:Name="RegistrationComplete" Foreground="LimeGreen" HorizontalAlignment="Left" Width="100" TextWrapping="Wrap" ></TextBlock>
-                <HyperlinkButton Grid.Row="0" FontSize="12" Command="{x:Bind _viewModel.RegisterUserCommand}" HorizontalAlignment="Right">New user? Click here to register!</HyperlinkButton>
+                <HyperlinkButton Grid.Row="0" FontSize="12" Name="RegistrationButton" Command="{x:Bind _viewModel.RegisterUserCommand}" HorizontalAlignment="Right">New user? Click here to register!</HyperlinkButton>
             </Grid>
         </StackPanel>
     </Grid>
