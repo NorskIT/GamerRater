@@ -30,15 +30,18 @@ namespace GamerRater.Application.Views
         {
             base.OnNavigatedTo(e);
             if (!(e.Parameter is GameRoot game)) return;
-            ViewModel.MainGame = game;
-            ViewModel.Initialize();
+            ViewModel.Initialize(game);
         }
 
-        private void DeleteReview(object sender, RoutedEventArgs e)
+        private void DeleteReviewButtonClicked(object sender, RoutedEventArgs e)
         {
             if (!(sender is Button button)) return;
             if (button.DataContext is Review review)
+            {
+                button.IsEnabled = false;
                 ViewModel.DeleteReview(review);
+                button.IsEnabled = true;
+            }
         }
 
         public void RatingGridBorderColor(bool x)

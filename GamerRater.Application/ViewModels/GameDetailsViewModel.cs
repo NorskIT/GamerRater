@@ -6,30 +6,35 @@ using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using GamerRater.Application.DataAccess;
 using GamerRater.Application.Helpers;
 using GamerRater.Application.Services;
 using GamerRater.Application.Views;
 using GamerRater.Model;
-using Newtonsoft.Json;
 
 namespace GamerRater.Application.ViewModels
 {
     public class GameDetailsViewModel : Observable
     {
         public static ObservableCollection<Review> _reviews = new ObservableCollection<Review>();
-        private int _averageScore = -1;
+        private int _averageScore = -1; //-1 equals 0 stars.
 
         private Visibility _showReviewEditor = Visibility.Collapsed;
-
-        public ICommand AddReviewCommand;
-        public GameRoot MainGame;
-        public GameDetailsPage Page;
         public ObservableCollection<Platform> Platforms = new ObservableCollection<Platform>();
-        public UserAuthenticator Session = UserAuthenticator.SessionUserAuthenticator;
+
+        public GameDetailsViewModel()
+        {
+            Session = UserAuthenticator.SessionUserAuthenticator;
+        }
 
         public ICommand CloseReviewWriter => new RelayCommand(() => ShowReviewEditor = Visibility.Collapsed);
+        public ICommand AddReviewCommand { get; set; }
+        public GameRoot MainGame { get; set; }
+        public GameDetailsPage Page { get; set; }
+        public UserAuthenticator Session { get; set; }
+
 
         public ICommand OpenReviewWriter => new RelayCommand(() =>
         {
@@ -56,45 +61,45 @@ namespace GamerRater.Application.ViewModels
         }
 
 
-        public async void Initialize()
+        /// <summary>Initializes the specified game for detailed view</summary>
+        /// <param name="game">The game.</param>
+        public async void Initialize(GameRoot game)
         {
-            if (MainGame == null) return;
-            AddReviewCommand = new RelayCommand<Review>(AddReview);
+            MainGame = game;
+            AddReviewCommand = new RelayCommand<Review>(InitializeAddReview);
             if (!NetworkInterface.GetIsNetworkAvailable()) return;
-            await InitializeReviews().ConfigureAwait(true);
             await InitializePlatforms().ConfigureAwait(true);
+            await InitializeReviews().ConfigureAwait(true);
         }
 
-        public async Task InitializeReviews()
+        /// <summary>Initializes process of fetching all reviews related to current game</summary>
+        /// <returns></returns>
+        public async Task<bool> InitializeReviews()
         {
             Reviews.Clear();
-            try
+            var conn = new Games();
+            var gameFromDb = await conn.GetGame(MainGame).ConfigureAwait(true);
+            if (gameFromDb == null) return false;
+            foreach (var rating in gameFromDb.Reviews)
             {
-                try
+                using (var usersConn = new Users())
                 {
-                    var conn = new Games();
-                    var gameFromDb = await conn.GetGame(MainGame).ConfigureAwait(true);
-                    if (gameFromDb != null) { 
-                        foreach (var rating in gameFromDb.Reviews)
-                        {
-                            using (var usersConn = new Users())
-                                rating.User = await usersConn.GetUser(rating.UserId).ConfigureAwait(true);
-                            Reviews.Add(rating);
-                        }
-                        SetAverageScore();
+                    var user = await usersConn.GetUser(rating.UserId).ConfigureAwait(true);
+                    if (user == null)
+                    {
+                        GrToast.SmallToast(GrToast.Errors.NetworkError);
+                        return false;
                     }
+                    rating.User = user;
                 }
-                catch (JsonReaderException)
-                {
-                    GrToast.SmallToast("Could not fetch reviews.. Please check your network connection and reload page.");
-                }
+                Reviews.Add(rating);
             }
-            catch (HttpRequestException)
-            {
-                GrToast.SmallToast("API request does not respond, please try again later.");
-            }
+            SetAverageScore();
+            return true;
         }
 
+        /// <summary>Initializes process of fetching all platforms related to current game</summary>
+        /// <returns></returns>
         public async Task InitializePlatforms()
         {
             if (MainGame.PlatformsIds == null || MainGame.PlatformsIds.Length == 0) return;
@@ -108,21 +113,25 @@ namespace GamerRater.Application.ViewModels
             } //TODO: Different excpetion
             catch (HttpRequestException)
             {
-                GrToast.SmallToast("Could not reach IGDB Servers. Please check your network connection and try again.");
+                GrToast.SmallToast(GrToast.Errors.IgdbError);
             }
         }
 
+        /// <summary>  Problem with connection. Reports to user wether Network or Api problem.</summary>
         public static void NoConnection()
         {
             if (NetworkInterface.GetIsNetworkAvailable())
             {
-                GrToast.SmallToast("Could not reach database... Our server might be down, please try again later.");
+                GrToast.SmallToast(GrToast.Errors.ApiError);
                 return;
             }
-            GrToast.SmallToast("Could not connect to server... Please check your network connection.");
+
+            GrToast.SmallToast(GrToast.Errors.NetworkError);
         }
 
-        public async void AddReview(Review review)
+        /// <summary>Initializes the process of adding a review.</summary>
+        /// <param name="review">The review.</param>
+        public async void InitializeAddReview(Review review)
         {
             Page.EnableReviewSubmitButton(false);
             if (!await new PingApi().CheckConnection().ConfigureAwait(true))
@@ -131,68 +140,99 @@ namespace GamerRater.Application.ViewModels
                 Page.EnableReviewSubmitButton(true);
                 return;
             }
+
             if (review.Stars == -1)
             {
                 Page.RatingGridBorderColor(true);
                 return;
             }
+
             Page.RatingGridBorderColor(false);
-            try
+            if (!await CheckIfGameExistsValidation().ConfigureAwait(true))
             {
-                using (var game = new Games())
-                {
-                    var gameFromDb = await game.GetGame(MainGame).ConfigureAwait(true);
-                    if (gameFromDb == null) { 
-                        var result = await game.AddGame(MainGame).ConfigureAwait(true);
-                        if (result.StatusCode != HttpStatusCode.Created) {
-                            //TODO: FIX, not throw here
-                            throw new HttpRequestException();
-                        }
-                    }
-                }
-            }
-            catch (HttpRequestException)
-            {
-                GrToast.SmallToast("Could not connect to server. Please try again.");
-                Page.RatingGridBorderColor(true);
+                GrToast.SmallToast(GrToast.Errors.ApiError);
                 return;
             }
 
-            review.date = DateTime.UtcNow;
-            if (review.Id != 0)
+            if (!await AddReview(review).ConfigureAwait(true))
             {
-                if (!await new Reviews().UpdateReview(review).ConfigureAwait(true))
-                    return;
+                GrToast.SmallToast(GrToast.Errors.AddReview);
+                return;
             }
-            else
-            {
-                if (!await new Reviews().AddReview(review).ConfigureAwait(true))
-                    return;
-            }
-            
+
             ShowReviewEditor = Visibility.Collapsed;
             Page.ShowReviewBox(true);
-            //TODO: Exception, could not update user
-            await UserAuthenticator.SessionUserAuthenticator.UpdateUser().ConfigureAwait(true);
-            UpdateRatings(review);
             Page.BringViewToReviews();
             Page.ClearReviewBox(null, null);
         }
 
-        public async void UpdateRatings(Review newReview)
+        /// <summary>Adds the review to database</summary>
+        /// <param name="review">The review.</param>
+        /// <returns>true if success, else false.</returns>
+        private async Task<bool> AddReview(Review review)
+        {
+            review.date = DateTime.UtcNow;
+            var reviewsConn = new Reviews();
+            using (reviewsConn)
+            {
+                if (review.Id != 0)
+                {
+                    if (!await reviewsConn.UpdateReview(review).ConfigureAwait(true))
+                        return false;
+                }
+                else
+                {
+                    if (!await reviewsConn.AddReview(review).ConfigureAwait(true))
+                        return false;
+                }
+            }
+
+            await UserAuthenticator.SessionUserAuthenticator.UpdateUser().ConfigureAwait(true);
+            UpdateReviews(review);
+            return true;
+        }
+
+        /// <summary>Checks if game exists within the database.</summary>
+        /// <returns>true if found, else false</returns>
+        private async Task<bool> CheckIfGameExistsValidation()
+        {
+            using (var game = new Games())
+            {
+                var gameFromDb = await game.GetGame(MainGame).ConfigureAwait(true);
+                if (gameFromDb != null) return true;
+                var result = await game.AddGame(MainGame).ConfigureAwait(true);
+                if (result.StatusCode != HttpStatusCode.Created) return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>Updates UI list containing reviews</summary>
+        /// <param name="newReview">The new review.</param>
+        public async void UpdateReviews(Review newReview)
         {
             //Removes old review so new one can be loaded.
             if (newReview.Id != 0)
                 Reviews.Remove(Reviews.Single(x => x.Id == newReview.Id));
             var conn = new Games();
 
-            var gameFromDb = await conn.GetGame(MainGame);
-            if (gameFromDb != null)
+            var gameFromDb = await conn.GetGame(MainGame).ConfigureAwait(true);
+            if (gameFromDb == null) return;
             {
                 foreach (var review in gameFromDb.Reviews)
                 {
                     using (var usersConn = new Users())
-                        review.User = await usersConn.GetUser(review.UserId).ConfigureAwait(true);
+                    {
+                        var user = await usersConn.GetUser(review.UserId).ConfigureAwait(true);
+                        if (user == null)
+                        {
+                            GrToast.SmallToast(GrToast.Errors.NetworkError);
+                            return;
+                        }
+
+                        review.User = user;
+                    }
+
                     if (Reviews.All(x => x.Id != review.Id))
                         Reviews.Insert(0, review);
                 }
@@ -200,10 +240,9 @@ namespace GamerRater.Application.ViewModels
                 SetAverageScore();
                 Page.EnableReviewSubmitButton(true);
             }
-
-            //TODO: NO INTERNET
         }
 
+        /// <summary>Sets the average GamerRater score based on all available reviews related to current game</summary>
         private void SetAverageScore()
         {
             if (Reviews.Count == 0)
@@ -213,16 +252,21 @@ namespace GamerRater.Application.ViewModels
             AverageScore = Convert.ToInt32(avg / Reviews.Count);
         }
 
+        /// <summary>Deletes the review from database. If success, removes it from UI review list.</summary>
+        /// <param name="review">The review.</param>
         public async void DeleteReview(Review review)
         {
+            Window.Current.CoreWindow.PointerCursor = new CoreCursor(CoreCursorType.Wait, 0);
             if (await new Reviews().DeleteReview(review.Id).ConfigureAwait(true))
                 if (await UserAuthenticator.SessionUserAuthenticator.UpdateUser().ConfigureAwait(true))
                 {
                     Reviews.Remove(review);
                     SetAverageScore();
+                    return;
                 }
 
-            //TODO: NO INTERNET
+            Window.Current.CoreWindow.PointerCursor = new CoreCursor(CoreCursorType.Arrow, 0);
+            GrToast.SmallToast(GrToast.Errors.DeleteReview);
         }
     }
 }

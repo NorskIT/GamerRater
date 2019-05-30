@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -25,78 +26,118 @@ namespace GamerRater.Api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Review>>> GetRatings()
         {
-            return await _context.Ratings.ToListAsync();
+            try
+            {
+                return await _context.Ratings.ToListAsync();
+            }
+            catch (SqlException)
+            {
+                return StatusCode(503, null);
+            }
+            
         }
 
         // GET: api/Reviews/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Review>> GetReview(int id)
         {
-            var review = await _context.Ratings.FindAsync(id);
-
-            if (review == null)
+            
+            try
             {
-                return NotFound();
-            }
+                var review = await _context.Ratings.FindAsync(id);
 
-            return review;
+                if (review == null)
+                {
+                    return NotFound();
+                }
+
+                return review;
+            }
+            catch (SqlException)
+            {
+                return StatusCode(503, null);
+            }
         }
 
         // PUT: api/Reviews/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutReview(int id, Review review)
         {
-            if (id != review.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(review).State = EntityState.Modified;
+            
 
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ReviewExists(id))
+                if (id != review.Id)
                 {
-                    return NotFound();
+                    return BadRequest();
                 }
-                else
-                {
-                    throw;
-                }
-            }
 
-            return Ok();
+                _context.Entry(review).State = EntityState.Modified;
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ReviewExists(id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                return Ok();
+            }
+            catch (SqlException)
+            {
+                return StatusCode(503, null);
+            }
         }
 
         // POST: api/Reviews
         [HttpPost]
         public async Task<ActionResult<Review>> PostReview(Review review)
         {
-            _context.Entry(review.User).State = EntityState.Modified;
-            _context.Ratings.Add(review);
-            await _context.SaveChangesAsync();
+            
+            try
+            {
+                _context.Entry(review.User).State = EntityState.Modified;
+                _context.Ratings.Add(review);
+                await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetReview", new { id = review.Id }, review);
+                return CreatedAtAction("GetReview", new { id = review.Id }, review);
+            }
+            catch (SqlException)
+            {
+                return StatusCode(503, null);
+            }
         }
 
         // DELETE: api/Reviews/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<Review>> DeleteReview(int id)
         {
-            var review = await _context.Ratings.FindAsync(id);
-            if (review == null)
+            try
             {
-                return NotFound();
+                var review = await _context.Ratings.FindAsync(id);
+                if (review == null)
+                {
+                    return NotFound();
+                }
+
+                _context.Ratings.Remove(review);
+                await _context.SaveChangesAsync();
+
+                return review;
             }
-
-            _context.Ratings.Remove(review);
-            await _context.SaveChangesAsync();
-
-            return review;
+            catch (SqlException)
+            {
+                return StatusCode(503, null);
+            }
         }
 
         private bool ReviewExists(int id)

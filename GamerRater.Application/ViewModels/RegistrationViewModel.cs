@@ -60,7 +60,6 @@ namespace GamerRater.Application.ViewModels
                                         NavigationService.Navigate<LoginPage>(user);
                                         return;
                                     }
-
                                     Page.ErrorMessage(RegistrationError.NetworkError);
                                     return;
                                 }

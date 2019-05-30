@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -25,94 +26,135 @@ namespace GamerRater.Api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserGroup>>> GetUserGroups()
         {
-            return await _context.UserGroups.ToListAsync();
+            try
+            {
+                return await _context.UserGroups.ToListAsync();
+            }
+            catch (SqlException)
+            {
+                return StatusCode(503, null);
+            }
         }
 
         // GET: api/UserGroups/5
         [HttpGet("{id}")]
         public async Task<ActionResult<UserGroup>> GetUserGroup(int id)
         {
-            var userGroup = await _context.UserGroups.FindAsync(id);
-
-            if (userGroup == null)
+            try
             {
-                return NotFound();
-            }
+                var userGroup = await _context.UserGroups.FindAsync(id);
 
-            return userGroup;
+                if (userGroup == null)
+                {
+                    return NotFound();
+                }
+
+                return userGroup;
+            }
+            catch (SqlException)
+            {
+                return StatusCode(503, null);
+            }
         }
 
         [HttpGet("Group/{groupName}")]
         public async Task<ActionResult<UserGroup>> GetUserGroupWithGroupName(string groupName)
         {
-            UserGroup userGroup = null;
             try
             {
-                userGroup = await _context.UserGroups.Where(x => x.Group == groupName).FirstAsync();
-            }
-            catch (InvalidOperationException e)
-            {
-                //UserGroup was not found.
-                return NoContent();
-            }
+                UserGroup userGroup = null;
+                try
+                {
+                    userGroup = await _context.UserGroups.Where(x => x.Group == groupName).FirstAsync();
+                }
+                catch (InvalidOperationException e)
+                {
+                    //UserGroup was not found.
+                    return NoContent();
+                }
 
-            return userGroup;
+                return userGroup;
+            }
+            catch (SqlException)
+            {
+                return StatusCode(503, null);
+            }
         }
 
         // PUT: api/UserGroups/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUserGroup(int id, UserGroup userGroup)
         {
-            if (id != userGroup.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(userGroup).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserGroupExists(id))
+                if (id != userGroup.Id)
                 {
-                    return NotFound();
+                    return BadRequest();
                 }
-                else
-                {
-                    throw;
-                }
-            }
 
-            return NoContent();
+                _context.Entry(userGroup).State = EntityState.Modified;
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!UserGroupExists(id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                return NoContent();
+            }
+            catch (SqlException)
+            {
+                return StatusCode(503, null);
+            }
         }
 
         // POST: api/UserGroups
         [HttpPost]
         public async Task<ActionResult<UserGroup>> PostUserGroup(UserGroup userGroup)
         {
-            _context.UserGroups.Add(userGroup);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetUserGroup", new { id = userGroup.Id }, userGroup);
+            try
+            {
+                _context.UserGroups.Add(userGroup);
+                await _context.SaveChangesAsync();
+                return CreatedAtAction("GetUserGroup", new { id = userGroup.Id }, userGroup);
+            }
+            catch (SqlException)
+            {
+                return StatusCode(503, null);
+            }
         }
 
         // DELETE: api/UserGroups/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<UserGroup>> DeleteUserGroup(int id)
         {
-            var userGroup = await _context.UserGroups.FindAsync(id);
-            if (userGroup == null)
+            try
             {
-                return NotFound();
+                var userGroup = await _context.UserGroups.FindAsync(id);
+                if (userGroup == null)
+                {
+                    return NotFound();
+                }
+
+                _context.UserGroups.Remove(userGroup);
+                await _context.SaveChangesAsync();
+
+                return userGroup;
             }
-
-            _context.UserGroups.Remove(userGroup);
-            await _context.SaveChangesAsync();
-
-            return userGroup;
+            catch (SqlException)
+            {
+                return StatusCode(503, null);
+            }
         }
 
         private bool UserGroupExists(int id)

@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using GamerRater.DataAccess;
 using GamerRater.Model;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace GamerRater.Api.Controllers
 {
@@ -26,94 +24,112 @@ namespace GamerRater.Api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GameRoot>>> GetGames()
         {
-            return await _context.Games.ToListAsync();
+            try
+            {
+                return await _context.Games.ToListAsync();
+            }
+            catch (SqlException)
+            {
+                return StatusCode(503, null);
+            }
         }
 
         // GET: api/GameRoots/5
         [HttpGet("{id}")]
         public async Task<ActionResult<GameRoot>> GetGameRoot(int id)
         {
-            var gameRoot = await _context.Games.FindAsync(id);
-            
-            if (gameRoot == null)
+            try
             {
-                return NotFound();
-            }
+                var gameRoot = await _context.Games.FindAsync(id);
 
-            await _context.Entry(gameRoot).Collection(r => r.Reviews).LoadAsync();
-            await _context.Entry(gameRoot).Reference(x => x.GameCover).LoadAsync();
-            
-            return gameRoot;
+                if (gameRoot == null) return NotFound();
+
+                await _context.Entry(gameRoot).Collection(r => r.Reviews).LoadAsync();
+                await _context.Entry(gameRoot).Reference(x => x.GameCover).LoadAsync();
+
+                return gameRoot;
+            }
+            catch (SqlException)
+            {
+                return StatusCode(503, null);
+            }
         }
 
         // PUT: api/GameRoots/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutGameRoot(int id, GameRoot gameRoot)
         {
-            if (id != gameRoot.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(gameRoot).State = EntityState.Unchanged;
-
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!GameRootExists(id))
+                if (id != gameRoot.Id) return BadRequest();
+
+                _context.Entry(gameRoot).State = EntityState.Unchanged;
+
+                try
                 {
-                    return NotFound();
+                    await _context.SaveChangesAsync();
                 }
-                else
+                catch (DbUpdateConcurrencyException)
                 {
+                    if (!GameRootExists(id))
+                        return NotFound();
                     throw;
                 }
-            }
 
-            return NoContent();
+                return NoContent();
+            }
+            catch (SqlException)
+            {
+                return StatusCode(503, null);
+            }
         }
 
         // POST: api/GameRoots
         [HttpPost]
         public async Task<ActionResult<GameRoot>> PostGameRoot(GameRoot gameRoot)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             try
             {
-                gameRoot.PlatformList = null;
-                _context.Games.Add(gameRoot);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException ex)
-            {
-                return BadRequest();
-            }
-            
+                if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            return CreatedAtAction("GetGameRoot", new { id = gameRoot.Id }, gameRoot);
+                try
+                {
+                    gameRoot.PlatformList = null;
+                    _context.Games.Add(gameRoot);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateException ex)
+                {
+                    return BadRequest();
+                }
+
+
+                return CreatedAtAction("GetGameRoot", new {id = gameRoot.Id}, gameRoot);
+            }
+            catch (SqlException)
+            {
+                return StatusCode(503, null);
+            }
         }
 
         // DELETE: api/GameRoots/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<GameRoot>> DeleteGameRoot(int id)
         {
-            var gameRoot = await _context.Games.FindAsync(id);
-            if (gameRoot == null)
+            try
             {
-                return NotFound();
+                var gameRoot = await _context.Games.FindAsync(id);
+                if (gameRoot == null) return NotFound();
+
+                _context.Games.Remove(gameRoot);
+                await _context.SaveChangesAsync();
+
+                return gameRoot;
             }
-
-            _context.Games.Remove(gameRoot);
-            await _context.SaveChangesAsync();
-
-            return gameRoot;
+            catch (SqlException)
+            {
+                return StatusCode(503, null);
+            }
         }
 
         private bool GameRootExists(int id)

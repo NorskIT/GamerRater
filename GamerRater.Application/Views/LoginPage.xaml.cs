@@ -48,11 +48,13 @@ namespace GamerRater.Application.Views
         {
             if (enabled)
             {
+                CancelButton.IsEnabled = false;
                 LoginButton.IsEnabled = false;
                 Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Wait, 0);
             }
             else
             {
+                CancelButton.IsEnabled = true;
                 LoginButton.IsEnabled = true;
                 Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 0);
             }
@@ -65,10 +67,13 @@ namespace GamerRater.Application.Views
             switch (error)
             {
                 case LoginViewModel.LoginError.NetworkError:
-                    ErrorInfoTextBlock.Text = !NetworkInterface.GetIsNetworkAvailable() ? "* Could not connect to server. Check your network connection and try again" : "* API not responding. Please try again later.";
+                    ErrorInfoTextBlock.Text = "* Could not connect to server. Check your network connection and try again";
                     break;
                 case LoginViewModel.LoginError.WrongUsernameOrPassword:
                     ErrorInfoTextBlock.Text = "* Wrong username/password or user does not exist.";
+                    break;
+                case LoginViewModel.LoginError.ApiError:
+                    ErrorInfoTextBlock.Text = "* API not responding. Please try again later.";
                     break;
                 case LoginViewModel.LoginError.None:
                     ErrorInfoTextBlock.Text = "";

@@ -16,9 +16,8 @@ namespace GamerRater.Application.DataAccess
 
         public async Task<UserGroup> GetUserGroup(int id)
         {
-            var httpResponse = await _httpClient.GetAsync(new Uri(BaseUri.UserGroups + id)).ConfigureAwait(true);
-            if (httpResponse.StatusCode != HttpStatusCode.OK)
-                return null;
+            var httpResponse = await _httpClient.GetAsync(new Uri(BaseUriString.UserGroups + id)).ConfigureAwait(true);
+            if (httpResponse.StatusCode != HttpStatusCode.OK) return null;
             var jsonCourses = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(true);
             var userResult = JsonConvert.DeserializeObject<UserGroup>(jsonCourses);
             return userResult.Id != 0 ? userResult : null;
@@ -27,9 +26,8 @@ namespace GamerRater.Application.DataAccess
         //Get UserGroup by username
         public async Task<UserGroup> GetUserGroup(string groupName)
         {
-            var httpResponse = await _httpClient.GetAsync(new Uri(BaseUri.UserGroupName + groupName)).ConfigureAwait(true);
-            if (httpResponse.StatusCode == HttpStatusCode.NoContent)
-                return null;
+            var httpResponse = await _httpClient.GetAsync(new Uri(BaseUriString.UserGroupName + groupName)).ConfigureAwait(true);
+            if (httpResponse.StatusCode != HttpStatusCode.OK) return null;
             var jsonCourses = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(true);
             var userResult = JsonConvert.DeserializeObject<UserGroup>(jsonCourses);
             return userResult.Id != 0 ? userResult : null;
@@ -39,7 +37,7 @@ namespace GamerRater.Application.DataAccess
         {
             var payload = JsonConvert.SerializeObject(userGroup);
             HttpContent cont = new StringContent(payload, Encoding.UTF8, "application/json");
-            var result = await _httpClient.PostAsync(new Uri(BaseUri.UserGroups), cont).ConfigureAwait(true);
+            var result = await _httpClient.PostAsync(new Uri(BaseUriString.UserGroups), cont).ConfigureAwait(true);
             return result.StatusCode;
         }
 

@@ -38,10 +38,13 @@ namespace GamerRater.Application.ViewModels
 
         public async void FetchGames()
         {
-            
             foreach (var review in UserAuthenticator.SessionUserAuthenticator.User.Reviews)
             {
-                var game = await new Games().GetGameById(review.GameRootId);
+                var game = await new Games().GetGameById(review.GameRootId).ConfigureAwait(true);
+                if (game == null)
+                {
+                    GrToast.SmallToast(GrToast.Errors.ApiError);
+                }
                 if(Games.All(x => x.Id != game.Id))
                     Games.Add(game);
             }

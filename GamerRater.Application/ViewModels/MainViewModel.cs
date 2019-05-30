@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
+﻿using System.Collections.ObjectModel;
 using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
-using System.Timers;
 using System.Windows.Input;
-using Windows.System;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Input;
 using GamerRater.Application.DataAccess;
 using GamerRater.Application.Helpers;
 using GamerRater.Application.Services;
@@ -30,14 +23,12 @@ namespace GamerRater.Application.ViewModels
         public ICommand ItemClickCommand =>
             _ItemClickCommand ?? (_ItemClickCommand = new RelayCommand<GameRoot>(OnItemClick));
 
-        //TODO: COmmand?
         public void SubmitSearch(SearchBox sender, SearchBoxQuerySubmittedEventArgs args)
         {
             sender.IsFocusEngaged = false;
             GetGamesAsync(args.QueryText);
         }
         
-
         private static void OnItemClick(GameRoot clickedItem)
         {
             if (clickedItem == null) return;
@@ -65,7 +56,7 @@ namespace GamerRater.Application.ViewModels
                 }
                 catch (HttpRequestException)
                 {
-                    GrToast.SmallToast("Connection to database failed.. Please check your network connection and try again.");
+                    GrToast.SmallToast(GrToast.Errors.NetworkError);
                     Page.WaitVisual(false);
                     return;
                 }

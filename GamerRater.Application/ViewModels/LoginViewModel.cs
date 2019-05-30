@@ -1,13 +1,9 @@
-﻿using System;
-using System.ComponentModel;
-using System.Net.Http;
-using System.Runtime.CompilerServices;
+﻿using System.Net.NetworkInformation;
 using System.Windows.Input;
 using GamerRater.Application.Helpers;
 using GamerRater.Application.Services;
 using GamerRater.Application.Views;
-using Newtonsoft.Json;
-using User = GamerRater.Model.User;
+using GamerRater.Model;
 
 namespace GamerRater.Application.ViewModels
 {
@@ -17,16 +13,20 @@ namespace GamerRater.Application.ViewModels
         {
             WrongUsernameOrPassword,
             NetworkError,
-            None
+            None,
+            ApiError
         }
 
-        public ICommand RegisterUserCommand => new RelayCommand(() => NavigationService.Navigate<RegistrationPage>());
         public ICommand LoginUserCommand;
-        public ICommand CancelCommand => new RelayCommand(() => NavigationService.GoBack());
+
         public LoginPage Page;
+
         //Flag: Has user just registered?
         public User RegisteredUser;
-        
+
+        public ICommand RegisterUserCommand => new RelayCommand(() => NavigationService.Navigate<RegistrationPage>());
+        public ICommand CancelCommand => new RelayCommand(() => NavigationService.GoBack());
+
         public void Initialize()
         {
             LoginUserCommand =
@@ -34,33 +34,30 @@ namespace GamerRater.Application.ViewModels
                 {
                     Page.AwaitLogin(true);
                     Page.ErrorMessage(LoginError.None);
-                    try
+                    if (NetworkInterface.GetIsNetworkAvailable())
                     {
-                        try
+                        var existingUser = await new UserAuthenticator().LogInUser(user);
+                        if (existingUser != null)
                         {
-                            var existingUser = await new UserAuthenticator().LogInUser(user);
-                            if (existingUser != null)
+                            if (RegisteredUser != null)
                             {
-                                if (RegisteredUser != null)
-                                {
-                                    NavigationService.Navigate<MainPage>();
-                                    NavigationService.Frame.BackStack.Clear();
-                                    return;
-                                }
-                                NavigationService.GoBack();
+                                NavigationService.Navigate<MainPage>();
+                                NavigationService.Frame.BackStack.Clear();
+                                return;
                             }
-                            else
-                                Page.ErrorMessage(LoginError.WrongUsernameOrPassword);
+
+                            NavigationService.GoBack();
                         }
-                        catch (JsonException)
+                        else
                         {
-                            Page.ErrorMessage(LoginError.NetworkError);
+                            Page.ErrorMessage(LoginError.ApiError);
                         }
                     }
-                    catch (HttpRequestException)
+                    else
                     {
                         Page.ErrorMessage(LoginError.NetworkError);
                     }
+
                     Page.AwaitLogin(false);
                 });
         }

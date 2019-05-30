@@ -22,41 +22,39 @@ namespace GamerRater.Application
         {
 
             InitializeComponent();
-            InitializeAppRequirements();
+
+            /*************************************
+             *      Uncomment method below       *
+             *      if you need to setup         *
+             *           the database            *
+             *************************************/
+            //InitializeAppRequirements();
 
             // Deferred execution until used. Check https://msdn.microsoft.com/library/dd642331(v=vs.110).aspx for further info on Lazy<T> class.
+
+            
             _activationService = new Lazy<ActivationService>(CreateActivationService);
         }
 
+        
         private static async void InitializeAppRequirements()
         {
-            try
+            
+            using (var userGroups = new UserGroups())
             {
-                using (var userGroups = new UserGroups())
+                var userGroup = await userGroups.GetUserGroup("User").ConfigureAwait(false);
+                if (userGroup != null) return;
+                if (await userGroups.AddUserGroup(new UserGroup() {Group = "User"}).ConfigureAwait(false) !=
+                    HttpStatusCode.Created)
                 {
-                    var userGroup = await userGroups.GetUserGroup("User").ConfigureAwait(false);
-                    if (userGroup != null) return;
-                    if (await userGroups.AddUserGroup(new UserGroup() {Group = "User"}).ConfigureAwait(false) !=
-                        HttpStatusCode.Created)
-                    {
-                        GrToast.SmallToast(
-                            "Failed connecting to the database, please check your network connection and try restart application.");
-                        return;
-                    }
-
-                    if (await userGroups.AddUserGroup(new UserGroup() {Group = "Admin"}).ConfigureAwait(false) !=
-                        HttpStatusCode.Created)
-                    {
-                        GrToast.SmallToast(
-                            "Failed connecting to the database, please check your network connection and try restart application.");
-                    }
+                    GrToast.SmallToast(GrToast.Errors.NetworkError);
+                    return;
                 }
-            }
-            catch (Exception)
-            {
-                if(!await new PingApi().CheckConnection().ConfigureAwait(true))
+
+                if (await userGroups.AddUserGroup(new UserGroup() {Group = "Admin"}).ConfigureAwait(false) !=
+                    HttpStatusCode.Created)
                 {
-                    
+                    GrToast.SmallToast(GrToast.Errors.NetworkError);
                 }
             }
         }

@@ -40,11 +40,17 @@ namespace GamerRater.Application.Services
                 var existingUser = await users.GetUser(user.Username).ConfigureAwait(true);
                 if (existingUser == null) return null;
                 if (!existingUser.Password.Equals(user.Password, StringComparison.CurrentCulture)) return null;
-                var completeUser = await users.GetUser(existingUser.Id).ConfigureAwait(true);
+                var contextUser = await users.GetUser(existingUser.Id).ConfigureAwait(true);
+                if (contextUser == null)
+                {
+                    GrToast.SmallToast(GrToast.Errors.NetworkError);
+                    return null;
+                }
+                var completeUser = contextUser;
                 User = completeUser;
                 UserLoggedInBool = true;
                 SessionUserAuthenticator = this;
-                await UpdateUser().ConfigureAwait(true);
+                if (!await UpdateUser().ConfigureAwait(true)) return null;
                 return existingUser;
             }
         }
@@ -53,7 +59,13 @@ namespace GamerRater.Application.Services
         {
             using (var users = new Users())
             {
-                var completeUser = await users.GetUser(User.Id).ConfigureAwait(true);
+                var user = await users.GetUser(User.Id).ConfigureAwait(true);
+                if (user == null)
+                {
+                    GrToast.SmallToast(GrToast.Errors.NetworkError);
+                    return false;
+                }
+                var completeUser = user;
                 User.Reviews = completeUser.Reviews;
                 return true;
             }

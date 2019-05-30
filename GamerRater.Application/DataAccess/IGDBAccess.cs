@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Windows.Storage.Streams;
 using Windows.Web.Http;
+using GamerRater.Application.Helpers;
+using GamerRater.Application.Services;
 using GamerRater.Model;
-using Microsoft.Win32.SafeHandles;
 using Newtonsoft.Json;
+using HttpClient = Windows.Web.Http.HttpClient;
 
 namespace GamerRater.Application.DataAccess
 {
     internal class IgdbAccess : IDisposable
     {
         private readonly HttpClient _httpClient = new HttpClient();
+
         //TODO: DO MORE ERROR CHECKS
         public IgdbAccess()
         {
@@ -23,9 +24,11 @@ namespace GamerRater.Application.DataAccess
 
         public async Task<GameRoot[]> GetCoversToGamesAsync(GameRoot[] games)
         {
-                var results = await _httpClient.PostAsync(new Uri(BaseUri.IGDBCovers), new HttpStringContent(
+            try
+            {
+                var results = await _httpClient.PostAsync(new Uri(BaseUriString.IGDBCovers), new HttpStringContent(
                     "fields *;" +
-                    "where id  = (" + BuildGameCoverIdString(games) + ");",
+                    "where id  = (" + IdStringBuilder.GameIds(games) + ");",
                     UnicodeEncoding.Utf8,
                     "application/json"));
                 var jsonGame = await results.Content.ReadAsStringAsync();
@@ -33,12 +36,18 @@ namespace GamerRater.Application.DataAccess
                 foreach (var cover in coversArr)
                 {
                     cover.url = "https:" + cover.url;
-                    foreach (GameRoot game in games)
+                    foreach (var game in games)
                         if (cover.id == game.Cover)
                             game.GameCover = cover;
                 }
 
                 return games;
+            }
+            catch (HttpRequestException)
+            {
+                GrToast.SmallToast(GrToast.Errors.IgdbError);
+                return null;
+            }
         }
 
         /// <summary>Gets the games asynchronous.</summary>
@@ -48,7 +57,7 @@ namespace GamerRater.Application.DataAccess
         {
             try
             {
-                var results = await _httpClient.PostAsync(new Uri(BaseUri.IGDBGames), new HttpStringContent(
+                var results = await _httpClient.PostAsync(new Uri(BaseUriString.IGDBGames), new HttpStringContent(
                     "fields *;" +
                     "search \"" + gameNames + "\"*;" +
                     "where cover != 0;" +
@@ -60,58 +69,34 @@ namespace GamerRater.Application.DataAccess
                 var gamesArr = JsonConvert.DeserializeObject<GameRoot[]>(jsonGame);
                 return gamesArr;
             }
-            catch (Exception ex)
+            catch (HttpRequestException)
             {
+                GrToast.SmallToast(GrToast.Errors.IgdbError);
                 return null;
             }
         }
-        //TODO: Egen helper klasse?
-        //Builds a Cover ID string compatible with the api query. Etc : (123, 432, 12994, 392)
-        private static string BuildGameCoverIdString(GameRoot[] games)
-        {
-            var ids = "";
-            var firstIterate = true;
-            foreach (var game in games)
-            {
-                if (firstIterate)
-                    ids += game.Cover;
-                else
-                    ids += ", " + game.Cover;
-                firstIterate = false;
 
-            }
-            return ids;
-        }
 
-        //Builds a Platform ID string compatible with the api query. Etc : (123, 432, 12994, 392)
-        private static string BuildPlatformIdString(GameRoot game)
-        {
-            var ids = "";
-            var firstIterate = true;
-            foreach (var id in game.PlatformsIds)
-            {
-                if (firstIterate)
-                    ids += id;
-                else
-                    ids += ", " + id;
-                firstIterate = false;
-
-            }
-            return ids;
-        }
-        
         public async Task<Platform[]> GetPlatformsAsync(GameRoot game)
         {
-            var results = await _httpClient.PostAsync(new Uri(BaseUri.IGDBPlatforms), new HttpStringContent(
-                "fields *;" +
-                "where id = (" + BuildPlatformIdString(game) + ");",
-                UnicodeEncoding.Utf8,
-                "application/json"));
-            var jsonGame = await results.Content.ReadAsStringAsync();
-            var platforms = JsonConvert.DeserializeObject<Platform[]>(jsonGame);
-            return platforms;
+            try
+            {
+                var results = await _httpClient.PostAsync(new Uri(BaseUriString.IGDBPlatforms), new HttpStringContent(
+                    "fields *;" +
+                    "where id = (" + IdStringBuilder.PlatformIds(game) + ");",
+                    UnicodeEncoding.Utf8,
+                    "application/json"));
+                var jsonGame = await results.Content.ReadAsStringAsync();
+                var platforms = JsonConvert.DeserializeObject<Platform[]>(jsonGame);
+                return platforms;
+            }
+            catch (HttpRequestException)
+            {
+                GrToast.SmallToast(GrToast.Errors.IgdbError);
+                return null;
+            }
         }
-
+        
         public void Dispose()
         {
             _httpClient?.Dispose();

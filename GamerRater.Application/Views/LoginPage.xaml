@@ -32,13 +32,17 @@
                             Password="{x:Bind Password.Password, Mode=OneWay}" />
                     </Button.CommandParameter>
                 </Button>
-                <Button Command="{x:Bind _viewModel.CancelCommand}" HorizontalAlignment="Right">Cancel</Button>
+                <Button Name="CancelButton" Command="{x:Bind _viewModel.CancelCommand}" HorizontalAlignment="Right">Cancel</Button>
             </Grid>
             <Grid Padding="0,25,0,0">
-                <TextBlock Name="ErrorInfoTextBlock" Foreground="Red"
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="1" Name="ErrorInfoTextBlock" Foreground="Red"
                            HorizontalAlignment="Left" Width="100" TextWrapping="Wrap"/>
-                <TextBlock Visibility="Collapsed" x:Name="RegistrationComplete" Foreground="LimeGreen" HorizontalAlignment="Left" Width="100" TextWrapping="Wrap" > Hello world</TextBlock>
-                <HyperlinkButton FontSize="12" Command="{x:Bind _viewModel.RegisterUserCommand}" HorizontalAlignment="Right">New user? Click here to register!</HyperlinkButton>
+                <TextBlock Grid.Row="1" Visibility="Collapsed" x:Name="RegistrationComplete" Foreground="LimeGreen" HorizontalAlignment="Left" Width="100" TextWrapping="Wrap" ></TextBlock>
+                <HyperlinkButton Grid.Row="0" FontSize="12" Command="{x:Bind _viewModel.RegisterUserCommand}" HorizontalAlignment="Right">New user? Click here to register!</HyperlinkButton>
             </Grid>
         </StackPanel>
     </Grid>

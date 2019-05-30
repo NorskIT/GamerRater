@@ -17,14 +17,14 @@ namespace GamerRater.Application.DataAccess
         {
             var payload = JsonConvert.SerializeObject(review);
             HttpContent cont = new StringContent(payload, Encoding.UTF8, "application/json");
-            var result = await _httpClient.PostAsync(new Uri(BaseUri.Reviews), cont).ConfigureAwait(true);
+            var result = await _httpClient.PostAsync(new Uri(BaseUriString.Reviews), cont).ConfigureAwait(true);
             return result.StatusCode == HttpStatusCode.Created;
         }
 
         public async Task<bool> DeleteReview(int id)
         {
             var result =
-                await _httpClient.DeleteAsync(new Uri(string.Concat(BaseUri.Reviews, id))).ConfigureAwait(true);
+                await _httpClient.DeleteAsync(new Uri(string.Concat(BaseUriString.Reviews, id))).ConfigureAwait(true);
             return result.IsSuccessStatusCode;
         }
 
@@ -33,7 +33,7 @@ namespace GamerRater.Application.DataAccess
             var payload = JsonConvert.SerializeObject(review);
             HttpContent cont = new StringContent(payload, Encoding.UTF8, "application/json");
             var result =
-                await _httpClient.PutAsync(new Uri(string.Concat(BaseUri.Reviews, review.Id)), cont).ConfigureAwait(true);
+                await _httpClient.PutAsync(new Uri(string.Concat(BaseUriString.Reviews, review.Id)), cont).ConfigureAwait(true);
             return result.IsSuccessStatusCode;
         }
 

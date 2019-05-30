@@ -124,7 +124,7 @@
     <Compile Include="Activation\ActivationHandler.cs" />
     <Compile Include="Behaviors\NavigationViewHeaderBehavior.cs" />
     <Compile Include="Behaviors\NavigationViewHeaderMode.cs" />
-    <Compile Include="DataAccess\BaseUri.cs" />
+    <Compile Include="DataAccess\BaseUriString.cs" />
     <Compile Include="DataAccess\Games.cs" />
     <Compile Include="DataAccess\IGDBAccess.cs" />
     <Compile Include="DataAccess\PingApi.cs" />

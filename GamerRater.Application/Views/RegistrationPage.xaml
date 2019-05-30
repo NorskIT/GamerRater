@@ -54,9 +54,9 @@
                                     />
                     </Button.CommandParameter>
                 </Button>
-                <Button Command="{x:Bind ViewModel.CancelCommand}" HorizontalAlignment="Right">Cancel</Button>
+                <Button Name="CancelButton" Command="{x:Bind ViewModel.CancelCommand}" HorizontalAlignment="Right">Cancel</Button>
             </Grid>
-            <TextBlock Name="ErrorInfoTextBlock" Foreground="Red" TextWrapping="Wrap" Visibility="{x:Bind ViewModel.FaultyData, Mode=OneWay}" Text="" />
+            <TextBlock Name="ErrorInfoTextBlock" Foreground="Red" TextWrapping="Wrap" Visibility="Collapsed" />
             <TextBlock Foreground="Red" TextWrapping="Wrap" Visibility="{x:Bind ViewModel.UserAlreadyRegistered, Mode=OneWay}" Text="" />
         </StackPanel>
     </Grid>
