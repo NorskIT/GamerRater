@@ -62,8 +62,10 @@ namespace GamerRater.Application.ViewModels
         /// <param name="game">The game.</param>
         public async void Initialize(GameRoot game)
         {
+            
             MainGame = game;
             AddReviewCommand = new RelayCommand<Review>(InitializeAddReview);
+            _reviews?.Clear();
             if (!NetworkInterface.GetIsNetworkAvailable()) return;
             await InitializePlatforms().ConfigureAwait(true);
             await InitializeReviews().ConfigureAwait(true);
