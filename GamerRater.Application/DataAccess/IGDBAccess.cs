@@ -45,9 +45,10 @@ namespace GamerRater.Application.DataAccess
 
                 return games;
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
                 GrToast.SmallToast(GrToast.Errors.IgdbError);
+                await Log.WriteMessage(this + " ; " + e.Message + " : " + e.StackTrace).ConfigureAwait(true);
                 return null;
             }
         }
@@ -71,8 +72,9 @@ namespace GamerRater.Application.DataAccess
                 var gamesArr = JsonConvert.DeserializeObject<GameRoot[]>(jsonGame);
                 return gamesArr;
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
+                await Log.WriteMessage(this + " ; " + e.Message + " : " + e.StackTrace).ConfigureAwait(true);
                 GrToast.SmallToast(GrToast.Errors.IgdbError);
                 return null;
             }
@@ -94,8 +96,9 @@ namespace GamerRater.Application.DataAccess
                 var platforms = JsonConvert.DeserializeObject<Platform[]>(jsonGame);
                 return platforms;
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
+                await Log.WriteMessage(this + " ; " + e.Message + " : " + e.StackTrace).ConfigureAwait(true);
                 GrToast.SmallToast(GrToast.Errors.IgdbError);
                 return null;
             }

@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using GamerRater.Application.Helpers;
 using GamerRater.Model;
 using Newtonsoft.Json;
 
@@ -41,13 +42,15 @@ namespace GamerRater.Application.DataAccess
                     var userResult = JsonConvert.DeserializeObject<User>(jsonCourses);
                     return userResult.Id != 0 ? userResult : null;
                 }
-                catch (TaskCanceledException)
+                catch (TaskCanceledException e)
                 {
+                    await Log.WriteMessage(this + " ; " + e.Message + " : " + e.StackTrace).ConfigureAwait(true);
                     return null;
                 }
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
+                await Log.WriteMessage(this + " ; " + e.Message + " : " + e.StackTrace).ConfigureAwait(true);
                 return null;
             }
         }
@@ -69,13 +72,15 @@ namespace GamerRater.Application.DataAccess
                     var userResult = JsonConvert.DeserializeObject<User>(jsonCourses);
                     return userResult.Id != 0 ? userResult : null;
                 }
-                catch (TaskCanceledException)
+                catch (TaskCanceledException e)
                 {
+                    await Log.WriteMessage(this + " ; " + e.Message + " : " + e.StackTrace).ConfigureAwait(true);
                     return null;
                 }
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
+                await Log.WriteMessage(this + " ; " + e.Message + " : " + e.StackTrace).ConfigureAwait(true);
                 return null;
             }
         }
@@ -95,13 +100,15 @@ namespace GamerRater.Application.DataAccess
                         await _httpClient.PostAsync(new Uri(BaseUriString.Users), cont).ConfigureAwait(true);
                     return httpResponse.StatusCode == HttpStatusCode.Created;
                 }
-                catch (TaskCanceledException)
+                catch (TaskCanceledException e)
                 {
+                    await Log.WriteMessage(this + " ; " + e.Message + " : " + e.StackTrace).ConfigureAwait(true);
                     return false;
                 }
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
+                await Log.WriteMessage(this + " ; " + e.Message + " : " + e.StackTrace).ConfigureAwait(true);
                 return false;
             }
         }

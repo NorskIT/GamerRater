@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using GamerRater.Application.Helpers;
 using GamerRater.Model;
 using Newtonsoft.Json;
 
@@ -31,8 +32,9 @@ namespace GamerRater.Application.DataAccess
                 var result = await _httpClient.PostAsync(new Uri(BaseUriString.Reviews), cont).ConfigureAwait(true);
                 return result.StatusCode == HttpStatusCode.Created;
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
+                await Log.WriteMessage(this + " ; " + e.Message + " : " + e.StackTrace).ConfigureAwait(true);
                 return false;
             }
         }
@@ -52,13 +54,15 @@ namespace GamerRater.Application.DataAccess
                             .ConfigureAwait(true);
                     return result.IsSuccessStatusCode;
                 }
-                catch (HttpRequestException)
+                catch (HttpRequestException e)
                 {
+                    await Log.WriteMessage(this + " ; " + e.Message + " : " + e.StackTrace).ConfigureAwait(true);
                     return false;
                 }
             }
-            catch (TaskCanceledException)
+            catch (TaskCanceledException e)
             {
+                await Log.WriteMessage(this + " ; " + e.Message + " : " + e.StackTrace).ConfigureAwait(true);
                 return false;
             }
         }
@@ -77,8 +81,9 @@ namespace GamerRater.Application.DataAccess
             return result.IsSuccessStatusCode;
 
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
+                await Log.WriteMessage(this + " ; " + e.Message + " : " + e.StackTrace).ConfigureAwait(true);
                 return false;
             }
         }

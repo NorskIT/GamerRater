@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using GamerRater.Application.Helpers;
 using GamerRater.Model;
 using Newtonsoft.Json;
 
@@ -31,8 +32,9 @@ namespace GamerRater.Application.DataAccess
                 var userResult = JsonConvert.DeserializeObject<UserGroup>(jsonCourses);
                 return userResult.Id != 0 ? userResult : null;
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
+                await Log.WriteMessage(this + " ; " + e.Message + " : " + e.StackTrace).ConfigureAwait(true);
                 return null;
             }
         }
@@ -52,8 +54,9 @@ namespace GamerRater.Application.DataAccess
                 var userResult = JsonConvert.DeserializeObject<UserGroup>(jsonCourses);
                 return userResult.Id != 0 ? userResult : null;
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
+                await Log.WriteMessage(this + " ; " + e.Message + " : " + e.StackTrace).ConfigureAwait(true);
                 return null;
             }
         }
@@ -70,8 +73,9 @@ namespace GamerRater.Application.DataAccess
                 var result = await _httpClient.PostAsync(new Uri(BaseUriString.UserGroups), cont).ConfigureAwait(true);
                 return result.StatusCode;
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
+                await Log.WriteMessage(this + " ; " + e.Message + " : " + e.StackTrace).ConfigureAwait(true);
                 return HttpStatusCode.ServiceUnavailable;
             }
         }

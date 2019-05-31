@@ -143,6 +143,7 @@
     <Compile Include="Helpers\Converters\StringToIntConverter.cs" />
     <Compile Include="Helpers\Converters\ShowLoginButtonConverter.cs" />
     <Compile Include="Helpers\IdStringBuilder.cs" />
+    <Compile Include="Helpers\Log.cs" />
     <Compile Include="Helpers\NavHelper.cs" />
     <Compile Include="Helpers\Observable.cs" />
     <Compile Include="Helpers\RelayCommand.cs" />

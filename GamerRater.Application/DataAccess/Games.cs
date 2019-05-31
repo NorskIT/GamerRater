@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using GamerRater.Application.Helpers;
 using GamerRater.Application.Services;
 using GamerRater.Model;
 using Newtonsoft.Json;
@@ -40,14 +41,16 @@ namespace GamerRater.Application.DataAccess
                     ResultGame = JsonConvert.DeserializeObject<GameRoot>(jsonGame);
                     return ResultGame.Id != 0 ? ResultGame : null;
                 }
-                catch (TaskCanceledException)
+                catch (TaskCanceledException e)
                 {
+                    await Log.WriteMessage(this + " ; " + e.Message + " : " + e.StackTrace).ConfigureAwait(true);
                     GrToast.SmallToast(GrToast.Errors.ApiError);
                     return null;
                 }
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
+                await Log.WriteMessage(this + " ; " + e.Message + " : " + e.StackTrace).ConfigureAwait(true);
                 GrToast.SmallToast(GrToast.Errors.ApiError);
                 return null;
             }
@@ -69,14 +72,16 @@ namespace GamerRater.Application.DataAccess
                     ResultGame = JsonConvert.DeserializeObject<GameRoot>(jsonGame);
                     return ResultGame.Id != 0 ? ResultGame : null;
                 }
-                catch (TaskCanceledException)
+                catch (TaskCanceledException e)
                 {
+                    await Log.WriteMessage(this + " ; " + e.Message + " : " + e.StackTrace).ConfigureAwait(true);
                     GrToast.SmallToast(GrToast.Errors.ApiError);
                     return null;
                 }
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
+                await Log.WriteMessage(this + " ; " + e.Message + " : " + e.StackTrace).ConfigureAwait(true);
                 GrToast.SmallToast(GrToast.Errors.ApiError);
                 return null;
             }
@@ -96,14 +101,15 @@ namespace GamerRater.Application.DataAccess
                     var result = await _httpClient.PostAsync(new Uri(BaseUriString.Games), cont).ConfigureAwait(true);
                     return result;
                 }
-                catch (TaskCanceledException)
+                catch (TaskCanceledException e)
                 {
+                    await Log.WriteMessage(this + " ; " + e.Message + " : " + e.StackTrace).ConfigureAwait(true);
                     return new HttpResponseMessage {StatusCode = HttpStatusCode.RequestTimeout};
-                    ;
                 }
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
+                await Log.WriteMessage(this + " ; " + e.Message + " : " + e.StackTrace).ConfigureAwait(true);
                 GrToast.SmallToast(GrToast.Errors.ApiError);
                 return null;
             }

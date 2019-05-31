@@ -229,6 +229,10 @@ namespace GamerRater.Api.Controllers
             return _context.Users.Any(e => e.Id == id);
         }
 
+        /// <summary>  Check if there exists a relation between user and user group</summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="userGroupId">The user group identifier.</param>
+        /// <returns></returns>
         private bool UserHasUserGroupExists(int userId, int userGroupId)
         {
             return _context.UserHasUserGroups.Any(uug => uug.UserId == userId && uug.UserGroupId == userGroupId);

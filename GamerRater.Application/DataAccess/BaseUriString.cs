@@ -11,7 +11,8 @@ namespace GamerRater.Application.DataAccess
     internal static class BaseUriString
     {
         /// <summary>Uri pointing towards the API</summary>
-        public static readonly string RootUrl = "http://localhost:61971/api/";
+        public static readonly string Port = "61971"; // CHANGE THIS EQUAL TO API PORT
+        public static readonly string RootUrl = "http://localhost:" + Port +"/api/";
         public static readonly string IGDBUrl = "https://api-v3.igdb.com/";
         public static readonly string Games = RootUrl + "GameRoots/";
         public static readonly string Covers = RootUrl + "Covers/";
