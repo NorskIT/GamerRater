@@ -25,7 +25,7 @@ namespace GamerRater.Application.DataAccess
             _httpClient?.Dispose();
         }
 
-        /// <summary>Gets the GameRater version GameRoot</summary>
+        /// <summary>Gets the GameRater GameRoot using IGDB GameRoot version</summary>
         /// <param name="game">  IGDB GameRoot</param>
         /// <returns>Original GameRoot</returns>
         public async Task<GameRoot> GetGame(GameRoot game)
