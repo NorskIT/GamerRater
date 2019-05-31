@@ -76,7 +76,11 @@
                         <StackPanel Width="150" Orientation="Vertical" Margin="0,0,10,0" BorderBrush="DarkGray"
                                     BorderThickness="2" Padding="5">
                             <TextBlock FontWeight="Bold" Text="GR Score: " />
-                            <RatingControl Grid.Row="2" Value="{x:Bind ViewModel.AverageScore, Mode=OneWay, FallbackValue=-1}" IsEnabled="False" />
+                            <RatingControl Grid.Row="2" Value="{x:Bind ViewModel.AverageScore, Mode=OneWay, FallbackValue=-1}" IsEnabled="False" >
+                                <RatingControl.Resources>
+                                    <SolidColorBrush Color="WhiteSmoke" x:Key="RatingControlUnselectedForeground" />
+                                </RatingControl.Resources>
+                            </RatingControl>
                         </StackPanel>
                     </StackPanel>
                     <Button Grid.Row="1" Height="50" HorizontalAlignment="Right" VerticalAlignment="Bottom"

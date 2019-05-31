@@ -23,11 +23,11 @@
             </StackPanel>
             <StackPanel Padding="0,0,0,15">
                 <TextBlock Text="Username"/>
-                <TextBox TextChanged="{x:Bind ViewModel.CanRegister}" BorderBrush="{x:Bind Username.Text, Mode=OneWay, Converter={StaticResource ValueLengthToColorConverter}}" Width="200" Name="Username"></TextBox>
+                <TextBox MaxLength="16" TextChanged="{x:Bind ViewModel.CanRegister}" BorderBrush="{x:Bind Username.Text, Mode=OneWay, Converter={StaticResource ValueLengthToColorConverter}}" Width="200" Name="Username"></TextBox>
             </StackPanel>
             <StackPanel Padding="0,0,0,15">
                 <TextBlock Text="Firstname"/>
-                <TextBox TextChanged="{x:Bind ViewModel.CanRegister}" BorderBrush="{x:Bind Firstname.Text, Mode=OneWay, Converter={StaticResource ValueLengthToColorConverter}}"  Width="200" Name="Firstname"></TextBox>
+                <TextBox MaxLength="16" TextChanged="{x:Bind ViewModel.CanRegister}" BorderBrush="{x:Bind Firstname.Text, Mode=OneWay, Converter={StaticResource ValueLengthToColorConverter}}"  Width="200" Name="Firstname"></TextBox>
             </StackPanel>
             <StackPanel Padding="0,0,0,15">
                 <TextBlock Text="Lastname"/>
@@ -35,11 +35,11 @@
             </StackPanel>
             <StackPanel Padding="0,0,0,15">
                 <TextBlock Text="Mail"/>
-                <TextBox TextChanged="{x:Bind ViewModel.CanRegister}" BorderBrush="{x:Bind Mail.Text, Mode=OneWay, Converter={StaticResource ValueLengthToColorConverter}}"  Width="200" Name="Mail"></TextBox>
+                <TextBox MaxLength="16" TextChanged="{x:Bind ViewModel.CanRegister}" BorderBrush="{x:Bind Mail.Text, Mode=OneWay, Converter={StaticResource ValueLengthToColorConverter}}"  Width="200" Name="Mail"></TextBox>
             </StackPanel>
             <StackPanel Padding="0,0,0,15">
                 <TextBlock Text="Password"/>
-                <PasswordBox PasswordChanged="{x:Bind ViewModel.CanRegister}" BorderBrush="{x:Bind Password.Password, Mode=OneWay, Converter={StaticResource ValueLengthToColorConverter}}"  Width="200" Name="Password"></PasswordBox>
+                <PasswordBox MaxLength="16" PasswordChanged="{x:Bind ViewModel.CanRegister}" BorderBrush="{x:Bind Password.Password, Mode=OneWay, Converter={StaticResource ValueLengthToColorConverter}}"  Width="200" Name="Password"></PasswordBox>
             </StackPanel>
             <Grid>
                 <Button x:Name="RegisterButton" Content="Register"

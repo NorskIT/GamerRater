@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Windows.Media.Core;
 using GamerRater.Model;
 using Newtonsoft.Json;
 
@@ -16,10 +13,15 @@ namespace GamerRater.Application.DataAccess
     {
         private readonly HttpClient _httpClient = new HttpClient();
 
-        /// <summary>Initializes a new instance of the <see cref="Users"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="Users" /> class.</summary>
         public Users()
         {
             _httpClient.Timeout = TimeSpan.FromSeconds(4);
+        }
+
+        public void Dispose()
+        {
+            _httpClient?.Dispose();
         }
 
 
@@ -30,13 +32,21 @@ namespace GamerRater.Application.DataAccess
         {
             try
             {
-                var httpResponse = await _httpClient.GetAsync(new Uri(BaseUriString.Users + id)).ConfigureAwait(true);
-                if (httpResponse.StatusCode != HttpStatusCode.OK) return null;
-                var jsonCourses = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(true);
-                var userResult = JsonConvert.DeserializeObject<User>(jsonCourses);
-                return userResult.Id != 0 ? userResult : null;
+                try
+                {
+                    var httpResponse =
+                        await _httpClient.GetAsync(new Uri(BaseUriString.Users + id)).ConfigureAwait(true);
+                    if (httpResponse.StatusCode != HttpStatusCode.OK) return null;
+                    var jsonCourses = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(true);
+                    var userResult = JsonConvert.DeserializeObject<User>(jsonCourses);
+                    return userResult.Id != 0 ? userResult : null;
+                }
+                catch (TaskCanceledException)
+                {
+                    return null;
+                }
             }
-            catch (TaskCanceledException)
+            catch (HttpRequestException)
             {
                 return null;
             }
@@ -50,14 +60,21 @@ namespace GamerRater.Application.DataAccess
         {
             try
             {
-                var httpResponse =
-                    await _httpClient.GetAsync(new Uri(BaseUriString.Username + username)).ConfigureAwait(true);
-                if (httpResponse.StatusCode != HttpStatusCode.OK) return null;
-                var jsonCourses = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(true);
-                var userResult = JsonConvert.DeserializeObject<User>(jsonCourses);
-                return userResult.Id != 0 ? userResult : null;
+                try
+                {
+                    var httpResponse =
+                        await _httpClient.GetAsync(new Uri(BaseUriString.Username + username)).ConfigureAwait(true);
+                    if (httpResponse.StatusCode != HttpStatusCode.OK) return null;
+                    var jsonCourses = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(true);
+                    var userResult = JsonConvert.DeserializeObject<User>(jsonCourses);
+                    return userResult.Id != 0 ? userResult : null;
+                }
+                catch (TaskCanceledException)
+                {
+                    return null;
+                }
             }
-            catch (TaskCanceledException)
+            catch (HttpRequestException)
             {
                 return null;
             }
@@ -70,12 +87,20 @@ namespace GamerRater.Application.DataAccess
         {
             try
             {
-                var payload = JsonConvert.SerializeObject(user);
-                HttpContent cont = new StringContent(payload, Encoding.UTF8, "application/json");
-                var httpResponse = await _httpClient.PostAsync(new Uri(BaseUriString.Users), cont).ConfigureAwait(true);
-                return httpResponse.StatusCode == HttpStatusCode.Created;
+                try
+                {
+                    var payload = JsonConvert.SerializeObject(user);
+                    HttpContent cont = new StringContent(payload, Encoding.UTF8, "application/json");
+                    var httpResponse =
+                        await _httpClient.PostAsync(new Uri(BaseUriString.Users), cont).ConfigureAwait(true);
+                    return httpResponse.StatusCode == HttpStatusCode.Created;
+                }
+                catch (TaskCanceledException)
+                {
+                    return false;
+                }
             }
-            catch (TaskCanceledException)
+            catch (HttpRequestException)
             {
                 return false;
             }
@@ -89,21 +114,16 @@ namespace GamerRater.Application.DataAccess
             var reg = new Regex("^[a-zA-Z0-9]*$");
 
             if (!reg.IsMatch(user.FirstName))
-                    return false;
+                return false;
             if (!reg.IsMatch(user.LastName))
-                    return false;
+                return false;
             if (!reg.IsMatch(user.Email))
-                    return false;
+                return false;
             if (!reg.IsMatch(user.Username))
-                    return false;
+                return false;
             if (!reg.IsMatch(user.Password))
-                    return false;
+                return false;
             return true;
-        }
-
-        public void Dispose()
-        {
-            _httpClient?.Dispose();
         }
     }
 }

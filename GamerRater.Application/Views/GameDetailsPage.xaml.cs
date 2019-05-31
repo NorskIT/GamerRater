@@ -26,13 +26,24 @@ namespace GamerRater.Application.Views
             ReviewEditBox.Visibility = Visibility.Collapsed;
         }
 
+        /// <summary>Invoked when the Page is loaded and becomes the current source of a parent Frame.</summary>
+        /// <param name="e">
+        /// Event data that can be examined by overriding code. The event data is representative of the pending navigation that will load the current Page. Usually the most relevant property to examine is Parameter.
+        /// </param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
             if (!(e.Parameter is GameRoot game)) return;
             ViewModel.Initialize(game);
+            if (game.Reviews == null || game.Reviews.Count == 0)
+            {
+                ReviewGridView.Visibility = Visibility.Collapsed;
+            }
         }
 
+        /// <summary>Invoked when 'Delete review'-button has been clicked. Sends review to VIewModel review delete method</summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void DeleteReviewButtonClicked(object sender, RoutedEventArgs e)
         {
             if (!(sender is Button button)) return;
@@ -49,6 +60,8 @@ namespace GamerRater.Application.Views
             RatingStarsGrid.BorderBrush = x ? new SolidColorBrush(Colors.Red) : new SolidColorBrush(Colors.White);
         }
 
+        /// <summary>Enables/Disables the review submit button.</summary>
+        /// <param name="enabled">if set to <c>true</c> [enabled].</param>
         public void EnableReviewSubmitButton(bool enabled)
         {
             if(enabled)
@@ -63,12 +76,14 @@ namespace GamerRater.Application.Views
             }
         }
 
+        /// <summary>Sets review edit box with info from selected review</summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void SetReviewBox(object sender, RoutedEventArgs e)
         {
             var button = (Button) sender;
             var review = (Review)button.DataContext;
             ReviewText.Text = review.ReviewText;
-            //TODO: FIX
             ReviewId.Text = review.Id + "";
             RatingStars.Value = review.Stars;
             ViewModel.ShowReviewEditor = Visibility.Visible;
@@ -77,6 +92,9 @@ namespace GamerRater.Application.Views
             BringViewToReviewEditBox();
         }
 
+        /// <summary>Clears the review box.</summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         public void ClearReviewBox(object sender, RoutedEventArgs e)
         {
             ReviewText.Text = "";
@@ -86,16 +104,19 @@ namespace GamerRater.Application.Views
             WriteReviewBoxText.Visibility = Visibility.Visible;
         }
 
+        /// <summary>  Tries to bring the view to reviews.</summary>
         public void BringViewToReviews()
         {
             BottomPage.StartBringIntoView();
         }
 
+        /// <summary>  Tries to bring the view to reviews edit box.</summary>
         public void BringViewToReviewEditBox()
         {
             BelowReviewEditBox.StartBringIntoView();
         }
 
+        /// <summary>  Shows/Hides the reviews box</summary>
         public void ShowReviewBox(bool b)
         {
             ReviewGridView.Visibility = Visibility.Visible;

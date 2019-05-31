@@ -31,13 +31,22 @@ namespace GamerRater.Application.DataAccess
         {
             try
             {
-                var httpResponse = await _httpClient.GetAsync(new Uri(BaseUriString.Games + game.Id)).ConfigureAwait(true);
-                if (httpResponse.StatusCode != HttpStatusCode.OK) return null;
-                var jsonGame = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(true);
-                ResultGame = JsonConvert.DeserializeObject<GameRoot>(jsonGame);
-                return ResultGame.Id != 0 ? ResultGame : null;
+                try
+                {
+                    var httpResponse = await _httpClient.GetAsync(new Uri(BaseUriString.Games + game.Id))
+                        .ConfigureAwait(true);
+                    if (httpResponse.StatusCode != HttpStatusCode.OK) return null;
+                    var jsonGame = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(true);
+                    ResultGame = JsonConvert.DeserializeObject<GameRoot>(jsonGame);
+                    return ResultGame.Id != 0 ? ResultGame : null;
+                }
+                catch (TaskCanceledException)
+                {
+                    GrToast.SmallToast(GrToast.Errors.ApiError);
+                    return null;
+                }
             }
-            catch (TaskCanceledException)
+            catch (HttpRequestException)
             {
                 GrToast.SmallToast(GrToast.Errors.ApiError);
                 return null;
@@ -51,13 +60,22 @@ namespace GamerRater.Application.DataAccess
         {
             try
             {
-                var httpResponse = await _httpClient.GetAsync(new Uri(BaseUriString.Games + id)).ConfigureAwait(true);
-                if (httpResponse.StatusCode != HttpStatusCode.OK) return null;
-                var jsonGame = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(true);
-                ResultGame = JsonConvert.DeserializeObject<GameRoot>(jsonGame);
-                return ResultGame.Id != 0 ? ResultGame : null;
+                try
+                {
+                    var httpResponse =
+                        await _httpClient.GetAsync(new Uri(BaseUriString.Games + id)).ConfigureAwait(true);
+                    if (httpResponse.StatusCode != HttpStatusCode.OK) return null;
+                    var jsonGame = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(true);
+                    ResultGame = JsonConvert.DeserializeObject<GameRoot>(jsonGame);
+                    return ResultGame.Id != 0 ? ResultGame : null;
+                }
+                catch (TaskCanceledException)
+                {
+                    GrToast.SmallToast(GrToast.Errors.ApiError);
+                    return null;
+                }
             }
-            catch (TaskCanceledException)
+            catch (HttpRequestException)
             {
                 GrToast.SmallToast(GrToast.Errors.ApiError);
                 return null;
@@ -71,17 +89,24 @@ namespace GamerRater.Application.DataAccess
         {
             try
             {
-                var payload = JsonConvert.SerializeObject(mainGame);
-                HttpContent cont = new StringContent(payload, Encoding.UTF8, "application/json");
-                var result = await _httpClient.PostAsync(new Uri(BaseUriString.Games), cont).ConfigureAwait(true);
-                return result;
+                try
+                {
+                    var payload = JsonConvert.SerializeObject(mainGame);
+                    HttpContent cont = new StringContent(payload, Encoding.UTF8, "application/json");
+                    var result = await _httpClient.PostAsync(new Uri(BaseUriString.Games), cont).ConfigureAwait(true);
+                    return result;
+                }
+                catch (TaskCanceledException)
+                {
+                    return new HttpResponseMessage {StatusCode = HttpStatusCode.RequestTimeout};
+                    ;
+                }
             }
-            catch (TaskCanceledException)
+            catch (HttpRequestException)
             {
-                return new HttpResponseMessage { StatusCode = HttpStatusCode.RequestTimeout }; ;
+                GrToast.SmallToast(GrToast.Errors.ApiError);
+                return null;
             }
         }
-
-        
     }
 }

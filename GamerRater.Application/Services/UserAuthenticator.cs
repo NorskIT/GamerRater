@@ -22,7 +22,7 @@ namespace GamerRater.Application.Services
         
         private static bool _userLoggedInBool;
 
-        //TODO: Changed, doyble check
+
         static UserAuthenticator()
         {
             SessionUserAuthenticator = new UserAuthenticator();

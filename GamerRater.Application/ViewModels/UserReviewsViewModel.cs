@@ -21,14 +21,18 @@ namespace GamerRater.Application.ViewModels
         public ICommand _ItemClickCommand;
         public ICommand ItemClickCommand =>
             _ItemClickCommand ?? (_ItemClickCommand = new RelayCommand<GameRoot>(OnItemClick));
+
+        /// <summary>Initializes this instance.</summary>
         public void Initialize()
         {
-            if (UserAuthenticator.SessionUserAuthenticator.User != null)
-                if(UserAuthenticator.SessionUserAuthenticator.User.Reviews.Count > 0)
-                    FetchGames();
-            
+            if (UserAuthenticator.SessionUserAuthenticator.User == null) return;
+            if(UserAuthenticator.SessionUserAuthenticator.User.Reviews.Count > 0)
+                FetchGamesRelatedToUserReviews();
+
         }
 
+        /// <summary>Called when game is clicked</summary>
+        /// <param name="clickedItem">The clicked item.</param>
         private static void OnItemClick(GameRoot clickedItem)
         {
             if (clickedItem == null) return;
@@ -36,7 +40,8 @@ namespace GamerRater.Application.ViewModels
             NavigationService.Navigate<GameDetailsPage>(clickedItem);
         }
 
-        public async void FetchGames()
+        /// <summary>Fetches the games related to user reviews.</summary>
+        public async void FetchGamesRelatedToUserReviews()
         {
             foreach (var review in UserAuthenticator.SessionUserAuthenticator.User.Reviews)
             {
@@ -44,6 +49,7 @@ namespace GamerRater.Application.ViewModels
                 if (game == null)
                 {
                     GrToast.SmallToast(GrToast.Errors.ApiError);
+                    return;
                 }
                 if(Games.All(x => x.Id != game.Id))
                     Games.Add(game);

@@ -117,6 +117,7 @@ namespace GamerRater.Application.ViewModels
         private void Frame_Navigated(object sender, NavigationEventArgs e)
         {
             var frame = (Frame) sender;
+            //Check if next page is on RegistrationPage/LoginPage so that Login-button can be hidden
             NotOnRegistrationLoginPage = !(frame.Content is RegistrationPage || frame.Content is LoginPage);
             Session = UserAuthenticator.SessionUserAuthenticator;
             IsBackEnabled = NavigationService.CanGoBack;

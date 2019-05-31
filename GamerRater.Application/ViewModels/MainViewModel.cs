@@ -31,6 +31,11 @@ namespace GamerRater.Application.ViewModels
         /// <param name="args">The <see cref="SearchBoxQuerySubmittedEventArgs"/> instance containing the event data.</param>
         public void SubmitSearch(SearchBox sender, SearchBoxQuerySubmittedEventArgs args)
         {
+            if(!NetworkInterface.GetIsNetworkAvailable())
+            {
+                GrToast.SmallToast(GrToast.Errors.NetworkError);
+                return;
+            }
             sender.IsFocusEngaged = false;
             InitializeGameSearchAsync(args.QueryText);
         }
@@ -70,6 +75,7 @@ namespace GamerRater.Application.ViewModels
                     return;
                 }
             }
+            Page.WaitVisual(false);
             GrToast.SmallToast("No game found");
             
         }

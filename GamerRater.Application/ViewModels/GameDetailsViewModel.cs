@@ -110,7 +110,7 @@ namespace GamerRater.Application.ViewModels
                     MainGame.PlatformList = await igdb.GetPlatformsAsync(MainGame).ConfigureAwait(true);
                     foreach (var platform in MainGame.PlatformList) Platforms.Add(platform);
                 }
-            } //TODO: Different excpetion
+            }
             catch (HttpRequestException)
             {
                 GrToast.SmallToast(GrToast.Errors.IgdbError);
@@ -144,6 +144,7 @@ namespace GamerRater.Application.ViewModels
             if (review.Stars == -1)
             {
                 Page.RatingGridBorderColor(true);
+                Page.EnableReviewSubmitButton(true);
                 return;
             }
 
@@ -262,6 +263,8 @@ namespace GamerRater.Application.ViewModels
                 {
                     Reviews.Remove(review);
                     SetAverageScore();
+                    Page.EnableReviewSubmitButton(true);
+                    Window.Current.CoreWindow.PointerCursor = new CoreCursor(CoreCursorType.Arrow, 0);
                     return;
                 }
 

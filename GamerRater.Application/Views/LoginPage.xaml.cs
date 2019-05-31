@@ -33,6 +33,11 @@ namespace GamerRater.Application.Views
             _viewModel.Page = this;
         }
 
+        /// <summary>Invoked when the Page is loaded and becomes the current source of a parent Frame.
+        /// If user is not null, will preset login info with user info</summary>
+        /// <param name="e">
+        /// Event data that can be examined by overriding code. The event data is representative of the pending navigation that will load the current Page. Usually the most relevant property to examine is Parameter.
+        /// </param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
@@ -44,6 +49,8 @@ namespace GamerRater.Application.Views
             RegistrationComplete.Visibility = Visibility.Visible;
         }
 
+        /// <summary>Disable textfield and button to visualize wait-mode</summary>
+        /// <param name="wait">if set to <c>true</c> [wait].</param>
         public void AwaitLogin(bool wait)
         {
             Username.IsEnabled = !wait;
@@ -54,6 +61,9 @@ namespace GamerRater.Application.Views
             Window.Current.CoreWindow.PointerCursor = wait ? new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Wait, 0) : new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 0);
         }
 
+        /// <summary>Present user with error received</summary>
+        /// <param name="error">The error.</param>
+        /// <exception cref="ArgumentOutOfRangeException">error - null</exception>
         public void ErrorMessage(LoginViewModel.LoginError error)
         {
             ErrorInfoTextBlock.Visibility = Visibility.Visible;

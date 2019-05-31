@@ -23,6 +23,9 @@ namespace GamerRater.Application.Views
             ViewModel.SetButton(RegisterButton);
         }
 
+        /// <summary>Present user with error received.</summary>
+        /// <param name="error">The error.</param>
+        /// <exception cref="ArgumentOutOfRangeException">error - null</exception>
         public void ErrorMessage(RegistrationViewModel.RegistrationError error)
         {
             WaitVisual(true);
@@ -47,6 +50,8 @@ namespace GamerRater.Application.Views
             WaitVisual(false);
         }
 
+        /// <summary>  Visually show wait-mode</summary>
+        /// <param name="wait">if set to <c>true</c> [wait].</param>
         private void WaitVisual(bool wait)
         {
             Window.Current.CoreWindow.PointerCursor = wait ? new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Wait, 0) : new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 0);

@@ -1,5 +1,6 @@
 ﻿using System.Net.NetworkInformation;
 using System.Windows.Input;
+using Windows.UI.Xaml;
 using GamerRater.Application.Helpers;
 using GamerRater.Application.Services;
 using GamerRater.Application.Views;
@@ -36,19 +37,19 @@ namespace GamerRater.Application.ViewModels
                         var existingUser = await new UserAuthenticator().LogInUser(user);
                         if (existingUser != null)
                         {
+                            Window.Current.CoreWindow.PointerCursor =
+                                new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 1);
                             if (RegisteredUser != null)
                             {
                                 NavigationService.Navigate<MainPage>();
                                 NavigationService.Frame.BackStack.Clear();
                                 return;
                             }
-
                             NavigationService.GoBack();
+                            return;
                         }
-                        else
-                        {
-                            Page.ErrorMessage(LoginError.ApiError);
-                        }
+
+                        Page.ErrorMessage(LoginError.WrongUsernameOrPassword);
                     }
                     else
                     {

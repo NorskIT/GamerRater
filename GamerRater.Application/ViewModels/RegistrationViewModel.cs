@@ -22,8 +22,9 @@ namespace GamerRater.Application.ViewModels
             IllegalValues,
             None
         }
-        private Button button;
-        private User newUser;
+
+        private Button _button;
+        private User _newUser;
         public RegistrationPage Page { get; set; }
         public ICommand RegisterUserCommand { get; set; }
         public ICommand CancelCommand => new RelayCommand(() => NavigationService.GoBack());
@@ -40,8 +41,10 @@ namespace GamerRater.Application.ViewModels
                             {
                                 if (await users.GetUser(user.Username) == null)
                                 {
+                                    
                                     if (await users.AddUser(user))
                                     {
+                                        Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 0);
                                         NavigationService.Navigate<LoginPage>(user);
                                         return;
                                     }
@@ -63,33 +66,37 @@ namespace GamerRater.Application.ViewModels
         }
 
 
+        /// <summary>Sets the button which is used up against CanRegister()</summary>
+        /// <param name="button">The button.</param>
         public void SetButton(Button button)
         {
-            this.button = button;
+            this._button = button;
             button.IsEnabled = false;
         }
-
-        //RelayCommand refreshes user object every time the model parameters are changed.
+        
+        /// <summary> Refreshed user object recieved from relay command</summary>
+        /// <param name="user">The user.</param>
+        /// <returns></returns>
         public bool SetUser(User user)
         {
-            newUser = user;
+            _newUser = user;
             return true;
         }
 
-        //TODO: LEss than 16 XAML.
-        //Check if all fields are OK
+
+        /// <summary>Determines whether this instance can register.</summary>
         public void CanRegister()
         {
-            button.IsEnabled = !string.IsNullOrWhiteSpace(newUser.Email) &&
-                               !string.IsNullOrWhiteSpace(newUser.Password) &&
-                               !string.IsNullOrWhiteSpace(newUser.LastName) &&
-                               !string.IsNullOrWhiteSpace(newUser.FirstName) &&
-                               !string.IsNullOrWhiteSpace(newUser.Username) &&
-                               (newUser.Email.Length > 2 && newUser.Email.Length < 16) &&
-                               (newUser.Password.Length > 2 && newUser.Password.Length < 16) &&
-                               (newUser.LastName.Length > 2 && newUser.LastName.Length < 16) &&
-                               (newUser.FirstName.Length > 2 && newUser.FirstName.Length < 16) &&
-                               (newUser.Username.Length > 2 && newUser.Username.Length < 16);
+            _button.IsEnabled = !string.IsNullOrWhiteSpace(_newUser.Email) &&
+                               !string.IsNullOrWhiteSpace(_newUser.Password) &&
+                               !string.IsNullOrWhiteSpace(_newUser.LastName) &&
+                               !string.IsNullOrWhiteSpace(_newUser.FirstName) &&
+                               !string.IsNullOrWhiteSpace(_newUser.Username) &&
+                               (_newUser.Email.Length > 2) &&
+                               (_newUser.Password.Length > 2) &&
+                               (_newUser.LastName.Length > 2) &&
+                               (_newUser.FirstName.Length > 2) &&
+                               (_newUser.Username.Length > 2);
         }
     }
 }

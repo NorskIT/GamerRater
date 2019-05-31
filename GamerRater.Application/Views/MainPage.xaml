@@ -23,7 +23,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0" HorizontalAlignment="Center" Height="32" Margin="0,10,0,0" VerticalAlignment="Top" Width="1004">
-            <SearchBox Name="GameRootSearchBar" PlaceholderText="Characters, Games, Platforms..."
+            <SearchBox Name="GameRootSearchBar" PlaceholderText="Games, Characters, Platforms..."
                        FocusOnKeyboardInput="True" VerticalAlignment="Center"
                        HorizontalAlignment="Center" Width="355" QuerySubmitted="{x:Bind ViewModel.SubmitSearch}" />
         </Grid>
