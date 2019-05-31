@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Windows.Storage.Streams;
@@ -15,10 +14,16 @@ namespace GamerRater.Application.DataAccess
     internal class IgdbAccess : IDisposable
     {
         private readonly HttpClient _httpClient = new HttpClient();
-        
+
         public IgdbAccess()
         {
-            _httpClient.DefaultRequestHeaders.Add("user-key", "d1f0748dd028fe160ba161dfd05fe3b1"); //Free key, no worries
+            _httpClient.DefaultRequestHeaders.Add("user-key",
+                "d1f0748dd028fe160ba161dfd05fe3b1"); //Free key, no worries
+        }
+
+        public void Dispose()
+        {
+            _httpClient?.Dispose();
         }
 
         /// <summary>Gets the covers related to games asynchronous.</summary>
@@ -102,11 +107,6 @@ namespace GamerRater.Application.DataAccess
                 GrToast.SmallToast(GrToast.Errors.IgdbError);
                 return null;
             }
-        }
-        
-        public void Dispose()
-        {
-            _httpClient?.Dispose();
         }
     }
 }

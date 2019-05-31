@@ -194,7 +194,8 @@ namespace GamerRater.Api.Controllers
                 }
                 catch (InvalidOperationException)
                 {
-                    Debug.WriteLine("ERROR: Duplicate user groups. Delete all values in user groups table and try again");
+                    Debug.WriteLine(
+                        "ERROR: Duplicate user groups. Delete all values in user groups table and try again");
                     return NoContent();
                 }
             }

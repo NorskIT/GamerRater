@@ -11,51 +11,51 @@ namespace GamerRater.Application.Services
             None,
             NetworkError,
             ApiError,
-            DeleteReview,
+            DeleteReviewError,
             IgdbError,
-            AddReview
+            AddReviewError
         }
 
         /// <summary>  Creates a small toast with a preset message</summary>
         /// <param name="errorType">Type of the error.</param>
         public static void SmallToast(Errors errorType)
         {
-            var visual = new ToastVisual()
+            var visual = new ToastVisual
             {
-                BindingGeneric = new ToastBindingGeneric()
+                BindingGeneric = new ToastBindingGeneric
                 {
                     Children =
                     {
-                        new AdaptiveText()
+                        new AdaptiveText
                         {
                             Text = CreateString(errorType)
-                        },
-                    },
+                        }
+                    }
                 }
             };
-            var toastContent = new ToastContent() { Visual = visual };
-            var toast = new ToastNotification(toastContent.GetXml()) { ExpirationTime = DateTime.Now.AddSeconds(2) };
+            var toastContent = new ToastContent {Visual = visual};
+            var toast = new ToastNotification(toastContent.GetXml()) {ExpirationTime = DateTime.Now.AddSeconds(2)};
             ToastNotificationManager.CreateToastNotifier().Show(toast);
         }
 
         /// <summary>  Creates a small toast with a custom message</summary>
         public static void SmallToast(string customMsg)
         {
-            var visual = new ToastVisual()
+            var visual = new ToastVisual
             {
-                BindingGeneric = new ToastBindingGeneric()
+                BindingGeneric = new ToastBindingGeneric
                 {
                     Children =
                     {
-                        new AdaptiveText()
+                        new AdaptiveText
                         {
                             Text = customMsg
-                        },
-                    },
+                        }
+                    }
                 }
             };
-            var toastContent = new ToastContent() { Visual = visual };
-            var toast = new ToastNotification(toastContent.GetXml()) { ExpirationTime = DateTime.Now.AddSeconds(2) };
+            var toastContent = new ToastContent {Visual = visual};
+            var toast = new ToastNotification(toastContent.GetXml()) {ExpirationTime = DateTime.Now.AddSeconds(2)};
             ToastNotificationManager.CreateToastNotifier().Show(toast);
         }
 
@@ -73,9 +73,9 @@ namespace GamerRater.Application.Services
                     return "Could not connect to the API. Check your network connection and try again";
                 case Errors.IgdbError:
                     return "Could not connect to IGDB. Check your network connection and try again";
-                case Errors.DeleteReview:
+                case Errors.DeleteReviewError:
                     return "Could not delete review.. Check your network connection and try again.";
-                case Errors.AddReview:
+                case Errors.AddReviewError:
                     return "Could not add review.. Check your network connection and try again.";
                 case Errors.None:
                     return "";
@@ -83,6 +83,5 @@ namespace GamerRater.Application.Services
                     throw new ArgumentOutOfRangeException(nameof(error), error, null);
             }
         }
-    }    
-    
+    }
 }

@@ -72,14 +72,14 @@ namespace GamerRater.Application.DataAccess
         /// <returns></returns>
         public async Task<bool> UpdateReview(Review review)
         {
-            try { 
-            var payload = JsonConvert.SerializeObject(review);
-            HttpContent cont = new StringContent(payload, Encoding.UTF8, "application/json");
-            var result =
-                await _httpClient.PutAsync(new Uri(string.Concat(BaseUriString.Reviews, review.Id)), cont)
-                    .ConfigureAwait(true);
-            return result.IsSuccessStatusCode;
-
+            try
+            {
+                var payload = JsonConvert.SerializeObject(review);
+                HttpContent cont = new StringContent(payload, Encoding.UTF8, "application/json");
+                var result =
+                    await _httpClient.PutAsync(new Uri(string.Concat(BaseUriString.Reviews, review.Id)), cont)
+                        .ConfigureAwait(true);
+                return result.IsSuccessStatusCode;
             }
             catch (HttpRequestException e)
             {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.NetworkInformation;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using GamerRater.Application.ViewModels;
@@ -36,7 +37,9 @@ namespace GamerRater.Application.Views
                     ErrorInfoTextBlock.Text = "* Fields cannot contain symbols or spaces!";
                     break;
                 case RegistrationViewModel.RegistrationError.NetworkError:
-                    ErrorInfoTextBlock.Text = !NetworkInterface.GetIsNetworkAvailable() ? "* Could not connect to server. Check your network connection and try again" : "* API not responding. Please try again later.";
+                    ErrorInfoTextBlock.Text = !NetworkInterface.GetIsNetworkAvailable()
+                        ? "* Could not connect to server. Check your network connection and try again"
+                        : "* API not responding. Please try again later.";
                     break;
                 case RegistrationViewModel.RegistrationError.UsernameAlreadyInUse:
                     ErrorInfoTextBlock.Text = "* Username already in use..";
@@ -47,6 +50,7 @@ namespace GamerRater.Application.Views
                 default:
                     throw new ArgumentOutOfRangeException(nameof(error), error, null);
             }
+
             WaitVisual(false);
         }
 
@@ -54,7 +58,8 @@ namespace GamerRater.Application.Views
         /// <param name="wait">if set to <c>true</c> [wait].</param>
         private void WaitVisual(bool wait)
         {
-            Window.Current.CoreWindow.PointerCursor = wait ? new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Wait, 0) : new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 0);
+            Window.Current.CoreWindow.PointerCursor =
+                wait ? new CoreCursor(CoreCursorType.Wait, 0) : new CoreCursor(CoreCursorType.Arrow, 0);
             RegisterButton.IsEnabled = !wait;
             CancelButton.IsEnabled = !wait;
             Username.IsEnabled = !wait;

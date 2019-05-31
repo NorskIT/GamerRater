@@ -7,7 +7,7 @@ namespace GamerRater.Application.Helpers.Converters
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            return value == null ? 0 : System.Convert.ToInt32((double)value);
+            return value == null ? 0 : System.Convert.ToInt32((double) value);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

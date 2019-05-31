@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using GamerRater.DataAccess;
 using GamerRater.Model;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace GamerRater.Api.Controllers
 {
@@ -34,22 +32,17 @@ namespace GamerRater.Api.Controllers
             {
                 return StatusCode(503, null);
             }
-            
         }
 
         // GET: api/Reviews/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Review>> GetReview(int id)
         {
-            
             try
             {
                 var review = await _context.Ratings.FindAsync(id);
 
-                if (review == null)
-                {
-                    return NotFound();
-                }
+                if (review == null) return NotFound();
 
                 return review;
             }
@@ -63,14 +56,9 @@ namespace GamerRater.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutReview(int id, Review review)
         {
-            
-
             try
             {
-                if (id != review.Id)
-                {
-                    return BadRequest();
-                }
+                if (id != review.Id) return BadRequest();
 
                 _context.Entry(review).State = EntityState.Modified;
 
@@ -81,13 +69,8 @@ namespace GamerRater.Api.Controllers
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!ReviewExists(id))
-                    {
                         return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    throw;
                 }
 
                 return Ok();
@@ -102,14 +85,13 @@ namespace GamerRater.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<Review>> PostReview(Review review)
         {
-            
             try
             {
                 _context.Entry(review.User).State = EntityState.Modified;
                 _context.Ratings.Add(review);
                 await _context.SaveChangesAsync();
 
-                return CreatedAtAction("GetReview", new { id = review.Id }, review);
+                return CreatedAtAction("GetReview", new {id = review.Id}, review);
             }
             catch (SqlException)
             {
@@ -124,10 +106,7 @@ namespace GamerRater.Api.Controllers
             try
             {
                 var review = await _context.Ratings.FindAsync(id);
-                if (review == null)
-                {
-                    return NotFound();
-                }
+                if (review == null) return NotFound();
 
                 _context.Ratings.Remove(review);
                 await _context.SaveChangesAsync();

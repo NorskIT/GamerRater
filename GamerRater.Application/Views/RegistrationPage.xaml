@@ -17,41 +17,51 @@
         </ResourceDictionary>
     </Page.Resources>
     <Grid>
-        <StackPanel Width="230" HorizontalAlignment="Center" VerticalAlignment="Top" Padding="15,15,15,15" Orientation="Vertical">
+        <StackPanel Width="230" HorizontalAlignment="Center" VerticalAlignment="Top" Padding="15,15,15,15"
+                    Orientation="Vertical">
             <StackPanel Padding="0,0,0,15">
-                <TextBlock FontSize="32" HorizontalAlignment="Center" Text="GamerRater"/>
+                <TextBlock FontSize="32" HorizontalAlignment="Center" Text="GamerRater" />
             </StackPanel>
             <StackPanel Padding="0,0,0,15">
-                <TextBlock Text="Username"/>
-                <TextBox MaxLength="16" TextChanged="{x:Bind ViewModel.CanRegister}" BorderBrush="{x:Bind Username.Text, Mode=OneWay, Converter={StaticResource ValueLengthToColorConverter}}" Width="200" Name="Username"></TextBox>
+                <TextBlock Text="Username" />
+                <TextBox MaxLength="16" TextChanged="{x:Bind ViewModel.CanRegister}"
+                         BorderBrush="{x:Bind Username.Text, Mode=OneWay, Converter={StaticResource ValueLengthToColorConverter}}"
+                         Width="200" Name="Username" />
             </StackPanel>
             <StackPanel Padding="0,0,0,15">
-                <TextBlock Text="Firstname"/>
-                <TextBox MaxLength="16" TextChanged="{x:Bind ViewModel.CanRegister}" BorderBrush="{x:Bind Firstname.Text, Mode=OneWay, Converter={StaticResource ValueLengthToColorConverter}}"  Width="200" Name="Firstname"></TextBox>
+                <TextBlock Text="Firstname" />
+                <TextBox MaxLength="16" TextChanged="{x:Bind ViewModel.CanRegister}"
+                         BorderBrush="{x:Bind Firstname.Text, Mode=OneWay, Converter={StaticResource ValueLengthToColorConverter}}"
+                         Width="200" Name="Firstname" />
             </StackPanel>
             <StackPanel Padding="0,0,0,15">
-                <TextBlock Text="Lastname"/>
-                <TextBox TextChanged="{x:Bind ViewModel.CanRegister}" BorderBrush="{x:Bind Lastname.Text, Mode=OneWay, Converter={StaticResource ValueLengthToColorConverter}}"  Width="200" Name="Lastname"></TextBox>
+                <TextBlock Text="Lastname" />
+                <TextBox TextChanged="{x:Bind ViewModel.CanRegister}"
+                         BorderBrush="{x:Bind Lastname.Text, Mode=OneWay, Converter={StaticResource ValueLengthToColorConverter}}"
+                         Width="200" Name="Lastname" />
             </StackPanel>
             <StackPanel Padding="0,0,0,15">
-                <TextBlock Text="Mail"/>
-                <TextBox MaxLength="16" TextChanged="{x:Bind ViewModel.CanRegister}" BorderBrush="{x:Bind Mail.Text, Mode=OneWay, Converter={StaticResource ValueLengthToColorConverter}}"  Width="200" Name="Mail"></TextBox>
+                <TextBlock Text="Mail" />
+                <TextBox MaxLength="16" TextChanged="{x:Bind ViewModel.CanRegister}"
+                         BorderBrush="{x:Bind Mail.Text, Mode=OneWay, Converter={StaticResource ValueLengthToColorConverter}}"
+                         Width="200" Name="Mail" />
             </StackPanel>
             <StackPanel Padding="0,0,0,15">
-                <TextBlock Text="Password"/>
-                <PasswordBox MaxLength="16" PasswordChanged="{x:Bind ViewModel.CanRegister}" BorderBrush="{x:Bind Password.Password, Mode=OneWay, Converter={StaticResource ValueLengthToColorConverter}}"  Width="200" Name="Password"></PasswordBox>
+                <TextBlock Text="Password" />
+                <PasswordBox MaxLength="16" PasswordChanged="{x:Bind ViewModel.CanRegister}"
+                             BorderBrush="{x:Bind Password.Password, Mode=OneWay, Converter={StaticResource ValueLengthToColorConverter}}"
+                             Width="200" Name="Password" />
             </StackPanel>
             <Grid>
                 <Button x:Name="RegisterButton" Content="Register"
-                                  Command="{x:Bind ViewModel.RegisterUserCommand}">
+                        Command="{x:Bind ViewModel.RegisterUserCommand}">
                     <Button.CommandParameter>
                         <model:User
-                                    FirstName="{x:Bind Firstname.Text, Mode=OneWay}"
-                                    LastName="{x:Bind Lastname.Text, Mode=OneWay}"
-                                    Email="{x:Bind Mail.Text, Mode=OneWay}"
-                                    Username="{x:Bind Username.Text, Mode=OneWay}"
-                                    Password="{x:Bind Password.Password, Mode=OneWay}"
-                                    />
+                            FirstName="{x:Bind Firstname.Text, Mode=OneWay}"
+                            LastName="{x:Bind Lastname.Text, Mode=OneWay}"
+                            Email="{x:Bind Mail.Text, Mode=OneWay}"
+                            Username="{x:Bind Username.Text, Mode=OneWay}"
+                            Password="{x:Bind Password.Password, Mode=OneWay}" />
                     </Button.CommandParameter>
                 </Button>
                 <Button Name="CancelButton" Command="{x:Bind ViewModel.CancelCommand}" HorizontalAlignment="Right">Cancel</Button>

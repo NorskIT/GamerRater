@@ -1,15 +1,12 @@
-﻿using System;
+﻿using Windows.UI.Core;
 using Windows.UI.Xaml;
-using GamerRater.Application.ViewModels;
-
 using Windows.UI.Xaml.Controls;
+using GamerRater.Application.ViewModels;
 
 namespace GamerRater.Application.Views
 {
     public sealed partial class MainPage : Page
     {
-        public MainViewModel ViewModel { get; } = new MainViewModel();
-
         public MainPage()
         {
             InitializeComponent();
@@ -17,17 +14,19 @@ namespace GamerRater.Application.Views
             ViewModel.Page = this;
         }
 
+        public MainViewModel ViewModel { get; } = new MainViewModel();
+
         public void WaitVisual(bool enabled)
         {
             if (enabled)
             {
                 GameRootSearchBar.IsEnabled = false;
-                Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Wait, 0);
+                Window.Current.CoreWindow.PointerCursor = new CoreCursor(CoreCursorType.Wait, 0);
             }
             else
             {
                 GameRootSearchBar.IsEnabled = true;
-                Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 0);
+                Window.Current.CoreWindow.PointerCursor = new CoreCursor(CoreCursorType.Arrow, 0);
             }
         }
     }

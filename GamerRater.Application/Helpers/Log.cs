@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
 
@@ -21,7 +20,6 @@ namespace GamerRater.Application.Helpers
             {
                 //TODO: Send to OS crash center?
                 //Possible file permission error, try to continue.
-                return;
             }
         }
 
@@ -29,10 +27,7 @@ namespace GamerRater.Application.Helpers
         {
             try
             {
-                if (ErrorFile == null)
-                {
-                    await CreateErrorFile().ConfigureAwait(true);
-                }
+                if (ErrorFile == null) await CreateErrorFile().ConfigureAwait(true);
 
                 await FileIO.AppendTextAsync(ErrorFile,
                     string.Format("{0} - {1}\r\n", DateTime.Now.ToLocalTime().ToString(), strMessage));
@@ -41,7 +36,6 @@ namespace GamerRater.Application.Helpers
             {
                 //TODO: Send to OS crash center?
                 //Possible file permission error, try to continue.
-                return;
             }
         }
     }

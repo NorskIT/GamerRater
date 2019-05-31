@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace GamerRater.Model
+﻿namespace GamerRater.Model
 {
     public class UserHasUserGroup
     {

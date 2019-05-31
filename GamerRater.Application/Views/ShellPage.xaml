@@ -40,7 +40,7 @@
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE7FC;" />
                 </winui:NavigationViewItem.Icon>
             </winui:NavigationViewItem>
-            <winui:NavigationViewItem Name="MyReviewNav" 
+            <winui:NavigationViewItem Name="MyReviewNav"
                                       IsEnabled="{x:Bind ViewModel.LoggedInUser, Mode=OneWay, Converter={StaticResource NotNullToBoolConverter}}"
                                       x:Uid="Shell_UserReviews" helpers:NavHelper.NavigateTo="views:UserReviews">
                 <winui:NavigationViewItem.Icon>

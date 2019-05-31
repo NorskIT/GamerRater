@@ -1,17 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using GamerRater.Application.ViewModels;
 using GamerRater.Model;
@@ -20,23 +10,24 @@ using GamerRater.Model;
 
 namespace GamerRater.Application.Views
 {
-
-
     public sealed partial class LoginPage : Page
     {
         private readonly LoginViewModel _viewModel = new LoginViewModel();
 
         public LoginPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             _viewModel.Initialize();
             _viewModel.Page = this;
         }
 
-        /// <summary>Invoked when the Page is loaded and becomes the current source of a parent Frame.
-        /// If user is not null, will preset login info with user info</summary>
+        /// <summary>
+        ///     Invoked when the Page is loaded and becomes the current source of a parent Frame.
+        ///     If user is not null, will preset login info with user info
+        /// </summary>
         /// <param name="e">
-        /// Event data that can be examined by overriding code. The event data is representative of the pending navigation that will load the current Page. Usually the most relevant property to examine is Parameter.
+        ///     Event data that can be examined by overriding code. The event data is representative of the pending navigation that
+        ///     will load the current Page. Usually the most relevant property to examine is Parameter.
         /// </param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
@@ -58,7 +49,8 @@ namespace GamerRater.Application.Views
             RegistrationButton.IsEnabled = !wait;
             CancelButton.IsEnabled = !wait;
             LoginButton.IsEnabled = !wait;
-            Window.Current.CoreWindow.PointerCursor = wait ? new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Wait, 0) : new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 0);
+            Window.Current.CoreWindow.PointerCursor =
+                wait ? new CoreCursor(CoreCursorType.Wait, 0) : new CoreCursor(CoreCursorType.Arrow, 0);
         }
 
         /// <summary>Present user with error received</summary>
@@ -71,7 +63,8 @@ namespace GamerRater.Application.Views
             switch (error)
             {
                 case LoginViewModel.LoginError.NetworkError:
-                    ErrorInfoTextBlock.Text = "* Could not connect to server. Check your network connection and try again";
+                    ErrorInfoTextBlock.Text =
+                        "* Could not connect to server. Check your network connection and try again";
                     break;
                 case LoginViewModel.LoginError.WrongUsernameOrPassword:
                     ErrorInfoTextBlock.Text = "* Wrong username/password or user does not exist.";

@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using GamerRater.DataAccess;
 using GamerRater.Model;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace GamerRater.Api.Controllers
 {
@@ -44,10 +43,7 @@ namespace GamerRater.Api.Controllers
             {
                 var userGroup = await _context.UserGroups.FindAsync(id);
 
-                if (userGroup == null)
-                {
-                    return NotFound();
-                }
+                if (userGroup == null) return NotFound();
 
                 return userGroup;
             }
@@ -87,10 +83,7 @@ namespace GamerRater.Api.Controllers
         {
             try
             {
-                if (id != userGroup.Id)
-                {
-                    return BadRequest();
-                }
+                if (id != userGroup.Id) return BadRequest();
 
                 _context.Entry(userGroup).State = EntityState.Modified;
 
@@ -101,13 +94,8 @@ namespace GamerRater.Api.Controllers
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!UserGroupExists(id))
-                    {
                         return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    throw;
                 }
 
                 return NoContent();
@@ -126,7 +114,7 @@ namespace GamerRater.Api.Controllers
             {
                 _context.UserGroups.Add(userGroup);
                 await _context.SaveChangesAsync();
-                return CreatedAtAction("GetUserGroup", new { id = userGroup.Id }, userGroup);
+                return CreatedAtAction("GetUserGroup", new {id = userGroup.Id}, userGroup);
             }
             catch (SqlException)
             {
@@ -141,10 +129,7 @@ namespace GamerRater.Api.Controllers
             try
             {
                 var userGroup = await _context.UserGroups.FindAsync(id);
-                if (userGroup == null)
-                {
-                    return NotFound();
-                }
+                if (userGroup == null) return NotFound();
 
                 _context.UserGroups.Remove(userGroup);
                 await _context.SaveChangesAsync();

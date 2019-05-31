@@ -19,11 +19,17 @@ namespace GamerRater.Application.ViewModels
     public class GameDetailsViewModel : Observable
     {
         public static ObservableCollection<Review> _reviews = new ObservableCollection<Review>();
-        public ObservableCollection<Platform> Platforms = new ObservableCollection<Platform>();
-        public ICommand CloseReviewWriter => new RelayCommand(() => ShowReviewEditor = Visibility.Collapsed);
-        private Visibility _showReviewEditor = Visibility.Collapsed;
-        public ICommand AddReviewCommand { get; set; }
         private int _averageScore = -1; //-1 equals 0 stars.
+        private Visibility _showReviewEditor = Visibility.Collapsed;
+        public ObservableCollection<Platform> Platforms = new ObservableCollection<Platform>();
+
+        public GameDetailsViewModel()
+        {
+            Session = UserAuthenticator.SessionUserAuthenticator;
+        }
+
+        public ICommand CloseReviewWriter => new RelayCommand(() => ShowReviewEditor = Visibility.Collapsed);
+        public ICommand AddReviewCommand { get; set; }
         public GameRoot MainGame { get; set; }
         public GameDetailsPage Page { get; set; }
         public UserAuthenticator Session { get; set; }
@@ -51,18 +57,12 @@ namespace GamerRater.Application.ViewModels
             ShowReviewEditor = Visibility.Visible;
             Page.BringViewToReviewEditBox();
         });
-        
-        public GameDetailsViewModel()
-        {
-            Session = UserAuthenticator.SessionUserAuthenticator;
-        }
 
 
         /// <summary>Initializes the specified game for detailed view</summary>
         /// <param name="game">The game.</param>
         public async void Initialize(GameRoot game)
         {
-            
             MainGame = game;
             AddReviewCommand = new RelayCommand<Review>(InitializeAddReview);
             _reviews?.Clear();
@@ -159,7 +159,7 @@ namespace GamerRater.Application.ViewModels
 
             if (!await AddReview(review).ConfigureAwait(true))
             {
-                GrToast.SmallToast(GrToast.Errors.AddReview);
+                GrToast.SmallToast(GrToast.Errors.AddReviewError);
                 return;
             }
 
@@ -271,7 +271,7 @@ namespace GamerRater.Application.ViewModels
                 }
 
             Window.Current.CoreWindow.PointerCursor = new CoreCursor(CoreCursorType.Arrow, 0);
-            GrToast.SmallToast(GrToast.Errors.DeleteReview);
+            GrToast.SmallToast(GrToast.Errors.DeleteReviewError);
         }
     }
 }

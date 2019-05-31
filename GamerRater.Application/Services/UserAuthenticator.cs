@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Threading.Tasks;
 using GamerRater.Application.DataAccess;
 using GamerRater.Application.Helpers;
@@ -9,23 +8,23 @@ namespace GamerRater.Application.Services
 {
     public class UserAuthenticator : Observable
     {
-        public static UserAuthenticator SessionUserAuthenticator { get; set; }
-        
+        private static bool _userLoggedInBool;
+
 
         private User _user;
-
-        public User User
-        {
-            get => _user;
-            set => Set(ref _user, value);
-        }
-        
-        private static bool _userLoggedInBool;
 
 
         static UserAuthenticator()
         {
             SessionUserAuthenticator = new UserAuthenticator();
+        }
+
+        public static UserAuthenticator SessionUserAuthenticator { get; set; }
+
+        public User User
+        {
+            get => _user;
+            set => Set(ref _user, value);
         }
 
         public bool UserLoggedInBool
@@ -34,9 +33,13 @@ namespace GamerRater.Application.Services
             set => Set(ref _userLoggedInBool, value);
         }
 
+        /// <summary>  Simulation a login of user and creates a "session" available to the rest of the app</summary>
+        /// <param name="user">The user.</param>
+        /// <returns></returns>
         public async Task<User> LogInUser(User user)
         {
-            using(var users = new Users()) { 
+            using (var users = new Users())
+            {
                 var existingUser = await users.GetUser(user.Username).ConfigureAwait(true);
                 if (existingUser == null) return null;
                 if (!existingUser.Password.Equals(user.Password, StringComparison.CurrentCulture)) return null;
@@ -46,6 +49,7 @@ namespace GamerRater.Application.Services
                     GrToast.SmallToast(GrToast.Errors.NetworkError);
                     return null;
                 }
+
                 var completeUser = contextUser;
                 User = completeUser;
                 UserLoggedInBool = true;
@@ -55,6 +59,8 @@ namespace GamerRater.Application.Services
             }
         }
 
+        /// <summary>Synchronise user to database</summary>
+        /// <returns></returns>
         public async Task<bool> UpdateUser()
         {
             using (var users = new Users())
@@ -65,13 +71,16 @@ namespace GamerRater.Application.Services
                     GrToast.SmallToast(GrToast.Errors.NetworkError);
                     return false;
                 }
+
                 var completeUser = user;
                 User.Reviews = completeUser.Reviews;
                 return true;
             }
         }
 
-        //Simple log out method
+
+        /// <summary>  Simulate a logout</summary>
+        /// <returns></returns>
         public bool LogOut()
         {
             User = null;

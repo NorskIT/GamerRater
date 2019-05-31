@@ -56,8 +56,6 @@ namespace GamerRater.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPlatform(int id, Platform platform)
         {
-            
-
             try
             {
                 if (id != platform.Id) return BadRequest();
@@ -87,8 +85,6 @@ namespace GamerRater.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<Platform>> PostPlatform(Platform platform)
         {
-            
-
             try
             {
                 _context.Platforms.Add(platform);
@@ -120,7 +116,6 @@ namespace GamerRater.Api.Controllers
             {
                 return StatusCode(503, null);
             }
-            
         }
 
         private bool PlatformExists(int id)

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-
-using GamerRater.Application.Services;
-
 using Windows.ApplicationModel.Activation;
+using GamerRater.Application.Services;
 
 namespace GamerRater.Application.Activation
 {

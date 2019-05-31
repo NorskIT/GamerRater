@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using GamerRater.Application.DataAccess;
 using GamerRater.Application.Helpers;
@@ -16,9 +12,10 @@ namespace GamerRater.Application.ViewModels
 {
     internal class UserReviewsViewModel : Observable
     {
-        public UserReviews Page { get; set; }
-        public ObservableCollection<GameRoot> Games = new ObservableCollection<GameRoot>();
         public ICommand _ItemClickCommand;
+        public ObservableCollection<GameRoot> Games = new ObservableCollection<GameRoot>();
+        public UserReviews Page { get; set; }
+
         public ICommand ItemClickCommand =>
             _ItemClickCommand ?? (_ItemClickCommand = new RelayCommand<GameRoot>(OnItemClick));
 
@@ -26,9 +23,8 @@ namespace GamerRater.Application.ViewModels
         public void Initialize()
         {
             if (UserAuthenticator.SessionUserAuthenticator.User == null) return;
-            if(UserAuthenticator.SessionUserAuthenticator.User.Reviews.Count > 0)
+            if (UserAuthenticator.SessionUserAuthenticator.User.Reviews.Count > 0)
                 FetchGamesRelatedToUserReviews();
-
         }
 
         /// <summary>Called when game is clicked</summary>
@@ -51,7 +47,8 @@ namespace GamerRater.Application.ViewModels
                     GrToast.SmallToast(GrToast.Errors.ApiError);
                     return;
                 }
-                if(Games.All(x => x.Id != game.Id))
+
+                if (Games.All(x => x.Id != game.Id))
                     Games.Add(game);
             }
         }

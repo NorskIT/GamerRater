@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace GamerRater.Application.DataAccess
+﻿namespace GamerRater.Application.DataAccess
 {
-
     /// <summary>A class with a collection of common used Uri's within the application</summary>
     internal static class BaseUriString
     {
         /// <summary>Uri pointing towards the API</summary>
         public static readonly string Port = "61971"; // CHANGE THIS EQUAL TO API PORT
-        public static readonly string RootUrl = "http://localhost:" + Port +"/api/";
+
+        public static readonly string RootUrl = "http://localhost:" + Port + "/api/";
         public static readonly string IGDBUrl = "https://api-v3.igdb.com/";
         public static readonly string Games = RootUrl + "GameRoots/";
         public static readonly string Covers = RootUrl + "Covers/";

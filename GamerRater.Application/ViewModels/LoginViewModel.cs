@@ -1,5 +1,6 @@
 ﻿using System.Net.NetworkInformation;
 using System.Windows.Input;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using GamerRater.Application.Helpers;
 using GamerRater.Application.Services;
@@ -38,13 +39,14 @@ namespace GamerRater.Application.ViewModels
                         if (existingUser != null)
                         {
                             Window.Current.CoreWindow.PointerCursor =
-                                new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 1);
+                                new CoreCursor(CoreCursorType.Arrow, 1);
                             if (RegisteredUser != null)
                             {
                                 NavigationService.Navigate<MainPage>();
                                 NavigationService.Frame.BackStack.Clear();
                                 return;
                             }
+
                             NavigationService.GoBack();
                             return;
                         }

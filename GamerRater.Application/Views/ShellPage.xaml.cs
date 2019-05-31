@@ -1,16 +1,10 @@
-﻿using System;
-using Windows.UI.Xaml;
+﻿using Windows.UI.Xaml.Controls;
 using GamerRater.Application.ViewModels;
-
-using Windows.UI.Xaml.Controls;
 
 namespace GamerRater.Application.Views
 {
     public sealed partial class ShellPage : Page
     {
-        public ShellViewModel ViewModel { get; } = new ShellViewModel();
-
-
         public ShellPage()
         {
             InitializeComponent();
@@ -18,5 +12,7 @@ namespace GamerRater.Application.Views
             DataContext = ViewModel;
             ViewModel.Initialize(shellFrame, navigationView, KeyboardAccelerators);
         }
+
+        public ShellViewModel ViewModel { get; } = new ShellViewModel();
     }
 }

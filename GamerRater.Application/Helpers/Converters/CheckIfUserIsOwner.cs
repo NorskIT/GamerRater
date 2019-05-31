@@ -10,7 +10,9 @@ namespace GamerRater.Application.Helpers.Converters
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             if (UserAuthenticator.SessionUserAuthenticator.User == null) return Visibility.Collapsed;
-            return (int)value == UserAuthenticator.SessionUserAuthenticator.User.Id ? Visibility.Visible : Visibility.Collapsed;
+            return (int) value == UserAuthenticator.SessionUserAuthenticator.User.Id
+                ? Visibility.Visible
+                : Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

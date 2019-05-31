@@ -1,23 +1,16 @@
-﻿using System;
-using System.Linq;
-using Windows.UI;
+﻿using Windows.UI;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
-using GamerRater.Application.ViewModels;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using GamerRater.Application.DataAccess;
+using GamerRater.Application.ViewModels;
 using GamerRater.Model;
-using Microsoft.Toolkit.Uwp.UI.Extensions;
 
 namespace GamerRater.Application.Views
 {
     public sealed partial class GameDetailsPage : Page
     {
-
-
-        public GameDetailsViewModel ViewModel { get; } = new GameDetailsViewModel();
-
         public GameDetailsPage()
         {
             InitializeComponent();
@@ -26,24 +19,25 @@ namespace GamerRater.Application.Views
             ReviewEditBox.Visibility = Visibility.Collapsed;
         }
 
+
+        public GameDetailsViewModel ViewModel { get; } = new GameDetailsViewModel();
+
         /// <summary>Invoked when the Page is loaded and becomes the current source of a parent Frame.</summary>
         /// <param name="e">
-        /// Event data that can be examined by overriding code. The event data is representative of the pending navigation that will load the current Page. Usually the most relevant property to examine is Parameter.
+        ///     Event data that can be examined by overriding code. The event data is representative of the pending navigation that
+        ///     will load the current Page. Usually the most relevant property to examine is Parameter.
         /// </param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
             if (!(e.Parameter is GameRoot game)) return;
             ViewModel.Initialize(game);
-            if (game.Reviews == null || game.Reviews.Count == 0)
-            {
-                ReviewGridView.Visibility = Visibility.Collapsed;
-            }
+            if (game.Reviews == null || game.Reviews.Count == 0) ReviewGridView.Visibility = Visibility.Collapsed;
         }
 
         /// <summary>Invoked when 'Delete review'-button has been clicked. Sends review to VIewModel review delete method</summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void DeleteReviewButtonClicked(object sender, RoutedEventArgs e)
         {
             if (!(sender is Button button)) return;
@@ -64,25 +58,25 @@ namespace GamerRater.Application.Views
         /// <param name="enabled">if set to <c>true</c> [enabled].</param>
         public void EnableReviewSubmitButton(bool enabled)
         {
-            if(enabled)
-            { 
+            if (enabled)
+            {
                 SubmitReviewButton.IsEnabled = enabled;
-                Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 0);
+                Window.Current.CoreWindow.PointerCursor = new CoreCursor(CoreCursorType.Arrow, 0);
             }
             else
             {
                 SubmitReviewButton.IsEnabled = enabled;
-                Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Wait, 0);
+                Window.Current.CoreWindow.PointerCursor = new CoreCursor(CoreCursorType.Wait, 0);
             }
         }
 
         /// <summary>Sets review edit box with info from selected review</summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void SetReviewBox(object sender, RoutedEventArgs e)
         {
             var button = (Button) sender;
-            var review = (Review)button.DataContext;
+            var review = (Review) button.DataContext;
             ReviewText.Text = review.ReviewText;
             ReviewId.Text = review.Id + "";
             RatingStars.Value = review.Stars;
@@ -94,7 +88,7 @@ namespace GamerRater.Application.Views
 
         /// <summary>Clears the review box.</summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         public void ClearReviewBox(object sender, RoutedEventArgs e)
         {
             ReviewText.Text = "";
