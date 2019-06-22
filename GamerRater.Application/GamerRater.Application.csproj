@@ -92,23 +92,29 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
+      <Version>2.9.2</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer">
-      <Version>2.2.3</Version>
+      <Version>2.2.4</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>6.1.9</Version>
+      <Version>6.2.8</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications">
+      <Version>5.1.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Uwp.UI.Controls">
       <Version>5.1.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.UI.Xaml">
-      <Version>2.0.181018003.1</Version>
+      <Version>2.1.190405004.2</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Xaml.Behaviors.Uwp.Managed">
-      <Version>2.0.0</Version>
+      <Version>2.0.1</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
-      <Version>12.0.1</Version>
+      <Version>12.0.2</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
@@ -118,22 +124,61 @@
     <Compile Include="Activation\ActivationHandler.cs" />
     <Compile Include="Behaviors\NavigationViewHeaderBehavior.cs" />
     <Compile Include="Behaviors\NavigationViewHeaderMode.cs" />
-    <Compile Include="DataAccess\Game.cs" />
+    <Compile Include="DataAccess\BaseUriString.cs" />
+    <Compile Include="DataAccess\Games.cs" />
     <Compile Include="DataAccess\IGDBAccess.cs" />
-    <Compile Include="DataAccess\Rating.cs" />
+    <Compile Include="DataAccess\Reviews.cs" />
+    <Compile Include="DataAccess\UserGroups.cs" />
+    <Compile Include="DataAccess\Users.cs" />
+    <Compile Include="Helpers\Converters\ValueLengthToColorConverter.cs" />
+    <Compile Include="Helpers\Converters\IgdbGameUrlToHDImageUrlConverter.cs" />
+    <Compile Include="Helpers\Converters\NotNullToVisibilityConverter.cs" />
+    <Compile Include="Helpers\Converters\CanWriteReviewConverter.cs" />
+    <Compile Include="Helpers\Converters\CheckIfUserIsOwner.cs" />
+    <Compile Include="Helpers\Converters\ColorIfOwnerConverter.cs" />
+    <Compile Include="Helpers\Converters\DoubleToIntConverter.cs" />
+    <Compile Include="Helpers\Converters\NotNullToBoolConverter.cs" />
+    <Compile Include="Helpers\Converters\NullToDefaultImageConverter.cs" />
+    <Compile Include="Helpers\Converters\ShowLogoutButtonConverter.cs" />
+    <Compile Include="Helpers\Converters\StringToIntConverter.cs" />
+    <Compile Include="Helpers\Converters\ShowLoginButtonConverter.cs" />
+    <Compile Include="Helpers\IdStringBuilder.cs" />
+    <Compile Include="Helpers\Log.cs" />
     <Compile Include="Helpers\NavHelper.cs" />
     <Compile Include="Helpers\Observable.cs" />
     <Compile Include="Helpers\RelayCommand.cs" />
+    <Compile Include="Helpers\Converters\RoundDoubleToTwoDecimalsConverter.cs" />
+    <Compile Include="Helpers\Converters\ReviewListIsNotEmptyConverter.cs" />
+    <Compile Include="Helpers\Converters\VisibilityListSizeConvert.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Services\ActivationService.cs" />
     <Compile Include="Activation\DefaultLaunchActivationHandler.cs" />
+    <Compile Include="Services\GrToast.cs" />
     <Compile Include="Services\NavigationService.cs" />
+    <Compile Include="Services\UserAuthenticator.cs" />
+    <Compile Include="ViewModels\GameDetailsViewModel.cs" />
+    <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\RegistrationViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
+    <Compile Include="ViewModels\UserReviewsViewModel.cs" />
+    <Compile Include="Views\GameDetailsPage.xaml.cs">
+      <DependentUpon>GameDetailsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LoginPage.xaml.cs">
+      <DependentUpon>LoginPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\RegistrationPage.xaml.cs">
+      <DependentUpon>RegistrationPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ShellPage.xaml.cs">
       <DependentUpon>ShellPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserReviews.xaml.cs">
+      <DependentUpon>UserReviews.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -163,13 +208,29 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\GameDetailsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\LoginPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\RegistrationPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ShellPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\UserReviews.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
@@ -181,6 +242,7 @@
     <Compile Include="Helpers\ResourceExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\DefaultImage.png" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -201,12 +263,19 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GamerRater.DataAccess\GamerRater.DataAccess.csproj">
+      <Project>{F8E1421D-EDE3-4E90-9F43-ACC6065F02D9}</Project>
+      <Name>GamerRater.DataAccess</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GamerRater.Model\GamerRater.Model.csproj">
       <Project>{081594b7-51fe-4731-8615-ebb375bc51c6}</Project>
       <Name>GamerRater.Model</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.AspNetCore.Http.Abstractions">
+      <HintPath>..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.aspnetcore.http.abstractions\2.2.0\lib\netstandard2.0\Microsoft.AspNetCore.Http.Abstractions.dll</HintPath>
+    </Reference>
     <Reference Include="System.Net.Http.Formatting">
       <HintPath>..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.aspnet.webapi.client\5.2.6\lib\netstandard2.0\System.Net.Http.Formatting.dll</HintPath>
     </Reference>

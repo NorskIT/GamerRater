@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace GamerRater.Application.Helpers
@@ -8,17 +7,17 @@ namespace GamerRater.Application.Helpers
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected void Set<T>(ref T storage, T value, [CallerMemberName]string propertyName = null)
+        protected void Set<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
         {
-            if (Equals(storage, value))
-            {
-                return;
-            }
+            if (Equals(storage, value)) return;
 
             storage = value;
             OnPropertyChanged(propertyName);
         }
 
-        protected void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }

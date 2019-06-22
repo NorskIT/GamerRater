@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
-using GamerRater.Application.Activation;
-
 using Windows.ApplicationModel.Activation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using GamerRater.Application.Activation;
 
 namespace GamerRater.Application.Services
 {
@@ -15,8 +13,8 @@ namespace GamerRater.Application.Services
     internal class ActivationService
     {
         private readonly App _app;
-        private readonly Lazy<UIElement> _shell;
         private readonly Type _defaultNavItem;
+        private readonly Lazy<UIElement> _shell;
 
         public ActivationService(App app, Type defaultNavItem, Lazy<UIElement> shell = null)
         {
@@ -34,28 +32,18 @@ namespace GamerRater.Application.Services
 
                 // Do not repeat app initialization when the Window already has content,
                 // just ensure that the window is active
-                if (Window.Current.Content == null)
-                {
-                    // Create a Frame to act as the navigation context and navigate to the first page
-                    Window.Current.Content = _shell?.Value ?? new Frame();
-                }
+                if (Window.Current.Content == null) Window.Current.Content = _shell?.Value ?? new Frame();
             }
 
             var activationHandler = GetActivationHandlers()
-                                                .FirstOrDefault(h => h.CanHandle(activationArgs));
+                .FirstOrDefault(h => h.CanHandle(activationArgs));
 
-            if (activationHandler != null)
-            {
-                await activationHandler.HandleAsync(activationArgs);
-            }
+            if (activationHandler != null) await activationHandler.HandleAsync(activationArgs);
 
             if (IsInteractive(activationArgs))
             {
                 var defaultHandler = new DefaultLaunchActivationHandler(_defaultNavItem);
-                if (defaultHandler.CanHandle(activationArgs))
-                {
-                    await defaultHandler.HandleAsync(activationArgs);
-                }
+                if (defaultHandler.CanHandle(activationArgs)) await defaultHandler.HandleAsync(activationArgs);
 
                 // Ensure the current window is active
                 Window.Current.Activate();

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-
-using GamerRater.Application.Services;
-
 using Windows.ApplicationModel.Activation;
+using GamerRater.Application.Services;
 
 namespace GamerRater.Application.Activation
 {
@@ -22,7 +20,7 @@ namespace GamerRater.Application.Activation
             // the new page by passing required information in the navigation parameter
             NavigationService.Navigate(_navElement, args.Arguments);
 
-            await Task.CompletedTask;
+            await Task.CompletedTask.ConfigureAwait(true);
         }
 
         protected override bool CanHandleInternal(LaunchActivatedEventArgs args)

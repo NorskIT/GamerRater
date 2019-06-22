@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace GamerRater.Application.Activation
 {
@@ -18,7 +17,7 @@ namespace GamerRater.Application.Activation
 
         public override async Task HandleAsync(object args)
         {
-            await HandleInternalAsync(args as T);
+            await HandleInternalAsync(args as T).ConfigureAwait(true);
         }
 
         public override bool CanHandle(object args)

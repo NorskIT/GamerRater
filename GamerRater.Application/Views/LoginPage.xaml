@@ -1,0 +1,53 @@
+﻿<Page
+    x:Class="GamerRater.Application.Views.LoginPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:GamerRater.Application.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:model="using:GamerRater.Model"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Padding="15,15,15,15"
+                    Orientation="Vertical">
+            <StackPanel Padding="0,0,0,15">
+                <TextBlock FontSize="32" HorizontalAlignment="Center" Text="GamerRater" />
+            </StackPanel>
+            <StackPanel Padding="0,0,0,15">
+                <TextBlock Text="Username" />
+                <TextBox Width="200" Name="Username" />
+            </StackPanel>
+            <StackPanel Padding="0,0,0,15">
+                <StackPanel>
+                    <TextBlock Text="Password" />
+                    <PasswordBox Width="200" Name="Password" />
+                </StackPanel>
+            </StackPanel>
+            <Grid>
+                <Button Name="LoginButton" Command="{x:Bind _viewModel.LoginUserCommand}" Content="Login">
+                    <Button.CommandParameter>
+                        <model:User
+                            Username="{x:Bind Username.Text, Mode=OneWay}"
+                            Password="{x:Bind Password.Password, Mode=OneWay}" />
+                    </Button.CommandParameter>
+                </Button>
+                <Button Name="CancelButton" Command="{x:Bind _viewModel.CancelCommand}" HorizontalAlignment="Right">Cancel</Button>
+            </Grid>
+            <Grid Padding="0,25,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="1" Name="ErrorInfoTextBlock" Foreground="Red"
+                           HorizontalAlignment="Left" Width="100" TextWrapping="Wrap" />
+                <TextBlock Grid.Row="1" Visibility="Collapsed" x:Name="RegistrationComplete" Foreground="LimeGreen"
+                           HorizontalAlignment="Left" Width="100" TextWrapping="Wrap" />
+                <HyperlinkButton Grid.Row="0" FontSize="12" Name="RegistrationButton"
+                                 Command="{x:Bind _viewModel.RegisterUserCommand}" HorizontalAlignment="Right">
+                    New user? Click here to register!
+                </HyperlinkButton>
+            </Grid>
+        </StackPanel>
+    </Grid>
+</Page>
